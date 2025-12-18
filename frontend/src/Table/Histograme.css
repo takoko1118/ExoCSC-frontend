@@ -1,0 +1,34 @@
+#gd .yaxislayer-above text {
+    /* transform: rotate(-45deg);
+    white-space: nowrap; */
+    font-size: 8px; /* Adjust the font size as needed */
+  }
+
+/* Add this CSS to your stylesheet or in a <style> tag in your component */
+.legend {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Align the legend to the right of the chart */
+    margin-top: 20px; /* Adjust the margin as needed */
+  }
+  
+  .legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px; /* Adjust the margin between legend items */
+  }
+  
+  .legend-color {
+    width: 10px; /* Adjust the width of the color icon */
+    height: 10px; /* Adjust the height of the color icon */
+    margin-right: 5px; /* Adjust the margin between the color icon and text */
+    border: 1px solid #ccc; /* Add a border around the color icon */
+  }
+  
+  .legend-text {
+    font-size: 8px; /* Adjust the font size of the legend text */
+  }
+  
+
+
+  

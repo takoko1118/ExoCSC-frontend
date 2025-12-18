@@ -1,0 +1,14 @@
+[
+    { "data": { "id": "center", "label": "EphA2" }, "position": { "x": 250, "y": 250 } },
+    { "data": { "id": "node1", "label": "miR-17" }, "position": { "x": 100, "y": 100 } },
+    { "data": { "id": "node2", "label": "miR-17-3p" }, "position": { "x": 200, "y": 100 } },
+    { "data": { "id": "node3", "label": "miR-17-9" }, "position": { "x": 300, "y": 100 } },
+    { "data": { "id": "node4", "label": "miR-100" }, "position": { "x": 400, "y": 100 } },
+    
+    { "data": { "source": "node1", "target": "center", "label": "Edge from Node 1 to Center Node" } },
+    { "data": { "source": "node2", "target": "center", "label": "Edge from Node 2 to Center Node" } },
+    { "data": { "source": "node3", "target": "center", "label": "Edge from Node 3 to Center Node" } },
+    { "data": { "source": "node4", "target": "center", "label": "Edge from Node 4 to Center Node" } }
+]
+
+  

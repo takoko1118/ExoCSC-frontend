@@ -1,0 +1,34 @@
+ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .Landing {
+    font-size: 1rem;
+    display: inline-block;
+    margin-right: 20px;
+    margin-bottom: 100px;
+    margin-top: 30px;
+  }
+  
+  .item {
+    font-size: 1rem;
+    font-weight: 900;
+    margin-right: 5px;
+  }
+  
+  .number {
+    /* font-weight: normal; */
+    font-weight: 500;
+  }
+  
+  .STATISTICS{
+    font-size: 2.125rem;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 400;
+    line-height: 1.235;
+    margin-top: 100px;
+    text-align: center;
+  }
+
+  

@@ -161,27 +161,27 @@ function NavigationBar({ width, tableControlRef, ...props }) {
   };
 
   let items = [
-    ["News", "/news"],
-    ["Paper", "https://arxiv.org/abs/2105.01051"],
-    ["Code", "https://github.com/s3prl/s3prl"],
-    ["Tasks", "/tasks"],
-    ["Rules", "/rules"],
-    ["Leaderboard", "/leaderboard"],
-    ["Challenge", [
-      ["Challenge Overview", "/challenge-slt2022/challenge_overview"],
-      ["Evaluation Framework", "/challenge-slt2022/framework"],
-      ["Upstream Specification", "/challenge-slt2022/upstream"],
-      ["Leaderboard Submission", "/challenge-slt2022/submission"],
-      ["Overall Metrics", "/challenge-slt2022/metrics"],
-    ]],
-    ["Submit", "/submit"],
+    ["Home", "/home"],
+    ["Search", "/search"],
+    ["Browse", "/browse"],
+    ["Help", "/help"],
+    //["Rules", "/rules"],
+    // ["Leaderboard", "/leaderboard"],
+    // ["Challenge", [
+    //   ["Challenge Overview", "/challenge-slt2022/challenge_overview"],
+    //   ["Evaluation Framework", "/challenge-slt2022/framework"],
+    //   ["Upstream Specification", "/challenge-slt2022/upstream"],
+    //   ["Leaderboard Submission", "/challenge-slt2022/submission"],
+    //   ["Overall Metrics", "/challenge-slt2022/metrics"],
+    // ]],
+    // ["Submit", "/submit"],
   ];
-  if (auth.isLoggedIn) {
-    items.push(["Profile", "/profile"]);
-    items.push(["Logout", "/logout"]);
-  } else {
-    items.push(["Login", "/login"]);
-  }
+  // if (auth.isLoggedIn) {
+  //   items.push(["Profile", "/profile"]);
+  //   items.push(["Logout", "/logout"]);
+  // } else {
+  //   items.push(["Login", "/login"]);
+  // }
 
   const items1 = items.map(([text, link]) =>
     Array.isArray(link) ?
@@ -329,9 +329,9 @@ function NavigationBar({ width, tableControlRef, ...props }) {
                       <div style={{textAlign: "left" }}>
                         {largeScreen
                         ?
-                        <img src="/logo-color.png" style={{width: "60%" , textAlign: "left" }} />
+                        <img src="/ExoCSC-logo.png" style={{width: "60%" , textAlign: "left" }} />
                         :
-                        <img src="/logo-color.png" style={{width: "20%" , textAlign: "left" }} />
+                        <img src="/ExoCSC-logo.png" style={{width: "20%" , textAlign: "left" }} />
                         }
                       </div>
                       </LiftingBarButton>

@@ -2,7 +2,7 @@ import { createMuiTheme } from "@material-ui/core/styles";
 import LockIcon from "@material-ui/icons/Lock";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
 import AllInclusive from "@material-ui/icons/AllInclusive";
-
+import React from 'react';
 import {
     constrainedTheme,
     lessConstrainedTheme,

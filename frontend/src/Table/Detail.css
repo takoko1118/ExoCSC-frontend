@@ -1,0 +1,128 @@
+.detail {
+  font-family: inherit;
+  font-weight: 500;
+    line-height: 1.1;
+    min-height: 100vh;
+    display: flex;
+    text-align: left;
+  }
+
+  aside {
+    flex: none;
+   
+    
+  }
+  .content {
+    flex: auto;
+    display: flex;
+    flex-direction: column;
+    
+  }
+  .content article {
+    flex: auto;
+  }
+  .detailTable{
+    
+    background-color: rgb(255, 255, 255);
+    margin-left: 100px;
+    /* color: rgb(0, 0, 0); */
+    text-align: justify;
+    text-justify: inter-word;
+
+    /* font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 14px; */
+
+  }
+  .detailTable th {
+    /* Add your custom styles for the <td> elements */
+    font-size: 1.0rem;
+    font-weight: 500;
+    /* ... */
+  }
+  
+  .nav-bar {
+    margin-left:60px;
+    margin-top: -50vh; /* Half of the navigation bar's height */
+    position: sticky;
+    top: 50%; /* Position the navigation bar at the middle */
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1999; /* Increase the z-index value */
+    
+  }
+  .nav-bar ul {
+    
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .nav-bar li{
+    font-size: 13px;
+    font-weight: 500;
+    color: #999;
+    padding: 4px 4px;
+  }
+  
+  .table.dataTable {
+   
+    
+  table-layout: fixed;
+  background-color: rgb(215, 215, 215);
+  border-collapse: collapse;
+  /* border: 2px solid #ffffff; */
+  width: 100%;
+  }
+  
+  .table.dataTable th,
+  .table.dataTable td {
+    /* border-top: none;
+    border-bottom: 1px solid #ddd; */
+    border: 2px solid #ffffff;
+    padding: 5px;
+  }
+  
+  .table.dataTable th {
+    font-size: large;
+    font-weight: bold;
+    border-top: 2px solid #ffffff;
+    border-bottom: 2px solid #000000;
+  }
+
+  h1{
+    
+    font-size: 30px;
+    margin-left: 100px;
+      margin-top: 50px;
+      
+  }  
+h2{
+  
+  font-size: 30px;
+  margin-left: 100px;
+    margin-top: 10px;
+    
+}
+h4{
+  
+  font-size: 18px;
+ 
+  margin-top: 50px;
+}
+  
+  /* td{
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 10px;
+    background-color: aqua;
+  } */
+
+  .table.dataTable{
+    margin-top: 0;
+  }
+
+  footer{
+    margin-left: 100px;
+    margin-top: 50px;
+    border-top: 2px solid rgb(0, 0, 0);
+    margin-right: 100px;
+  }

@@ -1,0 +1,24 @@
+/* Cytoscape.css */
+
+/* https://stackblitz.com/edit/react-cytoscape-example?file=src%2FApp.js */
+
+
+/* Cytoscape.css */
+.cytoscape-container {
+  width: 800px; /* Adjust the width as needed */
+  height: 500px; /* Adjust the height as needed */
+  border: 1px solid #ffffff; /* Add a border for visibility */
+  position: relative; /* Add this to position the canvas */
+}
+
+canvas {
+  border: 1px solid #ffffff; /* Add a border for visibility */
+  width: 100%; /* Set canvas width to 100% of the container */
+  height: 100%; /* Set canvas height to 100% of the container */
+  position: absolute; /* Add this to position the canvas within the container */
+  top: 0; /* Align the canvas to the top of the container */
+  left: 0; /* Align the canvas to the left of the container */
+  
+}
+
+  

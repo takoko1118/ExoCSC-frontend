@@ -11,24 +11,7 @@ import { subscribe_link } from "./Data";
 
 
 const news = [
-    // {
-    //     title: "This is a markdown block",
-    //     date: new Date(2021, 8, 2),
-    //     content: (
-    //         markdown
-    //     ),
-    // },
-    // {
-    //     title: "This is for leaderboard test",
-    //     date: new Date(2021, 9, 20),
-    //     content: (
-    //         <span>
-    //             <HashLink to="/leaderboard#paper">paper</HashLink><br />
-    //             <HashLink to="/leaderboard#public-set">Public Set</HashLink><br />
-    //             <HashLink to="/leaderboard#hidden-dev-set">Hidden Dev Set</HashLink><br />
-    //         </span >
-    //     ),
-    // },
+   
     {
         title: "The 2022 SLT SUPERB Challenge overview paper is now available on arXiv",
         date: new Date(2022, 4, 10),

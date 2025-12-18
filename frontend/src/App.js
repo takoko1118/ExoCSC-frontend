@@ -13,6 +13,29 @@ import {
     createMuiTheme,
 } from "@material-ui/core/styles";
 
+import Homepage from "./Homepage"
+import Browse from "./Browse";
+
+import ALLTable from "./Table/ALLTable";
+import LungTable from "./Table/LungTable";
+import ColonTable from "./Table/ColonTable";
+import BreastTable from "./Table/BreastTable";
+
+import Histograme from "./Table/Histograme";
+import Cytoscape from "./Table/Cytoscape";
+
+import GeneTable from "./Table/GeneTable";
+import ProteinTable from "./Table/ProteinTable";
+import RNATable from "./Table/RNATable";
+import LipidTable from "./Table/LipidTable";
+
+import DetailPage from "./Table/DetailPage";
+import GeneDetail from "./Table/GeneDetail";
+import ProteinDetail from "./Table/ProteinDetail.js";
+import RNADetail from "./Table/RNADetail.js";
+import LipidDetail from "./Table/LipidDetail.js";
+import MyComponent from './Table/testTable'
+
 import Landing from "./Landing";
 import News from "./News";
 import Tasks from "./Tasks";
@@ -64,6 +87,65 @@ function App() {
     if (auth.isLoggedIn) {
         routes = (
             <Switch>
+
+                {/* <Route path="/detail/:id" component={DetailPage} /> */}
+
+
+                
+
+
+
+                <Route path="/all/:index" exact>
+                    <div className={`${classes.narrowViewport}`}>
+                        <DetailPage />
+                    </div>
+                </Route>
+                <Route path="/gene/:index" exact>
+                    <div className={`${classes.narrowViewport}`}>
+                        <GeneDetail />
+                    </div>
+                </Route>
+
+                <Route path="/protein/:index" exact>
+                    <div className={`${classes.narrowViewport}`}>
+                        <ProteinDetail />
+                    </div>
+                </Route>
+
+                <Route path="/rna/:index" exact>
+                    <div className={`${classes.narrowViewport}`}>
+                        <RNADetail />
+                    </div>
+                </Route>
+
+
+
+                <Route path="/Gene" exact>
+                    <div className={`${classes.narrowViewport}`}>
+                        <GeneTable />
+                    </div>
+                </Route>
+
+
+
+                <Route path="/histograme" exact>
+                    <div className={`${classes.narrowViewport}`}>
+                        <Histograme />
+                    </div>
+                </Route>
+
+                <Route path="/cystoscape" exact>
+                    <div className={`${classes.narrowViewport}`}>
+                        <Cytoscape/>
+                    </div>
+                </Route>
+
+
+                <Route path="/home" exact>
+                    <div className={`${classes.narrowViewport}`}>
+                        <Homepage />
+                    </div>
+                </Route>
                 <Route path="/" exact>
                     <div className={`${classes.narrowViewport}`}>
                         <Landing />
@@ -71,7 +153,7 @@ function App() {
                 </Route>
                 <Route path="/news">
                     <div className={`${classes.narrowViewport}`}>
-                        <News />
+                    <News />
                     </div>
                 </Route>
                 <Route path="/tasks">
@@ -84,11 +166,7 @@ function App() {
                         <Rules />
                     </div>
                 </Route>
-                {/* <Route path="/compare">
-                    <div className={`${classes.narrowViewport}`}>
-                        <Compare />
-                    </div>
-                </Route> */}
+                
                 <Route path="/leaderboard">
                     <Leaderboard
                         height={`${height - navbarHeight}px`}
@@ -141,6 +219,101 @@ function App() {
     } else {
         routes = (
             <Switch>
+
+                <Route path="/all/:index" exact> 
+                <DetailPage />   
+                </Route>
+                
+                <Route path="/gene/:index" exact> 
+                <GeneDetail />
+                </Route>
+
+                <Route path="/protein/:index" exact>
+                    <div >
+                        <ProteinDetail />
+                    </div>
+                </Route>
+                <Route path="/rna/:index" exact>
+                    <div >
+                        <RNADetail />
+                    </div>
+                </Route>
+
+                <Route path="/lipid/:index" exact>
+                    <div >
+                        <LipidDetail />
+                    </div>
+                </Route>
+
+                <Route path="/ALL" exact>
+                <ALLTable />
+                </Route>
+                
+                <Route path="/Lung" exact>
+                <LungTable />
+                </Route>
+
+
+                <Route path="/Breast" exact>
+                <BreastTable />
+                </Route>
+
+                <Route path="/Colon" exact>
+                <ColonTable />
+                </Route>
+
+                <Route path="/Gene" exact>
+                <GeneTable />
+                </Route>
+                <Route path="/Protein" exact>
+                <ProteinTable />
+                </Route>
+                <Route path="/Lipid" exact>
+                <LipidTable />
+                </Route>
+                <Route path="/miRNA" exact>
+                <RNATable />
+                </Route>
+
+                <Route path="/test" exact>
+                <MyComponent />
+                </Route>
+
+
+                <Route path="/home" exact>
+                <div className={`${classes.narrowViewport}`}>
+                        <Landing />
+                    </div>
+                </Route>
+
+                <Route path="/search" exact>
+                <div className={`${classes.narrowViewport}`}>
+                        <ALLTable />
+                    </div>
+                </Route>
+                <Route path="/browse" exact>
+                <div className={`${classes.narrowViewport}`}>
+                        <Browse />
+                    </div>
+                </Route>
+                
+                <Route path="/help" exact>
+                <div className={`${classes.narrowViewport}`}>
+                        <Homepage />
+                    </div>
+                </Route>
+
+                <Route path="/histograme" exact>
+                    <div className={`${classes.narrowViewport}`}>
+                        <Histograme />
+                    </div>
+                </Route>
+
+                <Route path="/cytoscape" exact>
+                    <div >
+                        <Cytoscape/>
+                    </div>
+                </Route>
                 <Route path="/" exact>
                     <div className={`${classes.narrowViewport}`}>
                         <Landing />
@@ -148,7 +321,7 @@ function App() {
                 </Route>
                 <Route path="/news">
                     <div className={`${classes.narrowViewport}`}>
-                        <News />
+                    <News />
                     </div>
                 </Route>
                 <Route path="/tasks">

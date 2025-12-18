@@ -1,0 +1,137 @@
+
+
+/*Associated  markers */
+.associated{
+    font-size: 3rem;
+    font-family: 'Arial', sans-serif;
+    font-weight: 900;
+    
+    padding-top: 50px ;
+    padding-left: 130px;
+}
+.table.table-bordered.table-hover.table-striped.dataTable{
+   
+    text-align: left;
+    
+}
+/*Show entries */
+.dataTables_length.bs-select{
+
+    padding-left: 120px; 
+    font-size: 20px;
+ 
+}
+
+/*10,20,50,100 entries */
+.custom-select.custom-select-sm.form-control.form-control-sm{
+    font-size: 20px;
+}
+
+
+/*search */
+.form-control.form-control-sm.ml-0.my-1{
+    font-size: 20px;
+    width: 200px;
+}
+
+
+
+
+
+
+
+
+.page{
+    font-size: 20px;
+    margin-top: 50px;
+   
+    
+}
+
+
+/* table{
+    color: #000000;
+    background-color: rgb(206, 206, 206);
+    border:1px solid rgb(0, 0, 0);
+    font-family: "Roboto",sans-serif;
+    font-weight: 900;
+
+} */
+/* columns name */
+table tr {
+    border: 1px solid rgb(0, 0, 0);
+    /* color:rgb(255, 255, 255);
+    background-color:#2e3e93;
+    font-weight: 500;
+    font-size: 2rem;
+    font-family: 'Arial', sans-serif; */
+    
+}
+.table{
+    
+    /* border: 1px solid rgb(0, 0, 0); */
+    margin-left: 100px;
+    margin-top: 50px;
+}
+/* row content */
+table td{
+    width: 200px;
+    font-size: 1.0rem;
+    font-weight: 500;
+    /* font-family: 'Arial', sans-serif; */
+    
+}
+
+/*datatable */
+.col-sm-12{
+    
+    padding-right :200px;
+    padding-left:0px ;
+    
+}
+
+
+/*Showing 1 to 10 of 2703 entries */
+.dataTables_info{
+    font-size: 20px;
+    padding-left:120px ;
+    font-weight: 500;
+
+}
+
+
+/*previous 12345 Next */
+.pagination .page-item .page-link {
+    font-size: 20px;
+    /* font-family: 'Arial', sans-serif; */
+    font-weight: 500;
+    display: inline-block;
+    
+}
+.pagination{
+    list-style-type: none;
+}
+
+.MDBD{
+    
+    border:5px solid rgb(255, 255, 255);
+    padding: 20px;
+}
+
+.dataTables_wrapper .dataTables_paginate {
+    text-align: center;
+    white-space: nowrap;
+  }
+  .dataTables_wrapper .dataTables_paginate .pagination {
+    display: inline-block;
+    margin: 0;
+  }
+  .dataTables_wrapper .dataTables_paginate .pagination li {
+    display: inline;
+  }
+/* .content-tabs{
+    border:5px solid rgb(75, 49, 172);
+    width: 15000px;
+    padding-right :200px;
+    padding-left:0px ;
+} */

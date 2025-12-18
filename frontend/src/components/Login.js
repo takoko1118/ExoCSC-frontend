@@ -3,7 +3,7 @@ import axios from "axios";
 import { useContext } from "react";
 import { AuthContext } from "../context/auth-context";
 import { useHistory } from "react-router-dom";
-
+import React from 'react';
 const clientId =
     "796679159105-6335p2q2ub5pr15lnf3g2cqkhnucmvkl.apps.googleusercontent.com";
 

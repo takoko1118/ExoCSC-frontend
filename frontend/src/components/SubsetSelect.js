@@ -5,7 +5,7 @@ import {
     FormControlLabel,
     Typography
 } from "@material-ui/core";
-
+import React from 'react';
 export default function SubsetSelect({ subset, selections, onChange }) {
     let get_shown_name = (originName) => {
         let name = originName.toLowerCase();

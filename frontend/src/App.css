@@ -42,7 +42,8 @@ a {
 }
 
 table {
-  display: block;
+  border-collapse: collapse;
+  /* display: block; */
   width: 100%;
   overflow: auto;
   word-break: normal;
@@ -50,8 +51,9 @@ table {
 }
 
 table tr {
+ 
   background-color: #fff;
-  border-top: 1px solid #ccc;
+  border-top: 1px solid #ddd;
 }
 
 table th, table td {

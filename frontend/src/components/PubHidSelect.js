@@ -1,7 +1,7 @@
 import { public_hidden_selections } from "../Data";
 import { Radio, RadioGroup, Typography, FormControlLabel } from "@material-ui/core";
 import { ThemeProvider } from "@material-ui/core/styles";
-
+import React from 'react';
 export default function PubHidSelect({ type, onTypeChange }) {
     let getName = (originalName) => {
         let name = originalName.toLowerCase()
