@@ -170,7 +170,7 @@ function GeneDetail() {
           })
           .catch((err) => console.error('Error fetching GO:', err));
 
-        // KEGG Annotation 抓取
+        // KEGG Annotation
         fetch(`http://db.cmdm.tw:8000/search/table/GeneKegg/${index}/`)
           .then((r) => r.json())
           .then((keggRes) => {
@@ -192,9 +192,11 @@ function GeneDetail() {
           })
           .catch((err) => console.error('Error fetching KEGG:', err));
 
-        // 新增 GO enrichment 抓取
-        if (res.cargo) {
-            fetch(`http://db.cmdm.tw:8000/api/gene-detail/?symbol=${res.cargo.toUpperCase()}`)
+        // --- 重點修改：改用 EntrezID 抓取 GO Enrichment ---
+        if (res.entrezID) {
+            // 處理 1969.0 這種格式為整數
+            const cleanEntrezID = Math.floor(parseFloat(res.entrezID));
+            fetch(`http://db.cmdm.tw:8000/api/gene-detail/?entrez_id=${cleanEntrezID}`)
               .then((r) => r.json())
               .then((enrichRes) => {
                 const formattedEnrich = {
@@ -225,7 +227,7 @@ function GeneDetail() {
                 };
                 setGOEnrichContext(formattedEnrich);
               })
-              .catch((err) => console.error('Error fetching Enrichment Context:', err));
+              .catch((err) => console.error('Error fetching Enrichment Context by ID:', err));
           }
       });
   }, [index]);
@@ -292,7 +294,7 @@ function GeneDetail() {
           {GOdata && <MDBDataTable striped noBottomColumns searching={false} paging={false} data={GOdata} className={tableClass}/>}
         </div>
 
-        {/* 新增 GO Enrichment 區塊 */}
+        {/* GO Enrichment 區塊 */}
         <div id="go-enrichment" style={{ marginTop: '30px', padding: '20px', backgroundColor: '#fcfcfc', border: '1px solid #eee', borderRadius: '10px' }}>
           <h2 style={{ marginBottom: '10px' }}>Functional Enrichment Context</h2>
           <p className="text-muted" style={{ fontSize: '13px' }}>
