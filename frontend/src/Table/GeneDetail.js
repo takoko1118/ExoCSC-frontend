@@ -24,7 +24,7 @@ function GeneDetail() {
   const [Lipiddata, setLipiddata] = useState(null);
   const [GOdata, setGOdata] = useState(null);
   const [KEGGdata, setKEGGdata] = useState(null);
-  // 新增 GO enrichment 狀態
+  // GO enrichment 狀態
   const [GOEnrichContext, setGOEnrichContext] = useState(null);
 
   useEffect(() => {
@@ -45,7 +45,7 @@ function GeneDetail() {
         const requestsE = dataEUrls.map((url) => fetch(url).then((r) => r.json()));
         const requestsF = dataFUrls.map((url) => fetch(url).then((r) => r.json()));
 
-        // CSC data
+        // CSC data (保持原始邏輯)
         Promise.all(requestsD).then((dataDs) => {
           const CSCdata = {
             columns: [
@@ -66,7 +66,7 @@ function GeneDetail() {
           setCSCdata(CSCdata);
         });
 
-        // CC data
+        // CC data (保持原始邏輯)
         Promise.all(requestsE).then((dataEs) => {
           const CCdata = {
             columns: [
@@ -87,7 +87,7 @@ function GeneDetail() {
           setCCdata(CCdata);
         });
 
-        // mRNA data
+        // mRNA data (保持原始邏輯)
         Promise.all(requestsB).then((dataBs) => {
           const mRNAdata = {
             columns: [
@@ -108,7 +108,7 @@ function GeneDetail() {
           setmRNAdata(mRNAdata);
         });
 
-        // Reference data
+        // Reference data (保持原始邏輯)
         Promise.all(requestsC).then((dataCs) => {
           const Refdata = {
             columns: [
@@ -129,7 +129,7 @@ function GeneDetail() {
           setRefdata(Refdata);
         });
 
-        // Lipid data
+        // Lipid data (保持原始邏輯)
         Promise.all(requestsF).then((dataFs) => {
           const Lipiddata = {
             columns: [
@@ -150,7 +150,7 @@ function GeneDetail() {
           setLipiddata(Lipiddata);
         });
 
-        // GO Annotation
+        // GO Annotation (保持原始邏輯)
         fetch(`http://db.cmdm.tw:8000/gene/${parseInt(res.entrezID)}/go/`)
           .then((r) => r.json())
           .then((goRes) => {
@@ -170,31 +170,36 @@ function GeneDetail() {
           })
           .catch((err) => console.error('Error fetching GO:', err));
 
-        // KEGG Annotation
+        // --- 重點修改：KEGG enrichment (分為 CSC 與 Cancer) ---
         fetch(`http://db.cmdm.tw:8000/search/table/GeneKegg/${index}/`)
           .then((r) => r.json())
           .then((keggRes) => {
-            const KEGGdata = {
+            const formatKeggTable = (pathwayList, colorClass) => ({
               columns: [
                 { label: 'Pathway ID', field: 'pathway_id', sort: 'asc', width: 150 },
                 { label: 'Pathway Name', field: 'pathway_name', sort: 'asc', width: 300 },
                 { label: 'P-value', field: 'p_value', sort: 'asc', width: 150 },
                 { label: 'Score', field: 'score', sort: 'asc', width: 100 },
               ],
-              rows: (keggRes.pathways || []).map((k) => ({
+              rows: (pathwayList || []).map((k) => ({
                 pathway_id: <a href={`https://www.kegg.jp/pathway/${k.pathway_id}`} target="_blank" rel="noopener noreferrer" style={{ color: 'blue' }}>{k.pathway_id}</a>,
                 pathway_name: k.pathway_name,
                 p_value: k.p_value ? k.p_value.toExponential(4) : '-',
-                score: k.score ? parseFloat(k.score).toFixed(2) : '0.00',
+                score: k.score ? (
+                  <span className={`badge ${colorClass}`} style={{padding: '5px 10px'}}>{parseFloat(k.score).toFixed(2)}</span>
+                ) : '0.00',
               })),
-            };
-            setKEGGdata(KEGGdata);
+            });
+
+            setKEGGdata({
+              csc: formatKeggTable(keggRes.csc_pathways, 'badge-danger'),
+              cancer: formatKeggTable(keggRes.cancer_pathways, 'badge-primary'),
+            });
           })
           .catch((err) => console.error('Error fetching KEGG:', err));
 
-        // --- 重點修改：改用 EntrezID 抓取 GO Enrichment ---
+        // --- GO enrichment (保持原始邏輯，標題修改見下方 JSX) ---
         if (res.entrezID) {
-            // 處理 1969.0 這種格式為整數
             const cleanEntrezID = Math.floor(parseFloat(res.entrezID));
             fetch(`http://db.cmdm.tw:8000/api/gene-detail/?entrez_id=${cleanEntrezID}`)
               .then((r) => r.json())
@@ -246,8 +251,8 @@ function GeneDetail() {
             <li><a href="#gene-RNA">Associated miRNA</a></li>
             <li><a href="#gene-lipid">Associated Lipids</a></li>
             <li><a href="#go-annotation">GO Annotation</a></li>
-            <li><a href="#go-enrichment">Functional Context</a></li>
-            <li><a href="#kegg-annotation">KEGG Annotation</a></li>
+            <li><a href="#go-enrichment">GO Enrichment</a></li>
+            <li><a href="#kegg-annotation">KEGG Enrichment</a></li>
             <li><a href="#references">Reference</a></li>
           </ul>
         </nav>
@@ -296,9 +301,9 @@ function GeneDetail() {
 
         {/* GO Enrichment 區塊 */}
         <div id="go-enrichment" style={{ marginTop: '30px', padding: '20px', backgroundColor: '#fcfcfc', border: '1px solid #eee', borderRadius: '10px' }}>
-          <h2 style={{ marginBottom: '10px' }}>Functional Enrichment Context</h2>
+          <h2 style={{ marginBottom: '10px' }}>GO Enrichment</h2>
           <p className="text-muted" style={{ fontSize: '13px' }}>
-            Comparison of significant biological processes (GO) enriched in CSC vs Cancer collections (Background N=20,000).
+            Comparison of significant biological processes (GO) enriched in CSC vs Cancer collections.
           </p>
           <div className="row">
             <div className="col-md-6">
@@ -316,15 +321,26 @@ function GeneDetail() {
           </div>
         </div>
 
-        <div id="kegg-annotation" style={{ marginTop: '50px' }}>
-          <h2>KEGG Annotation</h2>
-          {KEGGdata && KEGGdata.rows.length > 0 ? (
-            <MDBDataTable striped noBottomColumns searching={false} paging={false} data={KEGGdata} className={tableClass}/>
-          ) : (
-            <div className="alert alert-light" style={{ border: '1px solid #eee', padding: '15px' }}>
-              No significant KEGG pathways enriched for this gene in the current dataset.
+        {/* KEGG Enrichment 區塊 */}
+        <div id="kegg-annotation" style={{ marginTop: '50px', padding: '20px', backgroundColor: '#f4f7f6', border: '1px solid #eee', borderRadius: '10px' }}>
+          <h2 style={{ marginBottom: '10px' }}>KEGG Enrichment</h2>
+          <p className="text-muted" style={{ fontSize: '13px' }}>
+            Comparison of significant pathways (KEGG) enriched in CSC vs Cancer collections.
+          </p>
+          <div className="row">
+            <div className="col-md-6">
+              <h4 style={{ color: '#d9534f', fontSize: '1.2rem' }}>CSC Specific Enrichment</h4>
+              {KEGGdata && KEGGdata.csc.rows.length > 0 ? (
+                <MDBDataTable striped small noBottomColumns searching={false} paging={false} data={KEGGdata.csc} />
+              ) : <div className="p-3 bg-light text-center" style={{borderRadius: '5px'}}>No significant CSC KEGG enrichment.</div>}
             </div>
-          )}
+            <div className="col-md-6">
+              <h4 style={{ color: '#0275d8', fontSize: '1.2rem' }}>Cancer General Enrichment</h4>
+              {KEGGdata && KEGGdata.cancer.rows.length > 0 ? (
+                <MDBDataTable striped small noBottomColumns searching={false} paging={false} data={KEGGdata.cancer} />
+              ) : <div className="p-3 bg-light text-center" style={{borderRadius: '5px'}}>No significant Cancer KEGG enrichment.</div>}
+            </div>
+          </div>
         </div>
 
         <div id="references" style={{ marginTop: '50px' }}>
