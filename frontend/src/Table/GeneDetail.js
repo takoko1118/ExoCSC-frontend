@@ -6,9 +6,40 @@ import 'mdbreact/dist/css/mdb.css';
 import CytoscapeComponent from 'react-cytoscapejs';
 
 function GeneDetail() {
-  const [cytoscapeElements, setCytoscapeElements] = useState([
-    { data: { id: 'center', label: 'Center Node' }, position: { x: 250, y: 250 } },
-  ]);
+  // PPI 狀態與樣式設定
+  const [ppiElements, setPpiElements] = useState(null);
+  const ppiStylesheet = [
+    {
+      selector: 'node',
+      style: {
+        'label': 'data(label)',
+        'background-color': '#0275d8',
+        'width': 25,
+        'height': 25,
+        'font-size': '10px',
+        'color': '#333'
+      }
+    },
+    {
+      selector: 'node[type = "center"]',
+      style: {
+        'background-color': '#d9534f',
+        'width': 40,
+        'height': 40,
+        'font-weight': 'bold',
+        'font-size': '12px'
+      }
+    },
+    {
+      selector: 'edge',
+      style: {
+        'width': 1.5,
+        'line-color': '#ccc',
+        'curve-style': 'bezier',
+        'opacity': 0.7
+      }
+    }
+  ];
 
   const tableStyle = {
     borderBottom: '1px solid black',
@@ -24,7 +55,6 @@ function GeneDetail() {
   const [Lipiddata, setLipiddata] = useState(null);
   const [GOdata, setGOdata] = useState(null);
   const [KEGGdata, setKEGGdata] = useState(null);
-  // GO enrichment 狀態
   const [GOEnrichContext, setGOEnrichContext] = useState(null);
 
   useEffect(() => {
@@ -32,6 +62,17 @@ function GeneDetail() {
       .then((response) => response.json())
       .then((res) => {
         setData(res);
+
+        // --- PPI Network Fetch (使用 EntrezID) ---
+        if (res.entrezID) {
+            const cleanID = Math.floor(parseFloat(res.entrezID));
+            fetch(`http://db.cmdm.tw:8000/api/ppi/?entrez_id=${cleanID}`)
+              .then(r => r.json())
+              .then(ppiRes => {
+                  if (ppiRes && ppiRes.length > 0) setPpiElements(ppiRes);
+              })
+              .catch(err => console.error('Error fetching PPI:', err));
+        }
 
         const dataBUrls = res.gene_rna_urls.map((obj) => obj.id_url);
         const dataCUrls = res.gene_ref_urls.map((obj) => obj.id_url);
@@ -45,7 +86,6 @@ function GeneDetail() {
         const requestsE = dataEUrls.map((url) => fetch(url).then((r) => r.json()));
         const requestsF = dataFUrls.map((url) => fetch(url).then((r) => r.json()));
 
-        // CSC data (保持原始邏輯)
         Promise.all(requestsD).then((dataDs) => {
           const CSCdata = {
             columns: [
@@ -66,7 +106,6 @@ function GeneDetail() {
           setCSCdata(CSCdata);
         });
 
-        // CC data (保持原始邏輯)
         Promise.all(requestsE).then((dataEs) => {
           const CCdata = {
             columns: [
@@ -87,7 +126,6 @@ function GeneDetail() {
           setCCdata(CCdata);
         });
 
-        // mRNA data (保持原始邏輯)
         Promise.all(requestsB).then((dataBs) => {
           const mRNAdata = {
             columns: [
@@ -108,7 +146,6 @@ function GeneDetail() {
           setmRNAdata(mRNAdata);
         });
 
-        // Reference data (保持原始邏輯)
         Promise.all(requestsC).then((dataCs) => {
           const Refdata = {
             columns: [
@@ -129,7 +166,6 @@ function GeneDetail() {
           setRefdata(Refdata);
         });
 
-        // Lipid data (保持原始邏輯)
         Promise.all(requestsF).then((dataFs) => {
           const Lipiddata = {
             columns: [
@@ -150,7 +186,6 @@ function GeneDetail() {
           setLipiddata(Lipiddata);
         });
 
-        // GO Annotation (保持原始邏輯)
         fetch(`http://db.cmdm.tw:8000/gene/${parseInt(res.entrezID)}/go/`)
           .then((r) => r.json())
           .then((goRes) => {
@@ -170,7 +205,6 @@ function GeneDetail() {
           })
           .catch((err) => console.error('Error fetching GO:', err));
 
-        // --- 重點修改：KEGG enrichment (分為 CSC 與 Cancer) ---
         fetch(`http://db.cmdm.tw:8000/search/table/GeneKegg/${index}/`)
           .then((r) => r.json())
           .then((keggRes) => {
@@ -198,7 +232,6 @@ function GeneDetail() {
           })
           .catch((err) => console.error('Error fetching KEGG:', err));
 
-        // --- GO enrichment (保持原始邏輯，標題修改見下方 JSX) ---
         if (res.entrezID) {
             const cleanEntrezID = Math.floor(parseFloat(res.entrezID));
             fetch(`http://db.cmdm.tw:8000/api/gene-detail/?entrez_id=${cleanEntrezID}`)
@@ -253,6 +286,7 @@ function GeneDetail() {
             <li><a href="#go-annotation">GO Annotation</a></li>
             <li><a href="#go-enrichment">GO Enrichment</a></li>
             <li><a href="#kegg-annotation">KEGG Enrichment</a></li>
+            <li><a href="#ppi-network">PPI Network</a></li>
             <li><a href="#references">Reference</a></li>
           </ul>
         </nav>
@@ -299,7 +333,6 @@ function GeneDetail() {
           {GOdata && <MDBDataTable striped noBottomColumns searching={false} paging={false} data={GOdata} className={tableClass}/>}
         </div>
 
-        {/* GO Enrichment 區塊 */}
         <div id="go-enrichment" style={{ marginTop: '30px', padding: '20px', backgroundColor: '#fcfcfc', border: '1px solid #eee', borderRadius: '10px' }}>
           <h2 style={{ marginBottom: '10px' }}>GO Enrichment</h2>
           <p className="text-muted" style={{ fontSize: '13px' }}>
@@ -321,7 +354,6 @@ function GeneDetail() {
           </div>
         </div>
 
-        {/* KEGG Enrichment 區塊 */}
         <div id="kegg-annotation" style={{ marginTop: '50px', padding: '20px', backgroundColor: '#f4f7f6', border: '1px solid #eee', borderRadius: '10px' }}>
           <h2 style={{ marginBottom: '10px' }}>KEGG Enrichment</h2>
           <p className="text-muted" style={{ fontSize: '13px' }}>
@@ -340,6 +372,29 @@ function GeneDetail() {
                 <MDBDataTable striped small noBottomColumns searching={false} paging={false} data={KEGGdata.cancer} />
               ) : <div className="p-3 bg-light text-center" style={{borderRadius: '5px'}}>No significant Cancer KEGG enrichment.</div>}
             </div>
+          </div>
+        </div>
+
+        {/* --- 新增：PPI Network 區塊 (位於 KEGG 下方) --- */}
+        <div id="ppi-network" style={{ marginTop: '50px', padding: '20px', backgroundColor: '#fff', border: '1px solid #eee', borderRadius: '10px' }}>
+          <h2 style={{ marginBottom: '10px' }}>Protein-Protein Interaction Network</h2>
+          <p className="text-muted" style={{ fontSize: '13px' }}>
+            Predicted protein interactions based on STRING database (Confidence score > 0.7). 
+            Red node represents the current gene.
+          </p>
+          <div style={{ border: '1px solid #ddd', borderRadius: '8px', height: '500px', backgroundColor: '#fafafa', position: 'relative' }}>
+            {ppiElements ? (
+              <CytoscapeComponent 
+                elements={ppiElements} 
+                style={{ width: '100%', height: '100%' }} 
+                layout={{ name: 'cose', nodeRepulsion: 4000, padding: 30 }} 
+                stylesheet={ppiStylesheet}
+              />
+            ) : (
+              <div className="d-flex align-items-center justify-content-center h-100 text-muted">
+                No protein interaction data available for this gene.
+              </div>
+            )}
           </div>
         </div>
 
