@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 import ReactDOM from 'react-dom';
@@ -6,6 +7,14 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import 'semantic-ui-css/semantic.min.css';
 import { createTheme } from '@material-ui/core/styles'
+
+// 🚀 在這裡注入修補程式，解決 "process is not defined" 錯誤
+if (typeof window !== 'undefined' && typeof window.process === 'undefined') {
+  window.process = {
+    env: { NODE_ENV: 'development' },
+  };
+}
+
 
 ReactDOM.render(
   <React.StrictMode>

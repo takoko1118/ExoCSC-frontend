@@ -278,7 +278,7 @@ function ProteinDetail() {
               </tr>
               <tr>
                 <th>Entrez Gene</th>
-                <td>{data.id}</td>
+                <td>{data.entrezID}</td>
               </tr>
             </tbody>
           </table>

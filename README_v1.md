@@ -3,7 +3,7 @@
 Here are the frontend and backend servers.
 
 ## Deployment
-http://db.cmdm.tw:13007
+https://superbbenchmark.org/
 
 
 ## Setup Guide

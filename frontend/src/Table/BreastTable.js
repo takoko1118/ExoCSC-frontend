@@ -604,7 +604,7 @@ const BreastTable = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch('http://db.cmdm.tw:8000/search/table/Cancer/')
+    fetch('  ')
       .then((response) => response.json())
       .then((res) => {
         const CancerStem = res.results

@@ -41,13 +41,12 @@ function GeneDetail() {
     }
   ];
 
-  const tableStyle = {
-    borderBottom: '1px solid black',
-  };
+  const tableStyle = { borderBottom: '1px solid black' };
   const tableClass = 'custom-table';
 
   const { index } = useParams();
   const [data, setData] = useState(null);
+  const [geneRnaRaw, setGeneRnaRaw] = useState([]); // 用於提取 llm_narrative
   const [CSCdata, setCSCdata] = useState(null);
   const [CCdata, setCCdata] = useState(null);
   const [mRNAdata, setmRNAdata] = useState(null);
@@ -63,15 +62,15 @@ function GeneDetail() {
       .then((res) => {
         setData(res);
 
-        // --- PPI Network Fetch (使用 EntrezID) ---
+        // PPI Network Fetch
         if (res.entrezID) {
-            const cleanID = Math.floor(parseFloat(res.entrezID));
-            fetch(`http://db.cmdm.tw:8000/api/ppi/?entrez_id=${cleanID}`)
-              .then(r => r.json())
-              .then(ppiRes => {
-                  if (ppiRes && ppiRes.length > 0) setPpiElements(ppiRes);
-              })
-              .catch(err => console.error('Error fetching PPI:', err));
+          const cleanID = Math.floor(parseFloat(res.entrezID));
+          fetch(`http://db.cmdm.tw:8000/api/ppi/?entrez_id=${cleanID}`)
+            .then(r => r.json())
+            .then(ppiRes => {
+              if (ppiRes && ppiRes.length > 0) setPpiElements(ppiRes);
+            })
+            .catch(err => console.error('Error fetching PPI:', err));
         }
 
         const dataBUrls = res.gene_rna_urls.map((obj) => obj.id_url);
@@ -86,6 +85,29 @@ function GeneDetail() {
         const requestsE = dataEUrls.map((url) => fetch(url).then((r) => r.json()));
         const requestsF = dataFUrls.map((url) => fetch(url).then((r) => r.json()));
 
+        // 處理 mRNA 資料與 LLM 敘述
+        Promise.all(requestsB).then((dataBs) => {
+          setGeneRnaRaw(dataBs); // 保存原始數據供 Description 欄位使用
+          const formattedMRNA = {
+            columns: [
+              { label: 'Name', field: 'gene', sort: 'asc', width: 270 },
+              { label: 'Tissue', field: 'tissue', sort: 'asc', width: 270 },
+              { label: 'Score', field: 'score', sort: 'asc', width: 200 },
+              { label: 'Cell Line', field: 'cellline', sort: 'asc', width: 150 },
+              { label: 'PMCID', field: 'pmcid', sort: 'asc', width: 150 },
+            ],
+            rows: dataBs.map((d) => ({
+              gene: <a href={`http://db.cmdm.tw:13007/rna/${d.rna_url}`} style={{ color: 'blue' }}>{d.cargo_rna}</a>,
+              tissue: d.tissue,
+              score: d.score_y,
+              cellline: d.cellLine,
+              pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} style={{ color: 'blue' }}>{d.pmcid}</a>,
+            })),
+          };
+          setmRNAdata(formattedMRNA);
+        });
+
+        // 處理 CSC 資料
         Promise.all(requestsD).then((dataDs) => {
           const CSCdata = {
             columns: [
@@ -106,6 +128,7 @@ function GeneDetail() {
           setCSCdata(CSCdata);
         });
 
+        // 處理 Cancer Cell 資料
         Promise.all(requestsE).then((dataEs) => {
           const CCdata = {
             columns: [
@@ -126,26 +149,7 @@ function GeneDetail() {
           setCCdata(CCdata);
         });
 
-        Promise.all(requestsB).then((dataBs) => {
-          const mRNAdata = {
-            columns: [
-              { label: 'Name', field: 'gene', sort: 'asc', width: 270 },
-              { label: 'Tissue', field: 'tissue', sort: 'asc', width: 270 },
-              { label: 'Score', field: 'score', sort: 'asc', width: 200 },
-              { label: 'Cell Line', field: 'cellline', sort: 'asc', width: 150 },
-              { label: 'PMCID', field: 'pmcid', sort: 'asc', width: 150 },
-            ],
-            rows: dataBs.map((d) => ({
-              gene: <a href={`http://db.cmdm.tw:13007/rna/${d.rna_url}`} style={{ color: 'blue' }}>{d.cargo_rna}</a>,
-              tissue: d.tissue,
-              score: d.score_y,
-              cellline: d.cellLine,
-              pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} style={{ color: 'blue' }}>{d.pmcid}</a>,
-            })),
-          };
-          setmRNAdata(mRNAdata);
-        });
-
+        // 處理 Reference 資料
         Promise.all(requestsC).then((dataCs) => {
           const Refdata = {
             columns: [
@@ -166,6 +170,7 @@ function GeneDetail() {
           setRefdata(Refdata);
         });
 
+        // 處理 Lipid 資料
         Promise.all(requestsF).then((dataFs) => {
           const Lipiddata = {
             columns: [
@@ -186,6 +191,7 @@ function GeneDetail() {
           setLipiddata(Lipiddata);
         });
 
+        // GO Annotation Fetch
         fetch(`http://db.cmdm.tw:8000/gene/${parseInt(res.entrezID)}/go/`)
           .then((r) => r.json())
           .then((goRes) => {
@@ -205,6 +211,7 @@ function GeneDetail() {
           })
           .catch((err) => console.error('Error fetching GO:', err));
 
+        // KEGG Enrichment Fetch
         fetch(`http://db.cmdm.tw:8000/search/table/GeneKegg/${index}/`)
           .then((r) => r.json())
           .then((keggRes) => {
@@ -232,6 +239,7 @@ function GeneDetail() {
           })
           .catch((err) => console.error('Error fetching KEGG:', err));
 
+        // GO Enrichment Context Fetch
         if (res.entrezID) {
             const cleanEntrezID = Math.floor(parseFloat(res.entrezID));
             fetch(`http://db.cmdm.tw:8000/api/gene-detail/?entrez_id=${cleanEntrezID}`)
@@ -296,14 +304,43 @@ function GeneDetail() {
 
         <div id="description" style={{ marginTop: '50px' }}>
           <h2>Description</h2>
-          <table className='detailTable' style={{ fontSize: '10px', width: '80%' }}>
+          <table className='detailTable' style={{ fontSize: '12px', width: '90%' }}>
             <thead>
-              <tr><th colSpan="2">{data.description}</th></tr>
+              {/* 原本顯示 data.description 的部分已移除，改為資訊標題 */}
+              <tr><th colSpan="2" style={{ backgroundColor: '#f4f4f4', textAlign: 'center' }}>Gene Functional Information</th></tr>
             </thead>
             <tbody>
-              <tr><th>Gene name</th><td>{data.cargo}</td></tr>
+              <tr><th style={{ width: '25%' }}>Gene name</th><td>{data.cargo}</td></tr>
               <tr><th>Gene symbol</th><td>{data.entrezName}</td></tr>
               <tr><th>Entrez Gene</th><td>{data.entrezID}</td></tr>
+              
+              {/* 新增：LLM 整合欄位 */}
+              <tr>
+                <th>AI Functional Narrative</th>
+                <td style={{ textAlign: 'left', padding: '15px', lineHeight: '1.6' }}>
+                  {geneRnaRaw.length > 0 ? (
+                    geneRnaRaw.map((item, idx) => (
+                      item.llm_narrative && (
+                        <div key={idx} style={{ 
+                          marginBottom: '15px', 
+                          padding: '10px', 
+                          borderLeft: '4px solid #0275d8', 
+                          backgroundColor: '#f9f9f9' 
+                        }}>
+                          <div style={{ fontWeight: 'bold', fontSize: '11px', color: '#666', marginBottom: '5px' }}>
+                            Associated miRNA: {item.cargo_rna}
+                          </div>
+                          <div style={{ whiteSpace: 'pre-wrap' }}>
+                            {item.llm_narrative}
+                          </div>
+                        </div>
+                      )
+                    ))
+                  ) : (
+                    <span className="text-muted">Narrative data not available for this gene.</span>
+                  )}
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -375,7 +412,6 @@ function GeneDetail() {
           </div>
         </div>
 
-        {/* --- 新增：PPI Network 區塊 (位於 KEGG 下方) --- */}
         <div id="ppi-network" style={{ marginTop: '50px', padding: '20px', backgroundColor: '#fff', border: '1px solid #eee', borderRadius: '10px' }}>
           <h2 style={{ marginBottom: '10px' }}>Protein-Protein Interaction Network</h2>
           <p className="text-muted" style={{ fontSize: '13px' }}>

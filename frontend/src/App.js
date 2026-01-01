@@ -54,6 +54,7 @@ import { useContext } from "react";
 
 import { challenge_overview, framework, upstream, submission, metrics } from "./policy";
 import { policy_aaai2022 } from "./history/AAAI2022_policy";
+import Chatbot from "./components/Chatbot";
 
 const useStyles = makeStyles((theme) => ({
     narrowViewport: {
@@ -392,6 +393,9 @@ function App() {
                     <NavigationBar tableControlRef={tableControlRef} />
                 </div>
                 {routes}
+
+                {/* 🚀 2. 放在 Router 裡面，但在 routes 之外，這樣每個頁面都有它 */}
+                <Chatbot />
             </Router>
         </div>
     );

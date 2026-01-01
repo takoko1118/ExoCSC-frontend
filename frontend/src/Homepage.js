@@ -2,6 +2,10 @@ import React, { Component } from "react";
 import { CancerType, Content } from './components/Button';import 'semantic-ui-css/semantic.min.css';
 import { Button, Dropdown,Menu } from 'semantic-ui-react'
 
+// 🚀 1. 匯入 Chatbot (確認路徑是否正確)
+import Chatbot from './components/Chatbot';
+
+
 class Home extends Component{
     
 
@@ -45,7 +49,9 @@ class Home extends Component{
                 </div>
                 
                 <div>bottom </div>
-             
+                
+                {/* 🚀 2. 將 Chatbot 放在這裡 */}
+                <Chatbot />
                 
             </div>
             
