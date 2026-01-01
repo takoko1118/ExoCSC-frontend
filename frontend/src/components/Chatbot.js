@@ -18,7 +18,7 @@ const Chatbot = () => {
 
         try {
             // 2. 呼叫 Django API (注意：React 跑在瀏覽器，用 localhost)
-            const response = await axios.post('http://localhost:8000/api/chatbot/', {
+            const response = await axios.post('http://db.cmdm.tw:8000/api/chatbot/', {
                 message: currentInput
             });
 
