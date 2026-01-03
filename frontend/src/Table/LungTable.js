@@ -14,7 +14,7 @@ const LungTable = () => {
   // 1. 從 API 獲取資料
   useEffect(() => {
     setIsLoading(true);
-    fetch('http://db.cmdm.tw:8000/search/table/ALL/?limit=10000')
+    fetch('http://db.cmdm.tw:8000/search/table/ALL/?tissue=Lung&limit=30000')
       .then((res) => res.json())
       .then((data) => {
         const results = data.results || data;
@@ -83,9 +83,9 @@ const LungTable = () => {
   };
 
   // 使用 useMemo 優化效能
+  // ✅ 修正後 (與資料庫現有的 "cancer" 和 "Cancer Stem Cell" 匹配)
   const cancerCellData = useMemo(() => formatTableData('cancer'), [rawData, alphabet]);
-  const cscData = useMemo(() => formatTableData('CSC'), [rawData, alphabet]);
-
+  const cscData = useMemo(() => formatTableData('Cancer Stem Cell'), [rawData, alphabet]);
   // 3. 渲染字母篩選按鈕
   const renderAlphabets = () => {
     let btns = [];

@@ -15,7 +15,7 @@ const BreastTable = () => {
   useEffect(() => {
     setIsLoading(true);
     // 假設使用與 Lung 相同的 API 端點
-    fetch('http://db.cmdm.tw:8000/search/table/ALL/?limit=10000')
+    fetch('http://db.cmdm.tw:8000/search/table/ALL/?tissue=Breast&limit=30000')
       .then((res) => res.json())
       .then((data) => {
         const results = data.results || data;
@@ -84,9 +84,9 @@ const BreastTable = () => {
   };
 
   // 使用 useMemo 提高切換標籤時的效能
+  // ✅ 修正後 (與資料庫現有的 "cancer" 和 "Cancer Stem Cell" 匹配)
   const cancerCellData = useMemo(() => formatTableData('cancer'), [rawData, alphabet]);
-  const cscData = useMemo(() => formatTableData('CSC'), [rawData, alphabet]);
-
+  const cscData = useMemo(() => formatTableData('Cancer Stem Cell'), [rawData, alphabet]);
   // 3. 渲染字母篩選按鈕 (橫向排列樣式)
   const renderAlphabets = () => {
     let btns = [];
