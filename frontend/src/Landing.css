@@ -31,4 +31,24 @@ ul {
     text-align: center;
   }
 
-  
+  /* 1. 確保最外層 html/body 不會因為滿版計算出錯而抖動 */
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* 🚀 防止 100vw 產生的微小橫向滾動條 */
+    width: 100%;
+}
+
+/* 2. 星空背景區塊 */
+.hero-background-section {
+    background-image: url("https://img.freepik.com/free-photo/night-sky-glows-with-iridescent-starry-nebula-generated-by-ai_188544-15577.jpg");
+    background-size: cover;
+    background-position: center;
+    padding: 100px 0;
+    text-align: center;
+    color: white;
+
+    /* 🚀 覆蓋邏輯：現在它不在 narrowViewport 裡了，直接 100% 寬度即可 */
+    width: 100%; 
+    margin: 0;
+}

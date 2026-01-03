@@ -313,9 +313,9 @@ function App() {
                     </div>
                 </Route>
                 <Route path="/" exact>
-                    <div className={`${classes.narrowViewport}`}>
-                        <Landing />
-                    </div>
+                    {/* <div className={`${classes.narrowViewport}`}> */}
+                        <Landing />{/* 👈 移除外層 div，讓 Landing 自己控制寬度 */}
+                    {/* </div> */}
                 </Route>
                 <Route path="/news">
                     <div className={`${classes.narrowViewport}`}>
