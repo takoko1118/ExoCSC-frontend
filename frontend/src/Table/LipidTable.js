@@ -1,134 +1,132 @@
-
-import React from 'react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { MDBDataTable } from 'mdbreact';
-import 'mdbreact/dist/css/mdb.css';
-
-import data from '../Data/gene.json';
-import './page.css'
-
 import { Link } from 'react-router-dom';
+
+import 'mdbreact/dist/css/mdb.css';
+import './page.css';
 
 const LipidTable = () => {
   const [alphabet, setAlphabet] = useState('');
-  const [isLoading, setIsLoading] = useState(true); // Add isLoading state variable
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [allData, setAllData] = useState([]);
 
-  const onAlphabetClick = (e) => {
-    setAlphabet(e.target.value);
-  }
+  // 1. 兩階段抓取：先抓 50 筆讓頁面秒開，背景再同步完整資料
+  useEffect(() => {
+    const fetchLipidData = async () => {
+      try {
+        // 第一階段：極速讀取
+        const quickRes = await fetch("http://db.cmdm.tw:8000/search/table/Lipid/?limit=500");
+        const quickData = await quickRes.json();
+        setAllData(quickData.results || []);
+        setIsInitialLoading(false);
 
-  const prepareAlphabets = () => {
-    let result = [];
-    for (let i = 65; i < 91; i++) {
-      result.push(
+        // 第二階段：背景讀取全量資料
+        const fullRes = await fetch("http://db.cmdm.tw:8000/search/table/Lipid/?limit=5000");
+        const fullData = await fullRes.json();
+        setAllData(fullData.results || []);
+      } catch (error) {
+        console.error('Error fetching lipid data:', error);
+        setIsInitialLoading(false);
+      }
+    };
+
+    fetchLipidData();
+  }, []);
+
+  // 2. 格式化與過濾邏輯
+  const formattedData = useMemo(() => {
+    const filtered = alphabet 
+      ? allData.filter(item => item.cargo && item.cargo.toLowerCase().startsWith(alphabet.toLowerCase()))
+      : allData;
+
+    return {
+      columns: [
+        { label: "Name", field: "cargo", sort: "asc", width: 150 },
+        { label: "Gene symbol", field: "entrezname", sort: "asc", width: 150 },
+        { label: "Tissue", field: "tissue", sort: "asc", width: 150 },
+        { label: "Cancer cell type", field: "cellType", sort: "asc", width: 150 },
+        { label: "Specimen", field: "clinicalUse", sort: "asc", width: 150 },
+        { label: "PMCID", field: "pmcid", sort: "asc", width: 150 },
+      ],
+      rows: filtered.map((item) => ({
+        cargo: (
+          <Link 
+            to={`/lipid/${item.id}`} 
+            style={{ color: '#2e3e93', fontWeight: 'bold', textDecoration: 'none' }}
+            className="marker-link"
+          >
+            {item.cargo}
+          </Link>
+        ),
+        entrezname: item.entrezName || '-',
+        tissue: item.tissue || '-',
+        cellType: item.cellType || '-',
+        clinicalUse: item.clinicalUse || '-',
+        pmcid: item.pmcid ? (
+          <a 
+            href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${item.pmcid}`} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{ color: 'green' }}
+          >
+            {item.pmcid}
+          </a>
+        ) : '-',
+      })),
+    };
+  }, [allData, alphabet]);
+
+  // 3. 渲染字母篩選按鈕
+  const renderAlphabets = () => {
+    let btns = [];
+    for (let i = 65; i <= 90; i++) {
+      const char = String.fromCharCode(i);
+      btns.push(
         <button
-          style={{
-            color: 'blue',
-            fontSize: 14,
-            fontWeight: 600,
-            width: 30,
-            height: 30,
-            textAlign: 'center',
-          }}
-          type="button"
-          key={i}
-          onClick={onAlphabetClick}
-          value={String.fromCharCode(i)}
+          key={char}
+          className={alphabet === char ? 'alphabet-btn active' : 'alphabet-btn'}
+          onClick={() => setAlphabet(alphabet === char ? '' : char)}
         >
-          {String.fromCharCode(i)}
+          {char}
         </button>
       );
     }
-
-    return result;
-  }
-
-  const [Genedata, setGeneData] = useState([]);
-
-  useEffect(() => {
-    setIsLoading(true); // Set isLoading to true before starting the fetch request
-
-    fetch("http://db.cmdm.tw:8000/search/table/Lipid/")
-      .then((response) => response.json())
-      .then((res) => {
-        const Genedata = {
-          columns: [
-            {
-              label: "Name",
-              field: "cargo",
-              sort: "asc",
-              width: 150,
-            },
-            {
-              label: "Gene symbol",
-              field: "",
-              sort: "asc",
-              width: 150,
-            },
-            {
-              label: "Tissue",
-              field: "tissue",
-              sort: "asc",
-              width: 15,
-            },
-            {
-              label: "Cancer cell type",
-              field: "cellType",
-              sort: "asc",
-              width: 150,
-            },
-            {
-              label: "Specimen",
-              field: "clinicalUse",
-              sort: "asc",
-              width: 150,
-            },
-            {
-              label: "PMCID",
-              field: "pmcid",
-              sort: "asc",
-              width: 150,
-            },
-          ],
-          rows: res.results.filter(el => el.cargo.toLowerCase().startsWith(alphabet.toLowerCase())).map((apiData) => ({
-            molecularType: apiData.molecularType,
-            cargo: (
-              <Link to={`/lipid/${apiData.id}`} style={{ color: 'blue' }}>{apiData.cargo}</Link>
-            ),
-            tissue: apiData.tissue,
-            cellType: apiData.cellType,
-            clinicalUse: apiData.clinicalUse,
-            pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${apiData.pmcid}`} style={{ color: 'blue' }}>{apiData.pmcid}</a>,
-          })),
-        };
-
-        setGeneData(Genedata);
-        setIsLoading(false); // Set isLoading to false when the data is fetched
-      })
-      .catch((error) => {
-        console.error('Error fetching gene data:', error);
-        setIsLoading(false); // Set isLoading to false even if an error occurs
-      });
-  }, [alphabet]);
+    return btns;
+  };
 
   return (
-    <div>
-      <p className='associated'>Associated potential lipids</p>
+    <div className="lung-container">
+      <h1 className="associated">Associated potential lipids</h1>
 
-      <div style={{ marginLeft: 250 }}>{prepareAlphabets()}</div>
+      <div className="alphabet-container">
+        {renderAlphabets()}
+      </div>
 
-      {isLoading ? (
-        <div>Loading...</div> // Show loading message while isLoading is true
-      ) : (
-        <MDBDataTable striped bordered hover data={Genedata} />
-      )}
+      <div className="content-tabs" style={{ marginTop: '20px' }}>
+        {isInitialLoading ? (
+          <div className="loading-spinner text-center p-5">
+            <div className="spinner-border text-primary" role="status"></div>
+            <p style={{ marginTop: '10px' }}>Loading lipid markers...</p>
+          </div>
+        ) : (
+          <div className="content active-content">
+            <h2 className="table-title" style={{ marginLeft: '20px', marginBottom: '20px', color: '#2e3e93' }}>
+               Lipid Results {alphabet && `(Filter: ${alphabet})`}
+            </h2>
+            <MDBDataTable 
+              striped 
+              bordered 
+              hover 
+              data={formattedData} 
+              entries={10}
+              noBottomColumns={true}
+              responsive
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
 export default LipidTable;
-
-
-
-
-

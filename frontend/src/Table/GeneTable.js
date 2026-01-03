@@ -1,282 +1,126 @@
-// import { useState, useEffect } from 'react';
-// import { MDBDataTable } from 'mdbreact';
-// import 'mdbreact/dist/css/mdb.css';
-
-// import data from '../Data/gene.json';
-// import './page.css'
-
-// import { Link } from 'react-router-dom';
-
-
-
-// const GeneTable = () => {
-  
-  
-
-//   const [alphabet,setAlphabet]=useState('');
-//   const onAlphabetClick = (e) => {
-    
-//         setAlphabet(e.target.value)
-//         console.log('setAlphabet',setAlphabet)
-//       }
-    
-//   const prepareAlphabets = () => {
-//         let result = [];
-//         for(let i=65; i<91; i++) {
-//           result.push(
-//             <button style={{
-//               color: 'blue',
-//               // 需改為駝峰式命名
-//               fontSize:14,
-//               fontWeight:600,
-//               width:30 ,
-//               height:30 ,
-//               textAlign: 'center',
-//               // color: isHover ? 'red' : 'green',
-//             }}type="button" key={i} onClick={onAlphabetClick} value={String.fromCharCode(i)} >{String.fromCharCode(i)}</button>
-//           )
-//         }
-        
-//         return result;
-//       }    
-
-
-
-      
-//   const [Genedata, setGeneData] = useState([]);
-
-
-      
-
-
-//   useEffect(() => {
-//     fetch("http://db.cmdm.tw:8000/search/table/Gene/")
-//       .then((response) => {
-//         return response.json();
-//       })
-//       .then((res) => {
-        
-        
-//         const Genedata = {
-//           columns: [
-            
-            
-           
-//             {
-//               label: "Gene",
-//               field: "cargo",
-//               sort: "asc",
-//               width: 150,
-//             },
-//             {
-//               label: "Gene symbol",
-//               field: "",
-//               sort: "asc",
-//               width: 150,
-//             },
-//             {
-//               label: "Tissue",
-//               field: "tissue",
-//               sort: "asc",
-//               width: 15,
-//             },
-//             {
-//               label: "Cancer cell type",
-//               field: "cellType",
-//               sort: "asc",
-//               width: 150,
-//             },
-//             {
-//               label: "Specimen",
-//               field: "clinicalUse",
-//               sort: "asc",
-//               width: 150,
-//             },
-
-//             {
-//               label: "PMCID",
-//               field: "pmcid",
-//               sort: "asc",
-//               width: 150,
-//             },
-//           ],
-          
-       
-//           rows: res.results.filter(el=> el.cargo.toLowerCase().startsWith(alphabet.toLowerCase())).map((apiData) => (
-//             {molecularType: apiData.molecularType ,
-//               cargo: 
-//               (
-//                 // wrap the cargo value with Link component
-//                 <Link to={`/gene/${apiData.id}`}style={{ color: 'blue' }}>{apiData.cargo}</Link>
-//               ),
-//                 tissue:apiData.tissue,
-//                 cellType:apiData.cellType, 
-//                 clinicalUse:apiData.clinicalUse,
-//                 // pmcid:apiData.pmcid,
-//                 pmcid:<a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${apiData.pmcid}`}style={{ color: 'blue' }}>{apiData.pmcid}</a>,
-//             })),
-          
-
-
-//         };
-        
-//         setGeneData(Genedata);
-//         // console.log('isres',res)
-//         console.log('isGenedata',Genedata)
-//         console.log('isalpha',alphabet)
-        
-//       });
-//   }, [alphabet]);
-  
-
-
-  
-
-//   return (
-//     <div>
-//          <p className='associated'>Associated Gene markers</p>
-        
-        
-//          <div style={{marginLeft:250}}>{prepareAlphabets()}</div>
-//             <MDBDataTable striped bordered hover data={Genedata} />   
-//     </div>
-       
-//   );
-// };
-
-// export default GeneTable;
-
-import React from 'react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { MDBDataTable } from 'mdbreact';
-import 'mdbreact/dist/css/mdb.css';
-
-import data from '../Data/gene.json';
-import './page.css'
-
 import { Link } from 'react-router-dom';
+
+import 'mdbreact/dist/css/mdb.css';
+import './page.css';
 
 const GeneTable = () => {
   const [alphabet, setAlphabet] = useState('');
-  const [isLoading, setIsLoading] = useState(true); // Add isLoading state variable
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [allData, setAllData] = useState([]);
 
-  const onAlphabetClick = (e) => {
-    setAlphabet(e.target.value);
-  }
+  // 1. 混合式抓取：先抓 50 筆秒開，再抓全部
+  useEffect(() => {
+    const fetchAllData = async () => {
+      try {
+        // Step A: 先抓前 50 筆，讓使用者立刻看到東西
+        const quickRes = await fetch("http://db.cmdm.tw:8000/search/table/Gene/?limit=500");
+        const quickData = await quickRes.json();
+        setAllData(quickData.results || []);
+        setIsInitialLoading(false); // 50 筆一到，立刻關閉 Loading
 
-  const prepareAlphabets = () => {
-    let result = [];
-    for (let i = 65; i < 91; i++) {
-      result.push(
+        // Step B: 背景偷偷抓剩下的所有資料 (7000+)
+        const fullRes = await fetch("http://db.cmdm.tw:8000/search/table/Gene/?limit=10000");
+        const fullData = await fullRes.json();
+        setAllData(fullData.results || []);
+      } catch (error) {
+        console.error('Fetch error:', error);
+        setIsInitialLoading(false);
+      }
+    };
+
+    fetchAllData();
+  }, []);
+
+  // 2. 前端即時篩選 (與 Lung/Breast 樣式一致)
+  const Genedata = useMemo(() => {
+    const filtered = alphabet 
+      ? allData.filter(item => item.cargo && item.cargo.toLowerCase().startsWith(alphabet.toLowerCase()))
+      : allData;
+
+    return {
+      columns: [
+        { label: "Gene", field: "cargo", sort: "asc", width: 150 },
+        { label: "Gene symbol", field: "entrezname", sort: "asc", width: 150 },
+        { label: "Tissue", field: "tissue", sort: "asc", width: 150 },
+        { label: "Cancer cell type", field: "cellType", sort: "asc", width: 150 },
+        { label: "Specimen", field: "clinicalUse", sort: "asc", width: 150 },
+        { label: "PMCID", field: "pmcid", sort: "asc", width: 150 },
+      ],
+      rows: filtered.map((item) => ({
+        cargo: (
+          <Link 
+            to={`/gene/${item.id}`} 
+            style={{ color: '#2e3e93', fontWeight: 'bold', textDecoration: 'none' }}
+            className="marker-link"
+          >
+            {item.cargo}
+          </Link>
+        ),
+        entrezname: item.entrezName || '-',
+        tissue: item.tissue || '-',
+        cellType: item.cellType || '-',
+        clinicalUse: item.clinicalUse || '-',
+        pmcid: item.pmcid ? (
+          <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${item.pmcid}`} target="_blank" rel="noopener noreferrer" style={{ color: 'green' }}>
+            {item.pmcid}
+          </a>
+        ) : '-',
+      })),
+    };
+  }, [allData, alphabet]);
+
+  const renderAlphabets = () => {
+    let btns = [];
+    for (let i = 65; i <= 90; i++) {
+      const char = String.fromCharCode(i);
+      btns.push(
         <button
-          style={{
-            color: 'blue',
-            fontSize: 14,
-            fontWeight: 600,
-            width: 30,
-            height: 30,
-            textAlign: 'center',
-          }}
-          type="button"
-          key={i}
-          onClick={onAlphabetClick}
-          value={String.fromCharCode(i)}
+          key={char}
+          className={alphabet === char ? 'alphabet-btn active' : 'alphabet-btn'}
+          onClick={() => setAlphabet(alphabet === char ? '' : char)}
         >
-          {String.fromCharCode(i)}
+          {char}
         </button>
       );
     }
-
-    return result;
-  }
-
-  const [Genedata, setGeneData] = useState([]);
-
-  useEffect(() => {
-    setIsLoading(true); // Set isLoading to true before starting the fetch request
-
-    fetch("http://db.cmdm.tw:8000/search/table/Gene/")
-      .then((response) => response.json())
-      .then((res) => {
-        const Genedata = {
-          columns: [
-            {
-              label: "Gene",
-              field: "cargo",
-              sort: "asc",
-              width: 150,
-            },
-            {
-              label: "Gene symbol",
-              field: "entrezname",
-              sort: "asc",
-              width: 150,
-            },
-            {
-              label: "Tissue",
-              field: "tissue",
-              sort: "asc",
-              width: 15,
-            },
-            {
-              label: "Cancer cell type",
-              field: "cellType",
-              sort: "asc",
-              width: 150,
-            },
-            {
-              label: "Specimen",
-              field: "clinicalUse",
-              sort: "asc",
-              width: 150,
-            },
-            {
-              label: "PMCID",
-              field: "pmcid",
-              sort: "asc",
-              width: 150,
-            },
-          ],
-          rows: res.results.filter(el => el.cargo.toLowerCase().startsWith(alphabet.toLowerCase())).map((apiData) => ({
-            molecularType: apiData.molecularType,
-            cargo: (
-              <Link to={`/gene/${apiData.id}`} style={{ color: 'blue' }}>{apiData.cargo}</Link>
-            ),
-            entrezname:apiData.entrezName,
-            tissue: apiData.tissue,
-            cellType: apiData.cellType,
-            clinicalUse: apiData.clinicalUse,
-            pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${apiData.pmcid}`} style={{ color: 'blue' }}>{apiData.pmcid}</a>,
-          })),
-        };
-
-        setGeneData(Genedata);
-        setIsLoading(false); // Set isLoading to false when the data is fetched
-      })
-      .catch((error) => {
-        console.error('Error fetching gene data:', error);
-        setIsLoading(false); // Set isLoading to false even if an error occurs
-      });
-  }, [alphabet]);
+    return btns;
+  };
 
   return (
-    <div>
-      <p className='associated'>Associated potential genes</p>
+    <div className="lung-container">
+      <h1 className="associated">Associated potential genes</h1>
 
-      <div style={{ marginLeft: 250 }}>{prepareAlphabets()}</div>
+      <div className="alphabet-container">
+        {renderAlphabets()}
+      </div>
 
-      {isLoading ? (
-        <div>Loading...</div> // Show loading message while isLoading is true
-      ) : (
-        <MDBDataTable striped bordered hover data={Genedata} />
-      )}
+      <div className="content-tabs" style={{ marginTop: '20px' }}>
+        {/* 只有第一次抓那 50 筆時會顯示 Loading，之後都不會 */}
+        {isInitialLoading ? (
+          <div className="loading-spinner text-center p-5">
+            <div className="spinner-border text-primary" role="status"></div>
+            <p style={{ marginTop: '10px' }}>Initializing table...</p>
+          </div>
+        ) : (
+          <div className="content active-content">
+            <h2 className="table-title" style={{ marginLeft: '20px', marginBottom: '20px', color: '#2e3e93' }}>
+               Gene Results {alphabet && `(Filter: ${alphabet})`}
+               {allData.length < 1000 && alphabet && <span style={{fontSize: '12px', color: '#999', marginLeft: '10px'}}>(Syncing database...)</span>}
+            </h2>
+            <MDBDataTable 
+              striped bordered hover 
+              data={Genedata} 
+              entries={10}
+              noBottomColumns={true}
+              responsive
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
 export default GeneTable;
-
-
-
-
-

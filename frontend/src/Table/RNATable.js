@@ -1,382 +1,4 @@
-// // import { useState, useEffect } from 'react';
-// // import { MDBDataTable } from 'mdbreact';
-
-// // import 'mdbreact/dist/css/mdb.css';
-// // import data from '../Data/miRNA.json';
-// // import './page.css'
-
-  
-  
-
-// //   function RNATable() {
-// //     const [alphabet,setAlphabet]=useState('');
-// //   const onAlphabetClick = (e) => {
-    
-// //         setAlphabet(e.target.value)
-// //         console.log('setAlphabet',setAlphabet)
-// //       }
-    
-// //   const prepareAlphabets = () => {
-// //         let result = [];
-// //         for(let i=65; i<91; i++) {
-// //           result.push(
-// //             <button style={{
-// //               color: 'blue',
-// //               // 需改為駝峰式命名
-// //               fontSize:14,
-// //               fontWeight:600,
-// //               width:30 ,
-// //               height:30 ,
-// //               textAlign: 'center',
-// //               // color: isHover ? 'red' : 'green',
-// //             }}type="button" key={i} onClick={onAlphabetClick} value={String.fromCharCode(i)} >{String.fromCharCode(i)}</button>
-// //           )
-// //         }
-// //         console.log('hekkko')
-// //         return result;
-// //       }    
-
-// //     const Genedata = {
-// //         columns: [
-          
-          
-         
-// //           {
-// //             label: "Gene",
-// //             field: "cargo",
-// //             sort: "asc",
-// //             width: 150,
-// //           },
-// //           {
-// //             label: "Gene symbol",
-// //             field: "",
-// //             sort: "asc",
-// //             width: 150,
-// //           },
-// //           {
-// //             label: "Tissue",
-// //             field: "tissue",
-// //             sort: "asc",
-// //             width: 15,
-// //           },
-// //           {
-// //             label: "Cancer cell type",
-// //             field: "cellType",
-// //             sort: "asc",
-// //             width: 150,
-// //           },
-// //           {
-// //             label: "Specimen",
-// //             field: "clinicalUse",
-// //             sort: "asc",
-// //             width: 150,
-// //           },
-
-// //           {
-// //             label: "PMCID",
-// //             field: "pmcid",
-// //             sort: "asc",
-// //             width: 150,
-// //           },
-// //         ],
-        
-     
-// //         rows: data.results.filter(el=> el.cargo.toLowerCase().startsWith(alphabet.toLowerCase())).map((apiData) => (
-// //           {molecularType: apiData.molecularType ,
-// //               cargo:apiData.cargo, 
-// //               tissue:apiData.tissue,
-// //               cellType:apiData.cellType, 
-// //               clinicalUse:apiData.clinicalUse,
-// //               // pmcid:apiData.pmcid,
-// //               pmcid:<a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${apiData.pmcid}`}>{apiData.pmcid}</a>,
-// //           })),
-        
-
-
-// //       };
-// //   return (
-// //     <div>
-// //        <div>
-// //          <p className='associated'>Associated miRNA markers</p>
-        
-        
-// //          <div style={{marginLeft:250}}>{prepareAlphabets()}</div>
-// //             <MDBDataTable striped bordered hover data={Genedata} />   
-// //     </div>
-      
-// //     </div>
-// //   );
-// // }
-
-// // export default RNATable;
-
-
-// // import { useState, useEffect } from 'react';
-// // import { MDBDataTable } from 'mdbreact';
-// // import { Link } from 'react-router-dom';
-
-// // import 'mdbreact/dist/css/mdb.css';
-// // import data from '../Data/protein.json';
-// // import './page.css'
-
-  
-  
-
-// //   function ProteinTable() {
-// //     const [alphabet,setAlphabet]=useState('');
-// //   const onAlphabetClick = (e) => {
-    
-// //         setAlphabet(e.target.value)
-// //         console.log('setAlphabet',setAlphabet)
-// //       }
-    
-// //   const prepareAlphabets = () => {
-// //         let result = [];
-// //         for(let i=65; i<91; i++) {
-// //           result.push(
-// //             <button style={{
-// //               color: 'blue',
-// //               // 需改為駝峰式命名
-// //               fontSize:14,
-// //               fontWeight:600,
-// //               width:30 ,
-// //               height:30 ,
-// //               textAlign: 'center',
-// //               // color: isHover ? 'red' : 'green',
-// //             }}type="button" key={i} onClick={onAlphabetClick} value={String.fromCharCode(i)} >{String.fromCharCode(i)}</button>
-// //           )
-// //         }
-// //         console.log('hekkko')
-// //         return result;
-// //       }    
-
-// //     const Genedata = {
-// //         columns: [
-          
-          
-         
-// //           {
-// //             label: "Gene",
-// //             field: "cargo",
-// //             sort: "asc",
-// //             width: 150,
-// //           },
-// //           {
-// //             label: "Gene symbol",
-// //             field: "",
-// //             sort: "asc",
-// //             width: 150,
-// //           },
-// //           {
-// //             label: "Tissue",
-// //             field: "tissue",
-// //             sort: "asc",
-// //             width: 15,
-// //           },
-// //           {
-// //             label: "Cancer cell type",
-// //             field: "cellType",
-// //             sort: "asc",
-// //             width: 150,
-// //           },
-// //           {
-// //             label: "Specimen",
-// //             field: "clinicalUse",
-// //             sort: "asc",
-// //             width: 150,
-// //           },
-
-// //           {
-// //             label: "PMCID",
-// //             field: "pmcid",
-// //             sort: "asc",
-// //             width: 150,
-// //           },
-// //         ],
-        
-     
-// //         rows: data.results.filter(el=> el.cargo.toLowerCase().startsWith(alphabet.toLowerCase())).map((apiData) => (
-// //           {molecularType: apiData.molecularType ,
-// //               //cargo:apiData.cargo, 
-// //               cargo: 
-// //               (
-// //                 // wrap the cargo value with Link component
-// //                 <Link to={`/protein/${apiData.id}`}>{apiData.cargo}</Link>
-// //               ),
-// //               tissue:apiData.tissue,
-// //               cellType:apiData.cellType, 
-// //               clinicalUse:apiData.clinicalUse,
-// //               // pmcid:apiData.pmcid,
-// //               pmcid:<a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${apiData.pmcid}`}>{apiData.pmcid}</a>,
-// //           })),
-        
-
-
-// //       };
-// //   return (
-// //     <div>
-// //        <div>
-// //          <p className='associated'>Associated Protein markers</p>
-        
-        
-// //          <div style={{marginLeft:250}}>{prepareAlphabets()}</div>
-// //             <MDBDataTable striped bordered hover data={Genedata} />   
-// //     </div>
-      
-// //     </div>
-// //   );
-// // }
-
-// // export default ProteinTable;
-
-
-// import { useState, useEffect } from 'react';
-// import { MDBDataTable } from 'mdbreact';
-
-// import 'mdbreact/dist/css/mdb.css';
-// import data from '../Data/gene.json';
-// import './page.css'
-
-// import { Link } from 'react-router-dom';
-
-
-
-// const RNATable = () => {
-  
-  
-
-//   const [alphabet,setAlphabet]=useState('');
-//   const onAlphabetClick = (e) => {
-    
-//         setAlphabet(e.target.value)
-//         console.log('setAlphabet',setAlphabet)
-//       }
-    
-//   const prepareAlphabets = () => {
-//         let result = [];
-//         for(let i=65; i<91; i++) {
-//           result.push(
-//             <button style={{
-//               color: 'blue',
-//               // 需改為駝峰式命名
-//               fontSize:14,
-//               fontWeight:600,
-//               width:30 ,
-//               height:30 ,
-//               textAlign: 'center',
-//               // color: isHover ? 'red' : 'green',
-//             }}type="button" key={i} onClick={onAlphabetClick} value={String.fromCharCode(i)} >{String.fromCharCode(i)}</button>
-//           )
-//         }
-        
-//         return result;
-//       }    
-
-
-
-      
-//   const [Genedata, setGeneData] = useState([]);
-
-
-      
-
-
-//   useEffect(() => {
-//     fetch("http://db.cmdm.tw:8000/search/table/RNA/")
-//       .then((response) => {
-//         return response.json();
-//       })
-//       .then((res) => {
-        
-        
-//         const Genedata = {
-//           columns: [
-            
-            
-           
-//             {
-//               label: "RNA",
-//               field: "cargo",
-//               sort: "asc",
-//               width: 150,
-//             },
-            
-//             {
-//               label: "Tissue",
-//               field: "tissue",
-//               sort: "asc",
-//               width: 15,
-//             },
-//             {
-//               label: "Cancer cell type",
-//               field: "cellType",
-//               sort: "asc",
-//               width: 150,
-//             },
-//             {
-//               label: "Specimen",
-//               field: "clinicalUse",
-//               sort: "asc",
-//               width: 150,
-//             },
-
-//             {
-//               label: "PMCID",
-//               field: "pmcid",
-//               sort: "asc",
-//               width: 150,
-//             },
-//           ],
-          
-       
-//           rows: res.results.filter(el=> el.cargo.toLowerCase().startsWith(alphabet.toLowerCase())).map((apiData) => (
-//             {molecularType: apiData.molecularType ,
-//               cargo: 
-//               (
-//                 // wrap the cargo value with Link component
-//                 <Link to={`/rna/${apiData.id}`}style={{ color: 'blue' }}>{apiData.cargo}</Link>
-//               ),
-//                 tissue:apiData.tissue,
-//                 cellType:apiData.cellType, 
-//                 clinicalUse:apiData.clinicalUse,
-//                 // pmcid:apiData.pmcid,
-//                 pmcid:<a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${apiData.pmcid}`}style={{ color: 'blue' }}>{apiData.pmcid}</a>,
-//             })),
-          
-
-
-//         };
-        
-//         setGeneData(Genedata);
-//         // console.log('isres',res)
-//         console.log('isGenedata',Genedata)
-//         console.log('isalpha',alphabet)
-        
-//       });
-//   }, [alphabet]);
-  
-
-
-  
-
-//   return (
-//     <div>
-//          <p className='associated'>Associated miRNA markers</p>
-        
-        
-//          <div style={{marginLeft:250}}>{prepareAlphabets()}</div>
-//             <MDBDataTable striped bordered hover data={Genedata} />   
-//     </div>
-       
-//   );
-// };
-
-// export default RNATable;
-
-
-
-import React from 'react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { MDBDataTable } from 'mdbreact';
 import { Link } from 'react-router-dom';
 
@@ -385,129 +7,126 @@ import './page.css';
 
 const RNATable = () => {
   const [alphabet, setAlphabet] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [allData, setAllData] = useState([]);
 
-  const onAlphabetClick = (e) => {
-    setAlphabet(e.target.value);
-    console.log('setAlphabet', setAlphabet);
-  };
+  // 1. 混合式抓取邏輯：先抓 50 筆秒開，背景再抓全部 (10000 筆以內)
+  useEffect(() => {
+    const fetchRNAData = async () => {
+      try {
+        // Step A: 快速抓取前 50 筆，讓使用者不需要等待
+        const quickRes = await fetch('http://db.cmdm.tw:8000/search/table/RNA/?limit=500');
+        const quickData = await quickRes.json();
+        setAllData(quickData.results || []);
+        setIsInitialLoading(false);
 
-  const prepareAlphabets = () => {
-    let result = [];
-    for (let i = 65; i < 91; i++) {
-      result.push(
+        // Step B: 背景安靜抓取完整 RNA 數據
+        const fullRes = await fetch('http://db.cmdm.tw:8000/search/table/RNA/?limit=10000');
+        const fullData = await fullRes.json();
+        setAllData(fullData.results || []);
+      } catch (error) {
+        console.error('Error fetching RNA data:', error);
+        setIsInitialLoading(false);
+      }
+    };
+
+    fetchRNAData();
+  }, []);
+
+  // 2. 前端即時過濾與格式化
+  const formattedData = useMemo(() => {
+    // 點擊字母時，直接在記憶體中過濾，反應速度最快
+    const filtered = alphabet 
+      ? allData.filter(item => item.cargo && item.cargo.toLowerCase().startsWith(alphabet.toLowerCase()))
+      : allData;
+
+    return {
+      columns: [
+        { label: 'RNA', field: 'cargo', sort: 'asc', width: 150 },
+        { label: 'Tissue', field: 'tissue', sort: 'asc', width: 150 },
+        { label: 'Cancer cell type', field: 'cellType', sort: 'asc', width: 150 },
+        { label: 'Specimen', field: 'clinicalUse', sort: 'asc', width: 150 },
+        { label: 'PMCID', field: 'pmcid', sort: 'asc', width: 150 },
+      ],
+      rows: filtered.map((item) => ({
+        cargo: (
+          <Link 
+            to={`/rna/${item.id}`} 
+            style={{ color: '#2e3e93', fontWeight: 'bold', textDecoration: 'none' }}
+            className="marker-link"
+          >
+            {item.cargo}
+          </Link>
+        ),
+        tissue: item.tissue || '-',
+        cellType: item.cellType || '-',
+        clinicalUse: item.clinicalUse || '-',
+        pmcid: item.pmcid ? (
+          <a 
+            href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${item.pmcid}`} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            style={{ color: 'green' }}
+          >
+            {item.pmcid}
+          </a>
+        ) : '-',
+      })),
+    };
+  }, [allData, alphabet]);
+
+  // 3. 渲染字母篩選按鈕 (同步 Lung/Breast 現代樣式)
+  const renderAlphabets = () => {
+    let btns = [];
+    for (let i = 65; i <= 90; i++) {
+      const char = String.fromCharCode(i);
+      btns.push(
         <button
-          style={{
-            color: 'blue',
-            fontSize: 14,
-            fontWeight: 600,
-            width: 30,
-            height: 30,
-            textAlign: 'center',
-          }}
-          type="button"
-          key={i}
-          onClick={onAlphabetClick}
-          value={String.fromCharCode(i)}
+          key={char}
+          className={alphabet === char ? 'alphabet-btn active' : 'alphabet-btn'}
+          onClick={() => setAlphabet(alphabet === char ? '' : char)}
         >
-          {String.fromCharCode(i)}
+          {char}
         </button>
       );
     }
-
-    return result;
+    return btns;
   };
 
-  const [Genedata, setGeneData] = useState([]);
-
-  useEffect(() => {
-    setIsLoading(true);
-
-    fetch('http://db.cmdm.tw:8000/search/table/RNA/')
-      .then((response) => response.json())
-      .then((res) => {
-        const Genedata = {
-          columns: [
-            {
-              label: 'RNA',
-              field: 'cargo',
-              sort: 'asc',
-              width: 150,
-            },
-            {
-              label: 'Tissue',
-              field: 'tissue',
-              sort: 'asc',
-              width: 15,
-            },
-            {
-              label: 'Cancer cell type',
-              field: 'cellType',
-              sort: 'asc',
-              width: 150,
-            },
-            {
-              label: 'Specimen',
-              field: 'clinicalUse',
-              sort: 'asc',
-              width: 150,
-            },
-            {
-              label: 'PMCID',
-              field: 'pmcid',
-              sort: 'asc',
-              width: 150,
-            },
-          ],
-          rows: res.results
-            .filter((el) => el.cargo.toLowerCase().startsWith(alphabet.toLowerCase()))
-            .map((apiData) => ({
-              molecularType: apiData.molecularType,
-              cargo: (
-                <Link to={`/rna/${apiData.id}`} style={{ color: 'blue' }}>
-                  {apiData.cargo}
-                </Link>
-              ),
-              tissue: apiData.tissue,
-              cellType: apiData.cellType,
-              clinicalUse: apiData.clinicalUse,
-              pmcid: (
-                <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${apiData.pmcid}`} style={{ color: 'blue' }}>
-                  {apiData.pmcid}
-                </a>
-              ),
-            })),
-        };
-
-        setGeneData(Genedata);
-        setIsLoading(false);
-        console.log('isGenedata', Genedata);
-        console.log('isalpha', alphabet);
-      })
-      .catch((error) => {
-        console.error('Error fetching RNA data:', error);
-        setIsLoading(false);
-      });
-  }, [alphabet]);
-
   return (
-    <div>
-      <p className="associated">Associated potential miRNAs</p>
+    <div className="lung-container">
+      <h1 className="associated">Associated potential miRNAs</h1>
 
-      <div style={{ marginLeft: 250 }}>{prepareAlphabets()}</div>
+      {/* 字母篩選器容器 */}
+      <div className="alphabet-container">
+        {renderAlphabets()}
+      </div>
 
-      {isLoading ? (
-        <div>Loading...</div>
-      ) : (
-        <MDBDataTable striped bordered hover data={Genedata} />
-      )}
+      <div className="content-tabs" style={{ marginTop: '20px' }}>
+        {isInitialLoading ? (
+          <div className="loading-spinner text-center p-5">
+            <div className="spinner-border text-primary" role="status"></div>
+            <p style={{ marginTop: '10px' }}>Loading RNA data...</p>
+          </div>
+        ) : (
+          <div className="content active-content">
+            <h2 className="table-title" style={{ marginLeft: '20px', marginBottom: '20px', color: '#2e3e93' }}>
+               RNA Results {alphabet && `(Filter: ${alphabet})`}
+            </h2>
+            <MDBDataTable 
+              striped 
+              bordered 
+              hover 
+              data={formattedData} 
+              entries={10}
+              noBottomColumns={true}
+              responsive
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
 export default RNATable;
-
-
-
-
-
