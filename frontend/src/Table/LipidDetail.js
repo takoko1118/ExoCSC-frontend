@@ -1,27 +1,21 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { HashRouter as Router, Route, Link } from 'react-router-dom';
 import { MDBDataTable } from 'mdbreact';
 import './Detail.css';
 import 'mdbreact/dist/css/mdb.css';
-import React from 'react';
 
 function LipidDetail() {
   const { index } = useParams();
   const [data, setData] = useState(null);
-  const [dataB, setDataB] = useState(null);
-  const [dataC, setDataC] = useState(null);
-  const [dataD, setDataD] = useState(null);
-  const [dataE, setDataE] = useState(null);
   const [Genedata, setGenedata] = useState(null);
   const [Proteindata, setProteindata] = useState(null);
   const [mRNAdata, setmRNAdata] = useState(null);
   const [Refdata, setRefdata] = useState(null);
-  const MAX_URLS = 20; // Maximum number of URLs to catch
-  const [isLoading, setIsLoading] = useState(true); // Add isLoading state
+  const [isLoading, setIsLoading] = useState(true);
+  const MAX_URLS = 20;
 
   useEffect(() => {
-    setIsLoading(true); // Set isLoading to true when the effect starts
+    setIsLoading(true);
 
     fetch(`http://db.cmdm.tw:8000/search/table/Lipid/${index}`)
       .then((response) => response.json())
@@ -33,316 +27,149 @@ function LipidDetail() {
         const dataDUrls = res.lipid_protein_urls.slice(0, MAX_URLS).map(obj => obj.id_url);
         const dataEUrls = res.lipid_gene_urls.slice(0, MAX_URLS).map(obj => obj.id_url);
 
-        console.log('dataBUrls:', dataBUrls);
-        console.log('dataCUrls:', dataCUrls);
-        console.log('dataDUrls:', dataDUrls);
-        console.log('dataEUrls:', dataEUrls);
+        const fetchAll = (urls) => Promise.all(urls.map(url => fetch(url).then(r => r.json())));
 
-        const requestsB = dataBUrls.map(url => fetch(url).then(response => response.json()));
-        const requestsC = dataCUrls.map(url => fetch(url).then(response => response.json()));
-        const requestsD= dataDUrls.map(url => fetch(url).then(response => response.json()));
-        const requestsE= dataEUrls.map(url => fetch(url).then(response => response.json()));
-        
-        Promise.all(requestsE)
-          .then((dataEs) => {
-            setDataE(dataEs);
-            const Genedata = {
-              columns: [
-                {
-                  label: 'Name',
-                  field: 'gene',
-                  sort: 'asc',
-                  width: 270,
-                },
-                {
-                  label: 'Tissue',
-                  field: 'tissue',
-                  sort: 'asc',
-                  width: 270,
-                },
-                {
-                  label: 'scroe',
-                  field: 'scroe',
-                  sort: 'asc',
-                  width: 200,
-                },
-                {
-                  label: 'Cell Line',
-                  field: 'cellline',
-                  sort: 'asc',
-                  width: 150,
-                },
-                {
-                  label: 'PMCID',
-                  field: 'pmcid',
-                  sort: 'asc',
-                  width: 150,
-                },
-                
-              ],
-              rows: [],
-            };
-            dataEs.forEach((dataE) => {
-                Genedata.rows.push({
-                gene:<a href={`http://db.cmdm.tw:13007/gene/${dataE.gene_url}`} style={{ color: 'blue' }}>{dataE.cargo_gene}</a>,
-                tissue: dataE.tissue,
-                scroe: dataE.score_y,
-                pmcid:<a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${dataE.pmcid}`} style={{ color: 'blue' }}>{dataE.pmcid}</a>,
-                cellline  : dataE.cell_line_y,
-              });
-            });
-            setGenedata(Genedata);
-          })
-          .catch((error) => {
-            console.error('Error fetching dataB:', error);
+        const commonCols = [
+          { label: 'Name', field: 'gene', width: 200 },
+          { label: 'Tissue', field: 'tissue', width: 150 },
+          { label: 'Score', field: 'score', width: 100 },
+          { label: 'Cell Line', field: 'cellline', width: 150 },
+          { label: 'PMCID', field: 'pmcid', width: 120 },
+        ];
+
+        // Fetch Associated Genes
+        fetchAll(dataEUrls).then(dataEs => {
+          setGenedata({
+            columns: commonCols,
+            rows: dataEs.map(d => ({
+              gene: <a href={`http://db.cmdm.tw:13007/gene/${d.gene_url}`} style={{ color: 'blue' }}>{d.cargo_gene}</a>,
+              tissue: d.tissue,
+              score: d.score_y,
+              pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a>,
+              cellline: d.cell_line_y
+            }))
           });
-        
-        
-        
-        Promise.all(requestsD)
-          .then((dataDs) => {
-            setDataD(dataDs);
-            const Proteindata = {
-              columns: [
-                {
-                  label: 'Name',
-                  field: 'gene',
-                  sort: 'asc',
-                  width: 270,
-                },
-                {
-                  label: 'Tissue',
-                  field: 'tissue',
-                  sort: 'asc',
-                  width: 270,
-                },
-                {
-                  label: 'scroe',
-                  field: 'scroe',
-                  sort: 'asc',
-                  width: 200,
-                },
-                {
-                  label: 'Cell Line',
-                  field: 'cellline',
-                  sort: 'asc',
-                  width: 150,
-                },
-                {
-                  label: 'PMCID',
-                  field: 'pmcid',
-                  sort: 'asc',
-                  width: 150,
-                },
-              ],
-              rows: [],
-            };
-            dataDs.forEach((dataD) => {
-                Proteindata.rows.push({
-                gene: <a href={`http://db.cmdm.tw:13007/protein/${dataD.protein_url}`} style={{ color: 'blue' }}>{dataD.cargo_protein}</a>,
-                tissue: dataD.tissue,
-                scroe: dataD.score_y,
-                cellline:dataD.cellLine,
-                pmcid:<a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${dataD.pmcid}`} style={{ color: 'blue' }}>{dataD.pmcid}</a>
-              });
-            });
-            setProteindata(Proteindata);
-          })
-          .catch((error) => {
-            console.error('Error fetching dataB:', error);
+        });
+
+        // Fetch Associated Proteins
+        fetchAll(dataDUrls).then(dataDs => {
+          setProteindata({
+            columns: commonCols,
+            rows: dataDs.map(d => ({
+              gene: <a href={`http://db.cmdm.tw:13007/protein/${d.protein_url}`} style={{ color: 'blue' }}>{d.cargo_protein}</a>,
+              tissue: d.tissue,
+              score: d.score_y,
+              cellline: d.cellLine,
+              pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a>
+            }))
           });
+        });
 
-        Promise.all(requestsB)
-          .then((dataBs) => {
-            setDataB(dataBs);
-            const mRNAdata = {
-              columns: [
-                {
-                  label: 'Name',
-                  field: 'gene',
-                  sort: 'asc',
-                  width: 270,
-                },
-                {
-                  label: 'Tissue',
-                  field: 'tissue',
-                  sort: 'asc',
-                  width: 270,
-                },
-                {
-                  label: 'scroe',
-                  field: 'scroe',
-                  sort: 'asc',
-                  width: 200,
-                },
-                {
-                  label: 'Cell Line',
-                  field: 'cellline',
-                  sort: 'asc',
-                  width: 150,
-                },
-                {
-                  label: 'PMCID',
-                  field: 'pmcid',
-                  sort: 'asc',
-                  width: 150,
-                },
-              ],
-              rows: [],
-            };
-            dataBs.forEach((dataB) => {
-              mRNAdata.rows.push({
-                gene:<a href={`http://db.cmdm.tw:13007/rna/${dataB.rna_url}`} style={{ color: 'blue' }}>{dataB.cargo_rna}</a>,
-                tissue: dataB.tissue,
-                scroe: dataB.score_y,
-                cellline:dataB.cellLine_y,
-                pmcid:<a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${dataB.pmcid}`} style={{ color: 'blue' }}>{dataB.pmcid}</a>
-              });
-            });
-            setmRNAdata(mRNAdata);
-          })
-          .catch((error) => {
-            console.error('Error fetching dataB:', error);
+        // Fetch Associated miRNAs
+        fetchAll(dataBUrls).then(dataBs => {
+          setmRNAdata({
+            columns: commonCols,
+            rows: dataBs.map(d => ({
+              gene: <a href={`http://db.cmdm.tw:13007/rna/${d.rna_url}`} style={{ color: 'blue' }}>{d.cargo_rna}</a>,
+              tissue: d.tissue,
+              score: d.score_y,
+              cellline: d.cellLine_y,
+              pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a>
+            }))
           });
+        });
 
-        Promise.all(requestsC)
-          .then((dataCs) => {
-            setDataC(dataCs);
-            const Refdata = {
-              columns: [
-                {
-                  label: 'Title',
-                  field: 'title',
-                  sort: 'asc',
-                  width: 270,
-                },
-                {
-                  label: 'Journal',
-                  field: 'journal',
-                  sort: 'asc',
-                  width: 270,
-                },
-                {
-                  label: 'Year',
-                  field: 'year',
-                  sort: 'asc',
-                  width: 270,
-                },
-                {
-                  label: 'Author',
-                  field: 'author',
-                  sort: 'asc',
-                  width: 200,
-                },
-                {
-                  label: 'PMCID',
-                  field: 'pmcid',
-                  sort: 'asc',
-                  width: 150,
-                },
-              ],
-              rows: [],
-            };
-
-            dataCs.forEach((dataC) => {
-              Refdata.rows.push({
-                title: dataC.title,
-                journal: dataC.journal,
-                year: dataC.year,
-                author: dataC.author,
-                pmcid:<a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${dataC.pmcid}`} style={{ color: 'blue' }}>{dataC.pmcid}</a>
-              });
-            });
-
-            setRefdata(Refdata);
-          })
-          .catch((error) => {
-            console.error('Error fetching dataC:', error);
-          })
-          .finally(() => {
-            setIsLoading(false); // Set isLoading to false when the requests are complete
+        // Fetch References (修正 Author 顯示第一作者)
+        fetchAll(dataCUrls).then(dataCs => {
+          setRefdata({
+            columns: [
+              { label: 'Title', field: 'title', width: 250 },
+              { label: 'Journal', field: 'journal', width: 150 },
+              { label: 'Year', field: 'year', width: 80 },
+              { label: 'Author', field: 'author', width: 120 },
+              { label: 'PMCID', field: 'pmcid', width: 120 },
+            ],
+            rows: dataCs.map(d => ({
+              title: d.title,
+              journal: d.journal,
+              year: d.year,
+              author: d.author ? d.author.split(',')[0] : '', // 這裡執行切割
+              pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a>
+            }))
           });
+        }).finally(() => {
+          setIsLoading(false);
+        });
       });
   }, [index]);
 
-  console.log('results', data);
-  console.log('dataB', dataB);
-  console.log('Refdata', Refdata);
-  console.log('RNAdata', mRNAdata);
-  console.log('Proteindata', Proteindata);
-  console.log('GeneData', Genedata);
-  if (isLoading) {
-    return <div>Loading...</div>; // Display the loading screen while isLoading is true
+  if (isLoading || !data) {
+    return <div className="p-5 text-center">Loading...</div>;
   }
 
   return (
-    <div className='detail'>
+    <div className='detail-page'>
       <aside>
         <nav className="nav-bar flex-column sticky-top">
           <h4>Menu</h4>
           <ul>
-            <li>
-              <a href="#description">Description</a>
-            </li>
-            <li>
-              <a href="#gene-RNA">Associated Genes</a>
-            </li>
-            <li>
-              <a href="#gene-protein">Associated Proteins</a>
-            </li>
-            <li>
-              <a href="#gene-RNA">Associated miRNAs</a>
-            </li>
-            
-            
-            <li>
-              <a href="#references">Reference</a>
-            </li>
+            <li><a href="#description">Description</a></li>
+            <li><a href="#gene-gene">Associated Genes</a></li>
+            <li><a href="#gene-protein">Associated Proteins</a></li>
+            <li><a href="#gene-RNA">Associated miRNAs</a></li>
+            <li><a href="#references">Reference</a></li>
           </ul>
         </nav>
       </aside>
+
       <div className="content">
         <h1>{data.cargo}</h1>
 
-        <div id="description" style={{ marginTop: '50px' }}>
+        <div id="description" className="section-container">
           <h2>Description</h2>
-          <table className='detailTable' style={{ fontSize: '10px', width: '80%' }}>
+          <table className='detailTable'>
             <thead>
               <tr>
-                <th colSpan="2"><>{data.description}</></th>
+                <th colSpan="2" style={{ backgroundColor: '#f4f4f4', textAlign: 'center' }}>Lipid Information</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <th>Gene name</th>
+                <th style={{ width: '25%' }}>Lipid name</th>
                 <td>{data.cargo}</td>
+              </tr>
+              <tr>
+                <th>Formula / Description</th>
+                <td style={{ textAlign: 'left', padding: '15px' }}>{data.description}</td>
               </tr>
             </tbody>
           </table>
         </div>
-        <div id="gene-gene" style={{ marginTop: '50px' }}>
+
+        <div id="gene-gene" className="section-container">
           <h2>Associated Genes</h2>
-          {Genedata !== null && <MDBDataTable striped noBottomColumns={true} searching={false} paging={false} data={Genedata} />}
+          {Genedata && <MDBDataTable striped responsive small noBottomColumns searching={false} paging={false} data={Genedata} />}
         </div>
 
-        <div id="gene-protein" style={{ marginTop: '50px' }}>
+        <div id="gene-protein" className="section-container">
           <h2>Associated Proteins</h2>
-          {Proteindata !== null && <MDBDataTable striped noBottomColumns={true} searching={false} paging={false} data={Proteindata} />}
+          {Proteindata && <MDBDataTable striped responsive small noBottomColumns searching={false} paging={false} data={Proteindata} />}
         </div>
 
-        <div id="gene-RNA" style={{ marginTop: '50px' }}>
+        <div id="gene-RNA" className="section-container">
           <h2>Associated miRNAs</h2>
-          {mRNAdata !== null && <MDBDataTable striped noBottomColumns={true} searching={false} paging={false} data={mRNAdata} />}
+          {mRNAdata && <MDBDataTable striped responsive small noBottomColumns searching={false} paging={false} data={mRNAdata} />}
         </div>
 
-        
-
-        <div id="references" style={{ marginTop: '50px' }}>
+        <div id="references" className="section-container">
           <h2>Associated References</h2>
-          {Refdata !== null && <MDBDataTable striped noBottomColumns={true} searching={false} paging={false} data={Refdata} />}
+          {Refdata && <MDBDataTable striped responsive small noBottomColumns searching={false} paging={false} data={Refdata} />}
         </div>
 
-        <footer><img src="../CMDM-Lab.png" style={{verticalAlign: "middle",width: "6%", textAlign: "left"}} />© 2023, Computational Molecular Design and Metabolomics Laboratory</footer>
+        <footer>
+          <img src="../CMDM-Lab.png" alt="Lab Logo" style={{ width: "60px", marginBottom: '10px' }} />
+          <p>© 2023, Computational Molecular Design and Metabolomics Laboratory</p>
+        </footer>
       </div>
     </div>
   );

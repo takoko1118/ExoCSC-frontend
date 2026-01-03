@@ -1,127 +1,169 @@
-/* 基礎佈局控制 */
-.detail {
-  font-family: inherit;
-  font-weight: 500;
-  line-height: 1.1;
-  min-height: 100vh;
-  display: flex;
-  text-align: left;
-  width: 100%;
+/* ==========================================================================
+   詳情頁專屬作用域 (右側加強留白版)
+   ========================================================================== */
+.detail-page {
+    font-family: 'Arial', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    text-align: left;
+    width: 100%;
+    color: #333;
+    background-color: #fff; /* 確保背景純白，留白才好看 */
 }
 
-/* 側邊欄固定寬度 */
-aside {
-  flex: 0 0 250px;
+/* 側邊欄 */
+.detail-page aside {
+    flex: 0 0 280px;
 }
 
-/* 右側內容區 */
-.content {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  /* 這裡增加了右邊空白，你可以根據需要調整 150px 到 200px */
-  padding-right: 200px; 
-  /* 新增：給予整個內容區頂部留白，避免緊貼全局導航欄 */
-  padding-top: 60px;
+/* 右側內容區：顯著增加 padding-right 以達到留白效果 */
+.detail-page .content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    /* 這裡大幅增加留白，讓視覺重心偏左 */
+    padding-right: 250px; 
+    padding-top: 60px;
+    padding-bottom: 120px;
 }
 
-/* 導覽列 */
-.nav-bar {
-  margin-left: 60px;
-  position: sticky;
-  top: 50px; 
-  height: auto;
-  z-index: 1000;
-  /* 新增：給予整個內容區頂部留白，避免緊貼全局導航欄 */
-  padding-top: 90px;
+/* 側邊導覽列樣式 */
+.detail-page .nav-bar {
+    margin-left: 60px;
+    position: sticky;
+    top: 100px;
+    z-index: 1000;
 }
 
-.nav-bar ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+.detail-page .nav-bar h4 {
+    font-weight: 900;
+    color: #2e3e93;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
 }
 
-.nav-bar li {
-  font-size: 13px;
-  color: #999;
-  padding: 5px 0;
+.detail-page .nav-bar ul {
+    list-style: none;
+    padding: 0;
 }
 
-/* 統一區塊容器，確保左右對齊 */
-/* 核心修復：解決 Menu 點擊跳轉後的標題遮擋問題 */
-.section-container {
-  margin-left: 100px;
-  margin-top: 50px;
-  width: 100%; /* 讓容器填滿剩餘空間，但受 content 的 padding-right 限制 */
-  /* 根據你上方 Navbar 的高度調整，通常 80px - 120px 效果最好 */
-  scroll-margin-top: 100px;
-}
-/* 針對第一個區塊 Description 的特別處理 */
-#description {
-  scroll-margin-top: 150px; /* 給予頂部標題更多的緩衝空間 */
+.detail-page .nav-bar li a {
+    text-decoration: none;
+    color: #666;
+    font-size: 1.05rem;
+    font-weight: bold;
+    display: block;
+    padding: 10px 0;
+    transition: 0.3s;
 }
 
-/* 針對標題的對齊 */
-h1 {
-  font-size: 30px;
-  margin-left: 100px;
-  margin-top: 50px;
+.detail-page .nav-bar li a:hover {
+    color: #2e3e93;
 }
 
-h2 {
-  font-size: 28px;
-  margin-bottom: 20px;
+/* ==========================================================================
+   標題與容器樣式 (調整 max-width)
+   ========================================================================== */
+.detail-page .section-container {
+    margin-left: 80px;
+    margin-top: 60px;
+    width: 100%;
+    /* 限制寬度在 1000px 以內，配合 padding-right 產生更多留白 */
+    max-width: 1000px; 
+    scroll-margin-top: 120px;
 }
 
-/* 數據表格樣式優化 */
-.table.dataTable {
-  table-layout: fixed !important;
-  width: 100% !important;
-  background-color: rgb(215, 215, 215);
-  border-collapse: collapse;
+.detail-page h1 {
+    font-size: 3rem;
+    font-weight: 900;
+    color: #333;
+    margin-left: 80px;
+    margin-top: 40px;
+    margin-bottom: 30px;
 }
 
-.table.dataTable th,
-.table.dataTable td {
-  border: 2px solid #ffffff;
-  padding: 10px;
-  word-break: break-all;
-  white-space: normal !important;
-  vertical-align: middle;
+.detail-page h2 {
+    font-size: 1.8rem;
+    color: #2e3e93;
+    margin-bottom: 25px;
+    font-weight: bold;
+    border-bottom: 3px solid #2e3e93;
+    display: inline-block;
+    padding-bottom: 5px;
 }
 
-.table.dataTable th {
-  font-size: 16px;
-  background-color: #eee;
-  border-bottom: 2px solid #000000;
+/* ==========================================================================
+   DataTable 樣式 (加粗並統一色調)
+   ========================================================================= */
+.detail-page .table.dataTable {
+    border-collapse: collapse !important;
+    font-weight: 700 !important; /* 加強粗細 */
+    font-size: 1.05rem;
+    background-color: #fff;
+    width: 100% !important;
 }
 
-/* Description 專屬表格 */
-.detailTable {
-  background-color: #ffffff;
-  width: 100%;
-  border-collapse: collapse;
+.detail-page .table.dataTable thead th {
+    background-color: #f8f9fa !important;
+    border-bottom: 2px solid #2e3e93 !important;
+    color: #222 !important;
+    font-weight: 900 !important;
+    padding: 18px 12px !important;
 }
 
-.detailTable th, .detailTable td {
-  padding: 12px;
-  border: 1px solid #ddd;
+.detail-page .table.dataTable td {
+    border: 1px solid #eee !important;
+    padding: 15px 12px !important;
+    color: #333;
+    vertical-align: middle !important;
 }
 
-/* AI 敘述框 */
-.narrative-box {
-  margin-bottom: 15px;
-  padding: 15px;
-  border-left: 4px solid #0275d8;
-  background-color: #f9f9f9;
+/* 連結與 Hover 效果 */
+.detail-page .table.dataTable a {
+    font-weight: 800;
+    color: #2e3e93 !important;
+    transition: color 0.2s;
 }
 
-/* 頁腳 */
-footer {
-  margin-left: 100px;
-  margin-top: 80px;
-  border-top: 2px solid rgb(0, 0, 0);
-  padding: 30px 0;
+.detail-page .table.dataTable a:hover {
+    color: #f44336 !important;
+    text-decoration: underline !important;
+}
+
+/* ==========================================================================
+   Description 表格 (仿照內容樣式)
+   ========================================================================== */
+.detail-page .detailTable {
+    width: 100%;
+    border: 2px solid #2e3e93;
+    border-collapse: collapse;
+}
+
+.detail-page .detailTable th {
+    background-color: #f0f2ff;
+    color: #2e3e93;
+    font-weight: 900;
+    padding: 18px;
+    width: 25%;
+    border-right: 1px solid #ddd;
+}
+
+.detail-page .detailTable td {
+    padding: 18px;
+    font-weight: 700;
+    line-height: 1.7;
+    color: #222;
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+.detail-page footer {
+    margin-left: 80px;
+    margin-top: 100px;
+    border-top: 2px solid #222;
+    padding: 40px 0;
+    font-weight: bold;
+    color: #444;
 }

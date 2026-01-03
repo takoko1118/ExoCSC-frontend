@@ -30,13 +30,12 @@ function GeneDetail() {
       .then((response) => response.json())
       .then((res) => {
         setData(res);
-
         if (res.entrezID) {
           const cleanID = Math.floor(parseFloat(res.entrezID));
           fetch(`http://db.cmdm.tw:8000/api/ppi/?entrez_id=${cleanID}`)
             .then(r => r.json())
             .then(ppiRes => { if (ppiRes && ppiRes.length > 0) setPpiElements(ppiRes); })
-            .catch(err => console.error('Error fetching PPI:', err));
+            .catch(err => console.error('Error PPI:', err));
         }
 
         const dataBUrls = res.gene_rna_urls.map((obj) => obj.id_url);
@@ -44,51 +43,33 @@ function GeneDetail() {
         const dataDUrls = res.other_gene_ids.filter((obj) => obj.cellType === 'CSC').slice(0, 20).map((obj) => obj.url);
         const dataEUrls = res.other_gene_ids.filter((obj) => obj.cellType === 'cancer').slice(0, 20).map((obj) => obj.url);
         const dataFUrls = res.lipid_gene_urls.map((obj) => obj.id_url);
-
         const fetchAll = (urls) => Promise.all(urls.map(url => fetch(url).then(r => r.json())));
 
-        // mRNA
+        const commonCols = [{ label: 'Name', field: 'gene', width: 200 }, { label: 'Tissue', field: 'tissue', width: 150 }, { label: 'Score', field: 'score', width: 100 }, { label: 'Cell Line', field: 'cellline', width: 150 }, { label: 'PMCID', field: 'pmcid', width: 120 }];
+
         fetchAll(dataBUrls).then(dataBs => {
           setGeneRnaRaw(dataBs);
           setmRNAdata({
-            columns: [
-              { label: 'Name', field: 'gene', width: 200 },
-              { label: 'Tissue', field: 'tissue', width: 150 },
-              { label: 'Score', field: 'score', width: 100 },
-              { label: 'Cell Line', field: 'cellline', width: 150 },
-              { label: 'PMCID', field: 'pmcid', width: 120 },
-            ],
-            rows: dataBs.map(d => ({
-              gene: <a href={`http://db.cmdm.tw:13007/rna/${d.rna_url}`} style={{ color: 'blue' }}>{d.cargo_rna}</a>,
-              tissue: d.tissue, score: d.score_y, cellline: d.cellLine,
-              pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a>
-            }))
+            columns: commonCols,
+            rows: dataBs.map(d => ({ gene: <a href={`http://db.cmdm.tw:13007/rna/${d.rna_url}`} style={{ color: 'blue' }}>{d.cargo_rna}</a>, tissue: d.tissue, score: d.score_y, cellline: d.cellLine, pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> }))
           });
         });
 
-        // Common Data Fetch (CSC, CC, Lipid)
-        const commonCols = [{ label: 'Name', field: 'gene', width: 200 }, { label: 'Tissue', field: 'tissue', width: 150 }, { label: 'Score', field: 'score', width: 100 }, { label: 'Cell Line', field: 'cellline', width: 150 }, { label: 'PMCID', field: 'pmcid', width: 120 }];
-        
-        fetchAll(dataDUrls).then(dataDs => setCSCdata({ columns: commonCols, rows: dataDs.map(d => ({ gene: <a href={`http://db.cmdm.tw:13007/gene/${d.id}`} style={{ color: 'blue' }}>{d.cargo}</a>, tissue: d.tissue, score: d.score, cellline: d.cellLine, pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> })) }));
-        fetchAll(dataEUrls).then(dataEs => setCCdata({ columns: commonCols, rows: dataEs.map(d => ({ gene: <a href={`http://db.cmdm.tw:13007/gene/${d.id}`} style={{ color: 'blue' }}>{d.cargo}</a>, tissue: d.tissue, score: d.score, cellline: d.cellLine, pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> })) }));
-        fetchAll(dataFUrls).then(dataFs => setLipiddata({ columns: commonCols, rows: dataFs.map(d => ({ gene: <a href={`http://db.cmdm.tw:13007/lipid/${d.lipid_url}`} style={{ color: 'blue' }}>{d.cargo_lipid}</a>, tissue: d.tissue, score: d.score_y, cellline: d.cellLine, pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> })) }));
+        fetchAll(dataDUrls).then(ds => setCSCdata({ columns: commonCols, rows: ds.map(d => ({ gene: <a href={`http://db.cmdm.tw:13007/gene/${d.id}`} style={{ color: 'blue' }}>{d.cargo}</a>, tissue: d.tissue, score: d.score, cellline: d.cellLine, pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> })) }));
+        fetchAll(dataEUrls).then(es => setCCdata({ columns: commonCols, rows: es.map(d => ({ gene: <a href={`http://db.cmdm.tw:13007/gene/${d.id}`} style={{ color: 'blue' }}>{d.cargo}</a>, tissue: d.tissue, score: d.score, cellline: d.cellLine, pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> })) }));
+        fetchAll(dataFUrls).then(fs => setLipiddata({ columns: commonCols, rows: fs.map(d => ({ gene: <a href={`http://db.cmdm.tw:13007/lipid/${d.lipid_url}`} style={{ color: 'blue' }}>{d.cargo_lipid}</a>, tissue: d.tissue, score: d.score_y, cellline: d.cellLine, pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> })) }));
+        fetchAll(dataCUrls).then(cs => setRefdata({ columns: [{ label: 'Title', field: 'title', width: 250 }, { label: 'Journal', field: 'journal', width: 150 }, { label: 'Year', field: 'year', width: 80 }, { label: 'Author', field: 'author', width: 120 }, { label: 'PMCID', field: 'pmcid', width: 120 }], rows: cs.map(d => ({ title: d.title, journal: d.journal, year: d.year, author: d.author ? d.author.split(',')[0] : '', pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> })) }));
+        fetch(`http://db.cmdm.tw:8000/gene/${parseInt(res.entrezID)}/go/`).then(r => r.json()).then(go => setGOdata({ columns: [{ label: 'GO ID', field: 'go_id', width: 150 }, { label: 'GO Name', field: 'go_name', width: 350 }, { label: 'Domain', field: 'domain', width: 100 }], rows: go.map(g => ({ go_id: g.go_id, go_name: g.go_name, domain: g.domain })) }));
 
-        // References
-        fetchAll(dataCUrls).then(dataCs => setRefdata({ columns: [{ label: 'Title', field: 'title', width: 250 }, { label: 'Journal', field: 'journal', width: 150 }, { label: 'Year', field: 'year', width: 80 }, { label: 'Author', field: 'author', width: 120 }, { label: 'PMCID', field: 'pmcid', width: 120 }], rows: dataCs.map(d => ({ title: d.title, journal: d.journal, year: d.year, author: d.author ? d.author.split(',')[0] : '', pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> })) }));
-
-        // GO Annotation
-        fetch(`http://db.cmdm.tw:8000/gene/${parseInt(res.entrezID)}/go/`).then(r => r.json()).then(goRes => setGOdata({ columns: [{ label: 'GO ID', field: 'go_id', width: 150 }, { label: 'GO Name', field: 'go_name', width: 350 }, { label: 'Domain', field: 'domain', width: 100 }], rows: goRes.map(g => ({ go_id: g.go_id, go_name: g.go_name, domain: g.domain })) }));
-
-        // KEGG & Enrichment
-        fetch(`http://db.cmdm.tw:8000/search/table/GeneKegg/${index}/`).then(r => r.json()).then(keggRes => {
-          const fmtKegg = (list, cls) => ({ columns: [{ label: 'Pathway ID', field: 'id', width: 120 }, { label: 'Pathway Name', field: 'name', width: 300 }, { label: 'P-value', field: 'p', width: 120 }, { label: 'Score', field: 's', width: 100 }], rows: (list || []).map(k => ({ id: <a href={`https://www.kegg.jp/pathway/${k.pathway_id}`} target="_blank" rel="noreferrer" style={{color: 'blue'}}>{k.pathway_id}</a>, name: k.pathway_name, p: k.p_value ? k.p_value.toExponential(4) : '-', s: <span className={`badge ${cls}`} style={{padding: '5px 10px'}}>{parseFloat(k.score).toFixed(2)}</span> })) });
-          setKEGGdata({ csc: fmtKegg(keggRes.csc_pathways, 'badge-danger'), cancer: fmtKegg(keggRes.cancer_pathways, 'badge-primary') });
+        fetch(`http://db.cmdm.tw:8000/search/table/GeneKegg/${index}/`).then(r => r.json()).then(kegg => {
+          const fmt = (list, cls) => ({ columns: [{ label: 'Pathway ID', field: 'id', width: 120 }, { label: 'Pathway Name', field: 'name', width: 300 }, { label: 'P-value', field: 'p', width: 120 }, { label: 'Score', field: 's', width: 100 }], rows: (list || []).map(k => ({ id: <a href={`https://www.kegg.jp/pathway/${k.pathway_id}`} target="_blank" rel="noreferrer" style={{color: 'blue'}}>{k.pathway_id}</a>, name: k.pathway_name, p: k.p_value ? k.p_value.toExponential(4) : '-', s: <span className={`badge ${cls}`} style={{padding: '5px 10px'}}>{parseFloat(k.score).toFixed(2)}</span> })) });
+          setKEGGdata({ csc: fmt(kegg.csc_pathways, 'badge-danger'), cancer: fmt(kegg.cancer_pathways, 'badge-primary') });
         });
 
         if (res.entrezID) {
           fetch(`http://db.cmdm.tw:8000/api/gene-detail/?entrez_id=${Math.floor(parseFloat(res.entrezID))}`).then(r => r.json()).then(enr => {
-            const fmtEnr = (list, cls) => ({ columns: [{ label: 'Term', field: 't', width: 300 }, { label: 'Score', field: 's', width: 100 }, { label: 'FDR', field: 'f', width: 120 }], rows: (list || []).map(c => ({ t: c.Term, s: <span className={`badge ${cls}`} style={{padding: '5px 10px'}}>{c.Score.toFixed(2)}</span>, f: c.Adjusted_P.toExponential(2) })) });
-            setGOEnrichContext({ csc: fmtEnr(enr.csc_context, 'badge-danger'), cancer: fmtEnr(enr.cancer_context, 'badge-primary') });
+            const fmt = (list, cls) => ({ columns: [{ label: 'Term', field: 't', width: 300 }, { label: 'Score', field: 's', width: 100 }, { label: 'FDR', field: 'f', width: 120 }], rows: (list || []).map(c => ({ t: c.Term, s: <span className={`badge ${cls}`} style={{padding: '5px 10px'}}>{c.Score.toFixed(2)}</span>, f: c.Adjusted_P.toExponential(2) })) });
+            setGOEnrichContext({ csc: fmt(enr.csc_context, 'badge-danger'), cancer: fmt(enr.cancer_context, 'badge-primary') });
           });
         }
       });
@@ -97,7 +78,7 @@ function GeneDetail() {
   if (!data) return <div className="p-5 text-center">Loading...</div>;
 
   return (
-    <div className='detail'>
+    <div className='detail-page'>
       <aside>
         <nav className="nav-bar flex-column sticky-top">
           <h4>Menu</h4>
@@ -128,10 +109,7 @@ function GeneDetail() {
             <tbody>
               <tr><th style={{ width: '25%' }}>Gene name</th><td>{data.cargo}</td></tr>
               <tr><th>Gene symbol</th><td>{data.entrezName}</td></tr>
-              <tr>
-                <th>Entrez Gene</th>
-                <td>{data.entrezID ? Math.floor(parseFloat(data.entrezID)) : ''}</td>
-              </tr>
+              <tr><th>Entrez Gene</th><td>{data.entrezID ? Math.floor(parseFloat(data.entrezID)) : ''}</td></tr>
               <tr>
                 <th>AI Functional Narrative</th>
                 <td style={{ textAlign: 'left', padding: '15px', lineHeight: '1.6' }}>
@@ -142,21 +120,21 @@ function GeneDetail() {
                         <div style={{ whiteSpace: 'pre-wrap' }}>{item.llm_narrative}</div>
                       </div>
                     )
-                  )) : <span className="text-muted">Narrative data not available.</span>}
+                  )) : <span className="text-muted">Narrative not available.</span>}
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <div id="geneCSC" className="section-container">
-          <h2>Associated genes in cancer stem cell exosome</h2>
-          {CSCdata && <MDBDataTable striped responsive small noBottomColumns searching={false} paging={false} data={CSCdata} />}
+        <div id="geneCC" className="section-container">
+          <h2>Associated genes in Cancer cell exosome</h2>
+          {CCdata && <MDBDataTable striped responsive small noBottomColumns searching={false} paging={false} data={CCdata} />}
         </div>
 
-        <div id="geneCC" className="section-container">
-          <h2>Associated genes in cancer cell exosome</h2>
-          {CCdata && <MDBDataTable striped responsive small noBottomColumns searching={false} paging={false} data={CCdata} />}
+        <div id="geneCSC" className="section-container">
+          <h2>Associated genes in Cancer Stem cell exosome</h2>
+          {CSCdata && <MDBDataTable striped responsive small noBottomColumns searching={false} paging={false} data={CSCdata} />}
         </div>
 
         <div id="gene-RNA" className="section-container">
@@ -178,11 +156,11 @@ function GeneDetail() {
           <h2>GO Enrichment</h2>
           <div className="row">
             <div className="col-md-6">
-              <h4 style={{ color: '#d9534f' }}>CSC Specific Enrichment</h4>
+              <h4 style={{ color: '#d9534f' }}>CSC Specific</h4>
               {GOEnrichContext && <MDBDataTable striped responsive small noBottomColumns searching={false} paging={false} data={GOEnrichContext.csc} />}
             </div>
             <div className="col-md-6">
-              <h4 style={{ color: '#0275d8' }}>Cancer General Enrichment</h4>
+              <h4 style={{ color: '#0275d8' }}>Cancer General</h4>
               {GOEnrichContext && <MDBDataTable striped responsive small noBottomColumns searching={false} paging={false} data={GOEnrichContext.cancer} />}
             </div>
           </div>
@@ -192,11 +170,11 @@ function GeneDetail() {
           <h2>KEGG Enrichment</h2>
           <div className="row">
             <div className="col-md-6">
-              <h4 style={{ color: '#d9534f' }}>CSC Specific Enrichment</h4>
+              <h4 style={{ color: '#d9534f' }}>CSC Specific</h4>
               {KEGGdata && <MDBDataTable striped responsive small noBottomColumns searching={false} paging={false} data={KEGGdata.csc} />}
             </div>
             <div className="col-md-6">
-              <h4 style={{ color: '#0275d8' }}>Cancer General Enrichment</h4>
+              <h4 style={{ color: '#0275d8' }}>Cancer General</h4>
               {KEGGdata && <MDBDataTable striped responsive small noBottomColumns searching={false} paging={false} data={KEGGdata.cancer} />}
             </div>
           </div>
