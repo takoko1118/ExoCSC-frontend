@@ -1,40 +1,75 @@
+/* Button.css */
 
-button{
-    width:80% ;
-    height: 150%;
+/* 1. 處理容器：解決背景尖角問題 */
+.ui.buttons, .ui.button.group {
+    background: transparent !important; /* 移除容器背景 */
+    border: none !important;
+    box-shadow: none !important;
+    margin: 10px 25px !important; /* 讓兩個按鈕組分開 */
+    display: inline-flex !important;
+}
+
+/* 2. 左側主要按鈕 (Browse...) */
+.ui.buttons .button:first-child {
+    background-color: #2e3e93 !important;
+    color: white !important;
+    font-family: 'Arial', sans-serif !important;
+    font-size: 1.2rem !important;
+    padding: 15px 25px !important;
+    font-weight: bold !important;
     
-  }
-  
-  
-  .ui.floating.dropdown.button.icon{
-    background-color: #4c7da0 ;
-  }
-  
-    /* .dropdown {
-        
-        width: 120% !important;
-        padding: 15px;
-        
-        
-    } */
-  .ui button{
-    background-color: #4c7da0 !important;
-    width:100% ;
-    height: 150%;
-    font-size: 100%;
+    /* 精確設定左側圓角，移除右側圓角 */
+    border-radius: 12px 0 0 12px !important; 
+    border: none !important;
+    margin: 0 !important;
+}
+
+/* 3. 右側下拉按鈕 (Dropdown Icon) */
+.ui.buttons .dropdown.button {
+    background-color: #2e3e93 !important;
+    color: white !important;
+    padding: 15px 15px !important;
     
-  }
-    
-  .ui.button {
-    font-size: 2rem;
-    
-  }
-  .btn-primary.dropdown-toggle {
-    background-color: #140ce6 !important;
-  }
-  
-  .btn{
-    padding: 0px;
-    font-size: 2rem;
-    font-family: 'Arial', sans-serif;
-  }
+    /* 精確設定右側圓角，移除左側圓角 */
+    border-radius: 0 12px 12px 0 !important;
+    border-left: 1px solid rgba(255, 255, 255, 0.3) !important; /* 中間的分隔線 */
+    margin: 0 !important;
+    min-width: auto !important;
+}
+
+/* 4. 解決按鈕組內部可能產生的尖角背景 */
+.ui.buttons .button {
+    box-shadow: none !important;
+}
+
+/* 5. 懸停效果 (Hover) */
+.ui.buttons .button:hover, 
+.ui.buttons .dropdown.button:hover {
+    background-color: #1a2569 !important;
+    color: #ffffff !important;
+    transition: background-color 0.3s ease;
+}
+
+/* 6. 下拉清單內容 (保持原本樣式) */
+.ui.dropdown .menu {
+    border-radius: 8px !important;
+    border: 1px solid #ddd !important;
+}
+
+.ui.dropdown .menu > .item {
+    color: #333 !important;
+    font-size: 1rem !important;
+    font-weight: bold !important;
+    padding: 12px 20px !important;
+}
+
+.ui.dropdown .menu > .item:hover {
+    background: #e8eaf6 !important;
+    color: #2e3e93 !important;
+}
+
+/* 移除原本干擾的百分比寬高 */
+button {
+    width: auto !important;
+    height: auto !important;
+}

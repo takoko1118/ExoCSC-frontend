@@ -34,7 +34,7 @@ import GeneDetail from "./Table/GeneDetail";
 import ProteinDetail from "./Table/ProteinDetail.js";
 import RNADetail from "./Table/RNADetail.js";
 import LipidDetail from "./Table/LipidDetail.js";
-import MyComponent from './Table/testTable'
+
 
 import Landing from "./Landing";
 import News from "./News";
@@ -276,10 +276,7 @@ function App() {
                 <RNATable />
                 </Route>
 
-                <Route path="/test" exact>
-                <MyComponent />
-                </Route>
-
+                
 
                 <Route path="/home" exact>
                 {/* <div className={`${classes.narrowViewport}`}> */}

@@ -74,7 +74,7 @@ export default function Landing(props) {
                     <Typography variant="body2" style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '15px', textTransform: 'uppercase', letterSpacing: '1px' }}>
                         Browse Content Type
                     </Typography>
-                    <Grid container justify="center" spacing={3}>
+                    <Grid container justify="center" spacing={5}> {/* 增加 spacing 從 3 到 5 */}
                         <Grid item><CancerType /></Grid>
                         <Grid item><Content /></Grid>
                     </Grid>
