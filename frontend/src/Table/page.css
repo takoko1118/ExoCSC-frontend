@@ -1,137 +1,200 @@
-
-
-/*Associated  markers */
-.associated{
-    font-size: 3rem;
+/* ==========================================================================
+   整體容器佈局 (控制寬度不讓表格過長)
+   ========================================================================== */
+.lung-container {
+    max-width: 1200px;         /* 限制最大寬度 */
+    margin: 40px auto;         /* 上下間距 40px，水平置中 */
+    padding: 0 20px;           /* 左右留一點緩衝，避免貼邊 */
     font-family: 'Arial', sans-serif;
-    font-weight: 900;
-    
-    padding-top: 50px ;
-    padding-left: 130px;
 }
-.table.table-bordered.table-hover.table-striped.dataTable{
-   
+
+/* 標題樣式 */
+.associated {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #333;
+    margin-bottom: 30px;
     text-align: left;
-    
-}
-/*Show entries */
-.dataTables_length.bs-select{
-
-    padding-left: 120px; 
-    font-size: 20px;
- 
 }
 
-/*10,20,50,100 entries */
-.custom-select.custom-select-sm.form-control.form-control-sm{
-    font-size: 20px;
+.table-title {
+    font-size: 1.5rem;
+    color: #2e3e93;
+    margin: 20px 0;
+    font-weight: bold;
 }
 
-
-/*search */
-.form-control.form-control-sm.ml-0.my-1{
-    font-size: 20px;
-    width: 200px;
+/* ==========================================================================
+   標籤頁切換 (Tabs) 樣式
+   ========================================================================== */
+.bloc-tabs {
+    display: flex;
+    border-bottom: 2px solid #ddd;
+    margin-bottom: 20px;
 }
 
-
-
-
-
-
-
-
-.page{
-    font-size: 20px;
-    margin-top: 50px;
-   
-    
+.tabs {
+    padding: 15px 30px;
+    cursor: pointer;
+    border: none;
+    background: #f8f9fa;
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #666;
+    transition: all 0.3s ease;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    margin-right: 5px;
 }
 
-
-/* table{
-    color: #000000;
-    background-color: rgb(206, 206, 206);
-    border:1px solid rgb(0, 0, 0);
-    font-family: "Roboto",sans-serif;
-    font-weight: 900;
-
-} */
-/* columns name */
-table tr {
-    border: 1px solid rgb(0, 0, 0);
-    /* color:rgb(255, 255, 255);
-    background-color:#2e3e93;
-    font-weight: 500;
-    font-size: 2rem;
-    font-family: 'Arial', sans-serif; */
-    
-}
-.table{
-    
-    /* border: 1px solid rgb(0, 0, 0); */
-    margin-left: 100px;
-    margin-top: 50px;
-}
-/* row content */
-table td{
-    width: 200px;
-    font-size: 1.0rem;
-    font-weight: 500;
-    /* font-family: 'Arial', sans-serif; */
-    
+.active-tabs {
+    background: #2e3e93;
+    color: white;
+    border-bottom: 2px solid #2e3e93;
 }
 
-/*datatable */
-.col-sm-12{
-    
-    padding-right :200px;
-    padding-left:0px ;
-    
+.tabs:hover:not(.active-tabs) {
+    background: #e9ecef;
 }
 
-
-/*Showing 1 to 10 of 2703 entries */
-.dataTables_info{
-    font-size: 20px;
-    padding-left:120px ;
-    font-weight: 500;
-
+/* 控制內容顯示/隱藏 */
+.content {
+    display: none;
 }
 
-
-/*previous 12345 Next */
-.pagination .page-item .page-link {
-    font-size: 20px;
-    /* font-family: 'Arial', sans-serif; */
-    font-weight: 500;
-    display: inline-block;
-    
-}
-.pagination{
-    list-style-type: none;
+.active-content {
+    display: block;
+    animation: fadeIn 0.5s ease;
 }
 
-.MDBD{
-    
-    border:5px solid rgb(255, 255, 255);
-    padding: 20px;
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
-.dataTables_wrapper .dataTables_paginate {
-    text-align: center;
-    white-space: nowrap;
-  }
-  .dataTables_wrapper .dataTables_paginate .pagination {
-    display: inline-block;
-    margin: 0;
-  }
-  .dataTables_wrapper .dataTables_paginate .pagination li {
-    display: inline;
-  }
-/* .content-tabs{
-    border:5px solid rgb(75, 49, 172);
-    width: 15000px;
-    padding-right :200px;
-    padding-left:0px ;
-} */
+/* ==========================================================================
+   字母篩選器 (左右排列)
+   ========================================================================== */
+.alphabet-container {
+    display: flex;
+    flex-wrap: wrap;           /* 自動換行 */
+    justify-content: center;   /* 居中 */
+    gap: 8px;                  /* 按鈕間距 */
+    margin: 30px 0;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+}
+
+.alphabet-btn {
+    width: 36px;
+    height: 36px;
+    border: 1px solid #ddd;
+    background-color: white;
+    color: #2e3e93;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+}
+
+.alphabet-btn:hover {
+    background-color: #e8eaf6;
+    border-color: #2e3e93;
+}
+
+.alphabet-btn.active {
+    background-color: #2e3e93;
+    color: white;
+    border-color: #2e3e93;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.btn-clear-filter {
+    padding: 0 20px;
+    height: 36px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+/* ==========================================================================
+   DataTable 內部元件修正 (分頁、搜尋、顯示筆數)
+   ========================================================================== */
+
+/* 強制分頁按鈕橫向排列 */
+.dataTables_paginate .pagination {
+    display: flex !important;
+    flex-direction: row !important; /* 強制橫向 */
+    justify-content: center !important;
+    list-style: none !important;
+    padding: 20px 0 !important;
+    margin: 0 !important;
+}
+
+.dataTables_paginate .pagination li {
+    display: inline-block !important;
+    margin: 0 2px !important;
+}
+
+.dataTables_paginate .pagination li a {
+    padding: 8px 14px !important;
+    border: 1px solid #ddd !important;
+    background-color: #fff !important;
+    color: #2e3e93 !important;
+    text-decoration: none !important;
+    border-radius: 4px !important;
+}
+
+.dataTables_paginate .pagination li.active a {
+    background-color: #2e3e93 !important;
+    color: white !important;
+    border-color: #2e3e93 !important;
+}
+
+/* 修正搜尋框與顯示筆數 */
+.dataTables_wrapper .dataTables_filter, 
+.dataTables_wrapper .dataTables_length {
+    margin-bottom: 15px;
+    font-size: 1rem;
+}
+
+.dataTables_wrapper .dataTables_filter input {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 5px 10px;
+    margin-left: 10px;
+}
+
+/* 表格內容樣式 */
+.table.dataTable thead th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #2e3e93;
+    color: #333;
+    font-weight: bold;
+}
+
+.marker-link {
+    transition: color 0.2s;
+}
+
+.marker-link:hover {
+    color: #d32f2f !important; /* 滑鼠移上去變色 */
+    text-decoration: underline !important;
+}
+
+/* 資料讀取中的 Spinner 居中 */
+.loading-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+}

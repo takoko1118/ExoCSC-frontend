@@ -1,34 +1,57 @@
+/* 🚀 讓星空背景區塊左右全覆蓋 */
+.hero-background-section {
+    background-image: url("https://img.freepik.com/free-photo/night-sky-glows-with-iridescent-starry-nebula-generated-by-ai_188544-15577.jpg");
+    background-size: cover;
+    background-position: center;
+    padding: 80px 0 60px 0;
+    text-align: center;
+    color: white;
+
+    /* 🚀 關鍵：跳出父容器限制 */
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    
+    box-sizing: border-box;
+}
+
+/* 🚀 防止因為 100vw 導致頁面出現微小的左右晃動 */
+body {
+    overflow-x: hidden;
+}
+
+/* 您原本的樣式保持不變 */
 ul {
     list-style: none;
     padding: 0;
-  }
-  
-  .Landing {
+}
+
+.Landing {
     font-size: 1rem;
     display: inline-block;
     margin-right: 20px;
     margin-bottom: 100px;
     margin-top: 30px;
-  }
-  
-  .item {
+}
+
+.item {
     font-size: 1rem;
     font-weight: 900;
     margin-right: 5px;
-  }
-  
-  .number {
-    /* font-weight: normal; */
+}
+
+.number {
     font-weight: 500;
-  }
-  
-  .STATISTICS{
+}
+
+.STATISTICS {
     font-size: 2.125rem;
     font-family: "Roboto", "Helvetica", "Arial", sans-serif;
     font-weight: 400;
     line-height: 1.235;
     margin-top: 100px;
     text-align: center;
-  }
-
-  
+}

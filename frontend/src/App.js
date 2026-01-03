@@ -282,9 +282,9 @@ function App() {
 
 
                 <Route path="/home" exact>
-                <div className={`${classes.narrowViewport}`}>
+                {/* <div className={`${classes.narrowViewport}`}> */}
                         <Landing />
-                    </div>
+                    {/* </div> */}
                 </Route>
 
                 <Route path="/search" exact>

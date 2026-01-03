@@ -1,159 +1,167 @@
 import React, { useRef, useEffect, useState } from "react";
 import Box from "@material-ui/core/Box";
-import { Typography, Link, Grid } from "@material-ui/core";
-import { useTheme } from "@material-ui/core/styles";
+import { Typography, Grid } from "@material-ui/core";
+import { useTheme, makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import './Landing.css'
-import { Section, SubSection, SubSubSection } from "./components/Sections";
-import { DescriptionButton } from "./components/Buttons";
-import { Strong } from "./components/Utilies";
-import { subscribe_link } from "./Data";
-import YouTube from 'react-youtube';
+import { SubSection, SubSubSection } from "./components/Sections";
 import { Title } from "./components/Titles";
-import { HashLink } from "react-router-hash-link";
-
-
 import { CancerType, Content } from './components/Button';
 import 'semantic-ui-css/semantic.min.css';
-import { Button, Dropdown,Menu } from 'semantic-ui-react';
-import Chatbot from './components/Chatbot'; // 🚀 1. 引入組件
+import Chatbot from './components/Chatbot';
+
+// 🚀 置中容器樣式
+const useStyles = makeStyles((theme) => ({
+    centeredWrapper: {
+        width: "85%",
+        maxWidth: 900,
+        margin: "0 auto",
+        // 注意：這裡不設定 textAlign: "left"，讓各個區塊自行決定對齊
+    },
+    introTitleBox: {
+        textAlign: "center", // 🚀 強制讓 Introduction 標題置中
+        marginTop: theme.spacing(10),
+        marginBottom: theme.spacing(4),
+    }
+}));
 
 export default function Landing(props) {
+    const classes = useStyles();
     const theme = useTheme();
     const ref = useRef(null);
-    const [width, setWidth] = useState(0);
 
-    useEffect(() => {
-        setWidth(ref.current.offsetWidth)
-    }, []);
-
-    const videoWidth = Math.min(width, 700)
-    const opts = {
-        height: videoWidth / 1920 * 1080,
-        width: videoWidth,
-        playerVars: {
-            // https://developers.google.com/youtube/player_parameters
-            autoplay: 0,
-        },
+    // 星空背景樣式 (100% 寬度)
+    const heroSectionStyle = {
+        backgroundImage: 'url("https://img.freepik.com/free-photo/night-sky-glows-with-iridescent-starry-nebula-generated-by-ai_188544-15577.jpg")',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        padding: '80px 20px',
+        textAlign: 'center',
+        color: 'white',
+        width: '100%',
+        display: 'block',
     };
 
     return (
-        <Box ref={ref} margin={theme.spacing(0, 0, 8)}>
-            <Box margin={theme.spacing(8, "auto", 1)}>
-                <img src="ExoCSC-logo.png" style={{width: "40%", textAlign: "left"}} />
-            </Box>
-            <Box margin={theme.spacing(1, "auto", 6)}>
-                <Typography
-                    variant={
-                        useMediaQuery(theme.breakpoints.up("sm")) ? "h4" : "h5"
-                    }
-                    color="textPrimary"
-                >
-                    <h3>Cancer Stem cell exosome Database</h3>
-                </Typography>
-            </Box>
-            <Box margin={theme.spacing(1, "auto", 6)}>
-                <CancerType/>
-            </Box>
-            <Box margin={theme.spacing(1, "auto", 6)}>
-                <Content/>
-            </Box>
-            {/* 🚀 2. 在 Content 之後，Introduction 之前插入機器人 */}
-            <Box margin={theme.spacing(2, "auto")}>
-                <Chatbot />
-            </Box>
+        <Box ref={ref} style={{ width: '100%', overflowX: 'hidden' }}>
             
-            <Box maxWidth={800} margin={theme.spacing(1, "auto", 6)}>
-                <Typography variant="h6" color="textPrimary">
-                    
-                    <Title title="Introduction of ExoCSC"/>
-                </Typography>
-                <span align="left">
+            {/* 1. 星空背景區域 (左右全覆蓋) */}
+            <div style={heroSectionStyle}>
+                <Box margin={theme.spacing(0, "auto", 0)}>
+                    <Typography 
+                        variant="h2" 
+                        style={{ 
+                            fontWeight: '800', 
+                            letterSpacing: '2px', 
+                            color: 'white',
+                            textShadow: '0 0 20px rgba(255,255,255,0.8)' 
+                        }}
+                    >
+                        ExoCSC
+                    </Typography>
+                </Box>
                 
-                </span>
-            </Box>
-            
-            <Box maxWidth={800} margin="auto" textAlign="left">
+                <Box margin={theme.spacing(1, "auto", 4)}>
+                    <Typography
+                        variant={useMediaQuery(theme.breakpoints.up("sm")) ? "h5" : "body1"}
+                        style={{ color: 'rgba(255,255,255,0.9)', fontWeight: '300' }}
+                    >
+                        Cancer Stem cell exosome Database
+                    </Typography>
+                </Box>
+
+                <Box margin={theme.spacing(4, "auto", 0)}>
+                    <Typography variant="body2" style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '15px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                        Browse Content Type
+                    </Typography>
+                    <Grid container justify="center" spacing={3}>
+                        <Grid item><CancerType /></Grid>
+                        <Grid item><Content /></Grid>
+                    </Grid>
+                </Box>
+            </div>
+
+            {/* 2. 下方內容區域 (Chatbot 在背景下方，置中顯示) */}
+            <div className={classes.centeredWrapper}>
+                
+                <Box style={{ marginTop: '40px', marginBottom: '60px' }}>
+                    <Chatbot />
+                </Box>
+                
+                {/* 🚀 Introduction 標題區域 (置中) */}
+                <Box className={classes.introTitleBox}>
+                    <Typography variant="h6" color="textPrimary">
+                        <Title title="Introduction of ExoCSC"/>
+                    </Typography>
+                </Box>
+
+                {/* 🚀 Introduction 內容區域 (文字靠左) */}
                 <SubSection>
                     <SubSubSection>
-                        <Typography
-                            component={"span"}
-                            variant="body1"
-                            color="textSecondary"
-                        >
-                            
-                            <div
-                                style={{
-                                    width: "fit-content",
-                                    margin: "auto",
-                                    textAlign: "left",
-                                }}
-                            >
-                                
-                            </div>
+                        <Typography variant="body1" color="textSecondary" style={{ textAlign: 'left' }}>
+                            ExoCSC provides information of exosomal proteins, RNA, lipids, 
+                            and metabolites in CSC and cancer cell using text-mining. 
+                            It collected published literatures including lung, breast 
+                            and colon tissue type from PubMed.
                         </Typography>
                     </SubSubSection>
                     
                     <SubSubSection>
-                        <Typography variant="body1" color="textSecondary">
-                        ExoCSC provides information of exosomal proteins, RNA, lipids, 
-                        and metabolites in CSC and cancer cell using text-mining. 
-                        It collected published literatures including lung, breast 
-                        and colon tissue type from PubMed.
-                        </Typography>
-                        
-                    </SubSubSection>
-                    <SubSubSection>
-                    <Typography variant="h6" color="textPrimary">
-                   
-                    <Typography variant="body1" color="textSecondary">
-                            
+                        <Typography variant="body1" color="textSecondary" style={{ textAlign: 'left', marginTop: '20px' }}>
                             The ExCSC database collected 4115 literatures, 
                             3862 genes, 4117 protein, 1703 metabolites in 
                             cancer cell exosome, also 434 literatures, 
                             180 genes, 233 protein, 499 metabolites in 
                             cancer stem cell exosome.
-                            
-
                         </Typography>
-                        <div class="STATISTICS">Statistics</div>
-            <ul>
-  <li className="Landing"><span className="item">Cancer stem cell</span><span class="number">6,450</span></li>
-  <li className="Landing"><span className="item">Cancer cell</span><span class="number">3,332</span></li>
-  <li className="Landing"><span clasNames="item">Genes</span><span class="number">7,826</span></li>
-  <li className="Landing"><span className="item">Proteins</span><span class="number">1,852</span></li>
-  <li className="Landing"><span className="item">mRNAs</span><span class="number">279</span></li>
-  <li className="Landing"><span className="item">Lipids</span><span class="number">87</span></li>
-</ul>
-                </Typography>
-                                
                         
+                        {/* Statistics (靠左或置中，根據您的 Landing.css) */}
+                        <div className="STATISTICS">Statistics</div>
+                        <ul style={{ padding: 0, textAlign: 'center' }}>
+                            <li className="Landing"><span className="item">Cancer stem cell</span><span className="number">6,450</span></li>
+                            <li className="Landing"><span className="item">Cancer cell</span><span className="number">3,332</span></li>
+                            <li className="Landing"><span className="item">Genes</span><span className="number">7,826</span></li>
+                            <li className="Landing"><span className="item">Proteins</span><span className="number">1,852</span></li>
+                            <li className="Landing"><span className="item">mRNAs</span><span className="number">279</span></li>
+                            <li className="Landing"><span className="item">Lipids</span><span className="number">87</span></li>
+                        </ul>
                     </SubSubSection>
                 </SubSection>
-                
-                
 
-
-
+                {/* Logo 牆 */}
                 <SubSection>
-                    <Grid container justify="space-evenly" spacing={0}>
-                        {[
-                            ["ntu-logo.png", "https://www.ntu.edu.tw/"],
-                            ["CMDM-Lab.png", "https://www.cmdm.tw/"],
-                          
-                        ].map((filename) => {
-                            return (
-                                <Grid item xs={6} sm={4} md={4} key={filename[0]}>
-                                    <a target="_blank" href={filename[1]}>
-                                        <img src={filename[0]} width="100%" />
-                                    </a>
-                                </Grid>
-                            );
-                        })}
-                    </Grid>
+                    <Grid container justify="space-evenly" alignItems="center" spacing={4} style={{ marginTop: '40px', marginBottom: '80px' }}>
+    {[
+        { src: "ntu-logo.png", url: "https://www.ntu.edu.tw/", type: "ntu" },
+        { src: "CMDM-Lab.png", url: "https://www.cmdm.tw/", type: "cmdm" },
+    ].map((item) => (
+        <Grid item xs={6} sm={4} md={4} key={item.src} style={{ textAlign: 'center' }}>
+            <a target="_blank" rel="noopener noreferrer" href={item.url}>
+                <img 
+                    src={item.src} 
+                    alt="Logo" 
+                    style={{ 
+                        // 🚀 1. 調整大小：針對 CMDM 設定較大的寬度，NTU 設定較小
+                        width: item.type === "cmdm" ? "120%" : "30%", 
+                        maxWidth: item.type === "cmdm" ? "280px" : "200px",
+                        
+                        // 🚀 2. 融入背景：移除白底色差
+                        // multiply 會將白色變透明，保留深色部分
+                        mixBlendMode: "multiply", 
+                        
+                        // 🚀 3. 視覺優化：如果背景太暗導致 Logo 不清晰，可稍微增加亮度
+                        filter: "contrast(1.1) brightness(1.1)", 
+                        
+                        display: "inline-block",
+                        verticalAlign: "middle"
+                    }} 
+                />
+            </a>
+        </Grid>
+    ))}
+</Grid>
                 </SubSection>
-                
-            </Box>
+            </div>
         </Box>
     );
 }

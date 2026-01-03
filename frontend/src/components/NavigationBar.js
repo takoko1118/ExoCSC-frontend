@@ -33,9 +33,6 @@ import { AuthContext } from "../context/auth-context";
 
 function HideOnScroll(props) {
   const { children, window } = props;
-  // Note that you normally won't need to set the window ref as useScrollTrigger
-  // will default to window.
-  // This is only being set here because the demo is in an iframe.
   const trigger = useScrollTrigger({ target: window ? window() : undefined });
 
   return (
@@ -47,10 +44,6 @@ function HideOnScroll(props) {
 
 HideOnScroll.propTypes = {
   children: PropTypes.element.isRequired,
-  /**
-   * Injected by the documentation to work in an iframe.
-   * You won't need it on your project.
-   */
   window: PropTypes.func,
 };
 
@@ -60,9 +53,6 @@ function ScrollTop(props) {
   let history = useHistory();
   let location = useLocation();
 
-  // Note that you normally won't need to set the window ref as useScrollTrigger
-  // will default to window.
-  // This is only being set here because the demo is in an iframe.
   const trigger = useScrollTrigger({
     target: window ? window() : undefined,
     disableHysteresis: true,
@@ -85,7 +75,7 @@ function ScrollTop(props) {
       <div
         onClick={handleClick}
         role="presentation"
-        className={classes.root}
+        className={classes.scrollTop}
       >
         {children}
       </div>
@@ -93,20 +83,19 @@ function ScrollTop(props) {
   );
 }
 
-ScrollTop.propTypes = {
-  children: PropTypes.element.isRequired,
-  /**
-   * Injected by the documentation to work in an iframe.
-   * You won't need it on your project.
-   */
-  window: PropTypes.func,
-};
-
 const useStyles = makeStyles((theme) => ({
-  root: {
+  scrollTop: {
     position: "fixed",
     bottom: theme.spacing(2),
     right: theme.spacing(2),
+    zIndex: 1000,
+  },
+  appBar: {
+    // 🚀 優化：深色半透明磨砂玻璃效果，完美融入星空
+    background: "rgba(10, 15, 30, 0.75) !important",
+    backdropFilter: "blur(12px)",
+    boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
+    borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
   },
   toolbar: {
     width: "100%",
@@ -120,21 +109,30 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: 5,
   },
   button: {
-    paddingLeft: 12,
-    paddingRight: 12,
-    marginLeft: 2,
-    marginRight: 2,
-    borderRadius: 10,
-    border: "solid 1px transparent",
+    paddingLeft: 15,
+    paddingRight: 15,
+    marginLeft: 4,
+    marginRight: 4,
+    borderRadius: 8,
+    transition: "all 0.3s ease",
     "&:hover": {
-      background: "rgba(255, 255, 255, 1)",
-      boxShadow: "0px 3px 10px rgba(0, 0, 0, 0.1)",
+      // 🚀 優化：懸停時呈現微光感，不再是死白的區塊
+      background: "rgba(255, 255, 255, 0.12)",
+      boxShadow: "0px 0px 15px rgba(255, 255, 255, 0.1)",
     },
     cursor: "pointer",
   },
   navlink: {
-    fontWeight: "inherit",
+    fontWeight: 600,
+    letterSpacing: "1px",
+    // 🚀 優化：導航文字改為淡白色
+    color: "rgba(255, 255, 255, 0.85) !important",
   },
+  logo: {
+    display: "flex",
+    alignItems: "center",
+    filter: "drop-shadow(0px 0px 5px rgba(255,255,255,0.2))", // 讓 Logo 帶點光暈
+  }
 }));
 
 function LiftingBarButton(props) {
@@ -153,47 +151,22 @@ function NavigationBar({ width, tableControlRef, ...props }) {
   const auth = useContext(AuthContext);
 
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+  const handleOpenUserMenu = (event) => setAnchorElUser(event.currentTarget);
+  const handleCloseUserMenu = () => setAnchorElUser(null);
 
   let items = [
     ["Home", "/home"],
     ["Search", "/search"],
     ["Browse", "/browse"],
     ["Help", "/help"],
-    //["Rules", "/rules"],
-    // ["Leaderboard", "/leaderboard"],
-    // ["Challenge", [
-    //   ["Challenge Overview", "/challenge-slt2022/challenge_overview"],
-    //   ["Evaluation Framework", "/challenge-slt2022/framework"],
-    //   ["Upstream Specification", "/challenge-slt2022/upstream"],
-    //   ["Leaderboard Submission", "/challenge-slt2022/submission"],
-    //   ["Overall Metrics", "/challenge-slt2022/metrics"],
-    // ]],
-    // ["Submit", "/submit"],
   ];
-  // if (auth.isLoggedIn) {
-  //   items.push(["Profile", "/profile"]);
-  //   items.push(["Logout", "/logout"]);
-  // } else {
-  //   items.push(["Login", "/login"]);
-  // }
 
   const items1 = items.map(([text, link]) =>
-    Array.isArray(link) ?
-      <Box sx={{ flexGrow: 0 }}>
+    Array.isArray(link) ? (
+      <Box key={text} sx={{ flexGrow: 0 }}>
         <Grid item onClick={handleOpenUserMenu}>
-          <LiftingBarButton >
-            <Typography
-              color="textSecondary"
-              variant="overline"
-              className={classes.navlink}
-              key={text}
-            >
+          <LiftingBarButton>
+            <Typography variant="overline" className={classes.navlink}>
               {text}
             </Typography>
           </LiftingBarButton>
@@ -202,172 +175,79 @@ function NavigationBar({ width, tableControlRef, ...props }) {
           sx={{ mt: '45px' }}
           id="menu-appbar"
           anchorEl={anchorElUser}
-          anchorOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
-          }}
+          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
           keepMounted
-          transformOrigin={{
-            vertical: -50,
-            horizontal: 'right',
-          }}
+          transformOrigin={{ vertical: -50, horizontal: 'right' }}
           open={Boolean(anchorElUser)}
           onClose={handleCloseUserMenu}
-          onMouseLeave={handleCloseUserMenu}
         >
-          {link.map(([text, link]) =>
-            <MenuItem key={text} onClick={handleCloseUserMenu}>
-              <AdaptiveLink link={link}>
-                <Typography textAlign="center">{text}</Typography>
+          {link.map(([subText, subLink]) => (
+            <MenuItem key={subText} onClick={handleCloseUserMenu}>
+              <AdaptiveLink link={subLink}>
+                <Typography textAlign="center">{subText}</Typography>
               </AdaptiveLink>
             </MenuItem>
-          )}
+          ))}
         </Menu>
-      </Box> :
+      </Box>
+    ) : (
       <Grid item key={link}>
         <AdaptiveLink link={link}>
           <LiftingBarButton>
-            <Typography
-              color="textSecondary"
-              variant="overline"
-              className={classes.navlink}
-              key={text}
-            >
+            <Typography variant="overline" className={classes.navlink}>
               {text}
             </Typography>
           </LiftingBarButton>
         </AdaptiveLink>
       </Grid>
+    )
   );
 
-  const items2 = (onclick) => items.map(([text, link]) =>
-    Array.isArray(link) ?
-      <Box sx={{ flexGrow: 0 }}>
-        <Grid item onClick={handleOpenUserMenu}>
-          <ListItem button>
-            <ListItemText>
-              <Typography
-                color="textSecondary"
-                variant="overline"
-                className={classes.navlink}
-                key={text}
-              >
-                {text}
-              </Typography>
-            </ListItemText>
-          </ListItem>
-        </Grid>
-        <Menu
-          sx={{ mt: '45px', flexGrow: 1 }}
-          id="menu-appbar"
-          anchorEl={anchorElUser}
-          anchorOrigin={{
-            vertical: 'top',
-            horizontal: 'left',
-          }}
-          keepMounted
-          transformOrigin={{
-            vertical: -50,
-            horizontal: 'left',
-          }}
-          open={Boolean(anchorElUser)}
-          onClose={handleCloseUserMenu}
-          onMouseLeave={handleCloseUserMenu}
-        >
-          {link.map(([text, link]) =>
-            <div onClick={onclick}>
-              <MenuItem key={text} onClick={handleCloseUserMenu}>
-                <AdaptiveLink link={link}>
-                  <Typography textAlign="center">{text}</Typography>
-                </AdaptiveLink>
-              </MenuItem>
-            </div>
-          )}
-        </Menu>
-        <Divider />
-      </Box> :
-      <div>
-        <AdaptiveLink link={link}>
-          <ListItem button onClick={onclick}>
-            {/* <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon> */}
-            <ListItemText>
-              <Typography
-                color="textSecondary"
-                variant="overline"
-                className={classes.navlink}
-                key={text}
-              >
-                {text}
-              </Typography>
-            </ListItemText>
-          </ListItem>
-        </AdaptiveLink>
-        <Divider />
-      </div>
-  );
-
+  const items2 = (onclick) => items.map(([text, link]) => (
+    <div key={text}>
+      <AdaptiveLink link={link}>
+        <ListItem button onClick={onclick}>
+          <ListItemText>
+            <Typography color="textSecondary" variant="overline">
+              {text}
+            </Typography>
+          </ListItemText>
+        </ListItem>
+      </AdaptiveLink>
+      <Divider />
+    </div>
+  ));
 
   const largeScreen = useMediaQuery(theme.breakpoints.up("lg"));
+
   return (
     <React.Fragment>
       <CssBaseline />
       <HideOnScroll {...props}>
-        <AppBar color="primary">
+        <AppBar className={classes.appBar} position="fixed">
           <Toolbar className={classes.toolbar}>
             <Grid container alignItems="center">
-              <Grid item xs={9} lg={2}>
-                <Grid
-                  container
-                  direction="row"
-                  justify="flex-start"
-                  alignItems="center"
-                  spacing={1}
-                >
-                  <Grid item>
-                    <AdaptiveLink link="/">
-                      <LiftingBarButton>
-                      <div style={{textAlign: "left" }}>
-                        {largeScreen
-                        ?
-                        <img src="/ExoCSC-logo.png" style={{width: "60%" , textAlign: "left" }} />
-                        :
-                        <img src="/ExoCSC-logo.png" style={{width: "20%" , textAlign: "left" }} />
-                        }
-                      </div>
-                      </LiftingBarButton>
-                    </AdaptiveLink>
-                  </Grid>
-                  {(location.pathname.includes(
-                    "leaderboard"
-                  ) ||
-                    location.pathname.includes(
-                      "profile"
-                    )) && (
-                      <Grid item>
-                        <AdaptiveLink link={null}>
-                          <Button
-                            size="small"
-                            variant="outlined"
-                            onClick={() => {
-                              tableControlRef.current.click();
-                            }}
-                          >
-                            {largeScreen
-                              ? "Help"
-                              : "Help"}
-                          </Button>
-                        </AdaptiveLink>
-                      </Grid>
-                    )}
-                </Grid>
+              {/* Logo 區域 */}
+              <Grid item xs={9} lg={3}>
+                <AdaptiveLink link="/">
+                  <div className={classes.logo}>
+                    <img 
+                      src="/ExoCSC-logo.png" 
+                      style={{ 
+                        width: largeScreen ? "180px" : "120px", 
+                        height: "auto",
+                        // 如果 Logo 黑色色差重，可開啟下方濾鏡
+                        // filter: "brightness(0) invert(1)" 
+                      }} 
+                      alt="ExoCSC Logo"
+                    />
+                  </div>
+                </AdaptiveLink>
               </Grid>
-              <Grid item xs={3} lg={10}>
-                <Grid
-                  container
-                  direction="row"
-                  justify="flex-end"
-                  alignItems="center"
-                >
+
+              {/* 選單區域 */}
+              <Grid item xs={3} lg={9}>
+                <Grid container direction="row" justify="flex-end" alignItems="center">
                   <Hidden mdDown>
                     {items1}
                   </Hidden>
@@ -375,10 +255,7 @@ function NavigationBar({ width, tableControlRef, ...props }) {
                     <Grid item>
                       <Drawer items={items2}>
                         <LiftingBarButton>
-                          <Typography
-                            color="textSecondary"
-                            variant="overline"
-                          >
+                          <Typography className={classes.navlink} variant="overline">
                             MENU
                           </Typography>
                         </LiftingBarButton>
@@ -391,13 +268,12 @@ function NavigationBar({ width, tableControlRef, ...props }) {
           </Toolbar>
         </AppBar>
       </HideOnScroll>
+
+      {/* 墊片：防止頁面內容被固定在頂部的 Navbar 遮住 */}
       <Toolbar id="back-to-top-anchor" />
+
       <ScrollTop {...props}>
-        <Fab
-          color="secondary"
-          size="small"
-          aria-label="scroll back to top"
-        >
+        <Fab color="secondary" size="small" aria-label="scroll back to top">
           <KeyboardArrowUpIcon />
         </Fab>
       </ScrollTop>
