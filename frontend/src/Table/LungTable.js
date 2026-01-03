@@ -127,9 +127,9 @@ const LungTable = () => {
       {/* 字母篩選器容器 (CSS 中已設定 flex 排列) */}
       <div className="alphabet-container">
         {renderAlphabets()}
-        <button className="btn-clear-filter" onClick={() => setAlphabet('')}>
+        {/* <button className="btn-clear-filter" onClick={() => setAlphabet('')}>
           Clear
-        </button>
+        </button> */}
       </div>
 
       <div className="content-tabs">

@@ -128,9 +128,9 @@ const BreastTable = () => {
       {/* 字母篩選器 */}
       <div className="alphabet-container">
         {renderAlphabets()}
-        <button className="btn-clear-filter" onClick={() => setAlphabet('')}>
+        {/* <button className="btn-clear-filter" onClick={() => setAlphabet('')}>
           Clear
-        </button>
+        </button> */}
       </div>
 
       <div className="content-tabs">

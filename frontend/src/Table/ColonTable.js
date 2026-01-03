@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { MDBDataTable } from 'mdbreact';
 import { Link } from 'react-router-dom';
 
@@ -7,320 +7,147 @@ import './page.css';
 
 const ColonTable = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [toggleState, setToggleState] = useState(1);
+  const [toggleState, setToggleState] = useState(1); // 1: Cancer Cell, 2: CSC
   const [alphabet, setAlphabet] = useState('');
-  const [CSCdata, setCSCData] = useState([]);
-  const [CCdata, setCCData] = useState([]);
+  const [rawData, setRawData] = useState([]);
 
-  const toggleTab = (index) => {
-    setToggleState(index);
-  };
-
-  const onAlphabetClick = (e) => {
-    setAlphabet(e.target.value);
-  };
-
-  const prepareAlphabets = () => {
-    let result = [];
-    for (let i = 65; i < 91; i++) {
-      result.push(
-        <button
-          style={{
-            color: 'blue',
-            fontSize: 14,
-            fontWeight: 600,
-            width: 30,
-            height: 30,
-            textAlign: 'center',
-          }}
-          type="button"
-          key={i}
-          onClick={onAlphabetClick}
-          value={String.fromCharCode(i)}
-        >
-          {String.fromCharCode(i)}
-        </button>
-      );
-    }
-    return result;
-  };
-
+  // 1. 從 API 獲取 Colon 相關資料
   useEffect(() => {
     setIsLoading(true);
     fetch('http://db.cmdm.tw:8000/search/table/Cancer/')
-      .then((response) => response.json())
-      .then((res) => {
-        const CancerStem = res.results
-        .filter(
-          (obj) =>
-          obj.tissue === 'Colon' &&
-          obj.cellType === 'CSC' &&
-          (
-            obj.cancer_gene_urls.length === 1 ||
-            obj.cancer_protein_urls.length === 1 ||
-            obj.cancer_rna_urls.length === 1 ||
-            obj.cancer_lipid_urls.length === 1
-          )
-       );
-       
-      console.log('CancerStem',CancerStem);
-        const updatedCancerStem = CancerStem.map((obj) => {
-          const combinedCancerStemUrls = [
-            ...obj.cancer_gene_urls,
-            ...obj.cancer_protein_urls,
-            ...obj.cancer_rna_urls,
-            ...obj.cancer_lipid_urls,
-          ];
-
-          const selectedCancerStemUrl = combinedCancerStemUrls[0];
-          return { ...obj, combined_url: selectedCancerStemUrl };
-        });
-        
-        const dataEUrls = updatedCancerStem.map(
-          (obj) => obj.combined_url.id_url
-        );
-        const requestsE = dataEUrls.map((url) =>
-          fetch(url).then((response) => response.json())
-        );
-          
-
-        Promise.all(requestsE)
-        .then((dataEs) => {
-          const CCdata = {
-            columns: [
-              {
-                label: 'Name',
-                field: 'gene',
-                sort: 'asc',
-                width: 270,
-              },
-              {
-                label: 'tissue',
-                field: 'tissue',
-                sort: 'asc',
-                width: 270,
-              },
-              // {
-              //   label: 'score',
-              //   field: 'score',
-              //   sort: 'asc',
-              //   width: 200,
-              // },
-              {
-                label: 'PMCID',
-                field: 'pmcid',
-                sort: 'asc',
-                width: 150,
-              },
-            ],
-            rows: [],
-          };
-
-          dataEs.forEach((dataE) => {
-            let Url;
-            if (dataE.molecularType === 'gene') {
-              Url = dataE.gene_url;
-            } else if (dataE.molecularType === 'protein') {
-              Url = dataE.protein_url;
-            } else if (dataE.molecularType === 'lipid') {
-              Url = dataE.lipid_url;
-            } else if (dataE.molecularType === 'rna') {
-              Url = dataE.rna_url;
-            } else {
-              Url = dataE.cancer_url;
-            }
-
-            CCdata.rows.push({
-              gene: (
-                <a
-                  href={`http://db.cmdm.tw:13007/${dataE.molecularType}/${Url}`}
-                  style={{ color: 'blue' }}
-                >
-                  {dataE.cargo}
-                </a>
-              ),
-              tissue: dataE.tissue,
-              score: dataE.score,
-              pmcid: (
-                <a
-                  href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${dataE.pmcid}`}
-                  style={{ color: 'blue' }}
-                >
-                  {dataE.pmcid}
-                </a>
-              ),
-            });
-          });
-
-          setCCData(CCdata);
-          setIsLoading(false);
-        })
-        .catch((error) => {
-          console.error('Error fetching dataD:', error);
-          setIsLoading(false);
-        });
-
-
-
-        const CancerGene = res.results.filter(
-          (obj) =>
-            obj.tissue === 'Colon' &&
-            obj.cellType === 'cancer' &&
-            (obj.cancer_gene_urls.length === 1 ||
-              obj.cancer_protein_urls.length === 1 ||
-              obj.cancer_rna_urls.length === 1 ||
-              obj.cancer_lipid_urls.length === 1)
-        );
-
-        const updatedCancerGene = CancerGene.map((obj) => {
-          const combinedUrls = [
-            ...obj.cancer_gene_urls,
-            ...obj.cancer_protein_urls,
-            ...obj.cancer_rna_urls,
-            ...obj.cancer_lipid_urls,
-          ];
-
-          const selectedUrl = combinedUrls[0];
-          return { ...obj, combined_url: selectedUrl };
-        });
-
-        const dataDUrls = updatedCancerGene.map(
-          (obj) => obj.combined_url.id_url
-        );
-        const requestsD = dataDUrls.map((url) =>
-          fetch(url).then((response) => response.json())
-        );
-        console.log('updatedCancerGene ',updatedCancerGene );
-        Promise.all(requestsD)
-          .then((dataDs) => {
-            const CSCdata = {
-              columns: [
-                {
-                  label: 'Name',
-                  field: 'gene',
-                  sort: 'asc',
-                  width: 270,
-                },
-                {
-                  label: 'tissue',
-                  field: 'tissue',
-                  sort: 'asc',
-                  width: 270,
-                },
-                // {
-                //   label: 'score',
-                //   field: 'score',
-                //   sort: 'asc',
-                //   width: 200,
-                // },
-                {
-                  label: 'PMCID',
-                  field: 'pmcid',
-                  sort: 'asc',
-                  width: 150,
-                },
-              ],
-              rows: [],
-            };
-
-            dataDs.forEach((dataD) => {
-              let Url;
-              if (dataD.molecularType === 'gene') {
-                Url = dataD.gene_url;
-              } else if (dataD.molecularType === 'protein') {
-                Url = dataD.protein_url;
-              } else if (dataD.molecularType === 'lipid') {
-                Url = dataD.lipid_url;
-              } else if (dataD.molecularType === 'rna') {
-                Url = dataD.rna_url;
-              } else {
-                Url = dataD.cancer_url;
-              }
-
-              CSCdata.rows.push({
-                gene: (
-                  <a
-                    href={`http://db.cmdm.tw:13007/${dataD.molecularType}/${Url}`}
-                    style={{ color: 'blue' }}
-                  >
-                    {dataD.cargo}
-                  </a>
-                ),
-                tissue: dataD.tissue,
-                score: dataD.score,
-                pmcid: (
-                  <a
-                    href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${dataD.pmcid}`}
-                    style={{ color: 'blue' }}
-                  >
-                    {dataD.pmcid}
-                  </a>
-                ),
-              });
-            });
-
-            setCSCData(CSCdata);
-            setIsLoading(false);
-          })
-          .catch((error) => {
-            console.error('Error fetching dataD:', error);
-            setIsLoading(false);
-          });
-          
+      .then((res) => res.json())
+      .then((data) => {
+        const results = data.results || data;
+        // 篩選出 Colon 的資料
+        const colonData = results.filter(item => item.tissue === 'Colon');
+        setRawData(colonData);
+        setIsLoading(false);
       })
-      .catch((error) => {
-        console.error('Error fetching gene data:', error);
+      .catch((err) => {
+        console.error("Fetch error:", err);
         setIsLoading(false);
       });
-  }, [alphabet]);
+  }, []);
+
+  // 2. 格式化表格數據的邏輯 (包含字母過濾與 Link 跳轉)
+  const formatTableData = (cellType) => {
+    let filtered = rawData.filter(item => {
+        const typeMatch = cellType === 'cancer' 
+            ? item.cellType?.toLowerCase() === 'cancer' 
+            : item.cellType?.toLowerCase() === 'csc';
+        return typeMatch;
+    });
+
+    // 字母篩選邏輯
+    if (alphabet) {
+      filtered = filtered.filter(item => 
+        item.cargo && item.cargo.toUpperCase().startsWith(alphabet.toUpperCase())
+      );
+    }
+
+    return {
+      columns: [
+        { label: 'Name', field: 'name', sort: 'asc', width: 200 },
+        { label: 'Tissue', field: 'tissue', sort: 'asc', width: 150 },
+        { label: 'PMCID', field: 'pmcid', sort: 'asc', width: 150 },
+      ],
+      rows: filtered.map(item => ({
+        name: (
+          <Link 
+            to={`/${item.molecularType?.toLowerCase() || 'gene'}/${item.id}`} 
+            style={{ color: '#2e3e93', fontWeight: 'bold', textDecoration: 'none' }}
+          >
+            {item.cargo}
+          </Link>
+        ),
+        tissue: item.tissue,
+        pmcid: (
+          <a 
+            href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${item.pmcid}`} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{ color: 'green' }}
+          >
+            {item.pmcid}
+          </a>
+        )
+      }))
+    };
+  };
+
+  // 使用 useMemo 優化效能
+  const cancerCellData = useMemo(() => formatTableData('cancer'), [rawData, alphabet]);
+  const cscData = useMemo(() => formatTableData('csc'), [rawData, alphabet]);
+
+  // 3. 渲染字母按鈕 (無 Clear 按鈕，再次點擊即可取消)
+  const renderAlphabets = () => {
+    let btns = [];
+    for (let i = 65; i <= 90; i++) {
+      const char = String.fromCharCode(i);
+      btns.push(
+        <button
+          key={char}
+          className={alphabet === char ? 'alphabet-btn active' : 'alphabet-btn'}
+          onClick={() => setAlphabet(alphabet === char ? '' : char)}
+        >
+          {char}
+        </button>
+      );
+    }
+    return btns;
+  };
 
   return (
-    <div>
-      <p className="associated">Associated Colon markers</p>
+    <div className="lung-container"> {/* 使用統一的佈局容器 */}
+      <h1 className="associated">Associated Colon Markers</h1>
+      
+      {/* Tab 標籤切換 */}
       <div className="bloc-tabs">
-        {/* <button
+        <button
           className={toggleState === 1 ? 'tabs active-tabs' : 'tabs'}
-          onClick={() => toggleTab(1)}
+          onClick={() => setToggleState(1)}
         >
-          Cancer Stem Cell
+          Cancer Cell
         </button>
         <button
           className={toggleState === 2 ? 'tabs active-tabs' : 'tabs'}
-          onClick={() => toggleTab(2)}
+          onClick={() => setToggleState(2)}
         >
-          Cancer Cell
-        </button> */}
+          Cancer Stem Cell
+        </button>
       </div>
-      
-      <div className="content-tabs">
-        <div className={toggleState === 1 ? 'content active-content' : 'content'}>
-          <div className="justify-center">
-          <h1 className="associated" style={{ textAlign: 'left' ,marginLeft:0}}>Cancer cell</h1>
-            <div style={{ marginLeft: 250 }}>{prepareAlphabets()}</div>
-            {isLoading ? (
-              <p>Loading...</p>
-            ) : (
-              
-              <MDBDataTable striped bordered hover data={CSCdata} />
-            )}
-          </div>
-        </div>
 
-        <div className={toggleState === 2 ? 'content active-content' : 'content'}>
-          <div style={{ width: '100%' }}>
-          <h1 className="associated" style={{ textAlign: 'left' ,marginLeft:0 }}>Cancer Stem cell</h1>
-            <div style={{ marginLeft: 250 }}>{prepareAlphabets()}</div>
-            {isLoading ? (
-              <p>Loading...</p>
-            ) : (
-              <MDBDataTable striped bordered hover data={CCdata} />
-            )}
+      {/* 字母篩選器區域 */}
+      <div className="alphabet-container">
+        {renderAlphabets()}
+      </div>
+
+      <div className="content-tabs">
+        {isLoading ? (
+          <div className="loading-spinner">
+            <p>Loading Colon molecular data...</p>
           </div>
-        </div>
+        ) : (
+          <>
+            {/* 根據選中的標籤顯示對應內容 */}
+            {toggleState === 1 && (
+              <div className="content active-content">
+                <h2 className="table-title">Colon Cancer Cell Markers {alphabet && `(${alphabet})`}</h2>
+                <MDBDataTable striped bordered hover data={cancerCellData} />
+              </div>
+            )}
+
+            {toggleState === 2 && (
+              <div className="content active-content">
+                <h2 className="table-title">Colon Cancer Stem Cell Markers {alphabet && `(${alphabet})`}</h2>
+                <MDBDataTable striped bordered hover data={cscData} />
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
 };
 
 export default ColonTable;
-
