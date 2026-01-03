@@ -16,7 +16,7 @@ import { HashLink } from "react-router-hash-link";
 import { CancerType, Content } from './components/Button';
 import 'semantic-ui-css/semantic.min.css';
 import { Button, Dropdown,Menu } from 'semantic-ui-react';
-
+import Chatbot from './components/Chatbot'; // 🚀 1. 引入組件
 
 export default function Landing(props) {
     const theme = useTheme();
@@ -58,7 +58,10 @@ export default function Landing(props) {
             <Box margin={theme.spacing(1, "auto", 6)}>
                 <Content/>
             </Box>
-            
+            {/* 🚀 2. 在 Content 之後，Introduction 之前插入機器人 */}
+            <Box margin={theme.spacing(2, "auto")}>
+                <Chatbot />
+            </Box>
             
             <Box maxWidth={800} margin={theme.spacing(1, "auto", 6)}>
                 <Typography variant="h6" color="textPrimary">

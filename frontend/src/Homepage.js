@@ -17,7 +17,7 @@ class Home extends Component{
             
             
             <div className="block">
-                
+                 
                 <div className="bg-container">
                      <div className='wrap' >
                      
@@ -33,8 +33,16 @@ class Home extends Component{
                 </div>
 
 
-               
-
+               {/* 使用一個帶有背景色的 div 包裹，確保它撐開空間 */}
+    <div style={{ 
+        width: '100%', 
+        display: 'flex', 
+        justifyContent: 'center', 
+        padding: '40px 0', 
+        backgroundColor: '#f9f9f9' // 給一點淺灰色背景，確認它在哪裡
+    }}>
+        <Chatbot />
+    </div>
                 
 
 
@@ -50,8 +58,7 @@ class Home extends Component{
                 
                 <div>bottom </div>
                 
-                {/* 🚀 2. 將 Chatbot 放在這裡 */}
-                <Chatbot />
+                
                 
             </div>
             
