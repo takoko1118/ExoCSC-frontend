@@ -247,7 +247,7 @@ function NavigationBar({ width, tableControlRef, ...props }) {
 
               {/* 選單區域 */}
               <Grid item xs={3} lg={9}>
-                <Grid container direction="row" justify="flex-end" alignItems="center">
+                <Grid container direction="row" justifyContent="flex-end" alignItems="center">
                   <Hidden mdDown>
                     {items1}
                   </Hidden>

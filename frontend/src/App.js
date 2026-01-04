@@ -4,13 +4,13 @@ import {
     BrowserRouter as Router,
     Switch,
     Route,
-    Redirect,
+    // Redirect,
 } from "react-router-dom";
 import {
-    useTheme,
+    // useTheme,
     ThemeProvider,
     makeStyles,
-    createMuiTheme,
+    createTheme, // 新名稱
 } from "@material-ui/core/styles";
 
 import Homepage from "./Homepage"
@@ -380,6 +380,13 @@ function App() {
                         <Login />
                     </div>
                 </Route>
+
+                {/* 當路徑匹配 /detail/:index 時，也渲染 GeneDetail 組件 */}
+                <Route path="/detail/:index" exact>
+                    <div className={classes.narrowViewport}>
+                        <GeneDetail />
+                    </div>
+                </Route>
             </Switch>
         );
     }
@@ -400,7 +407,7 @@ function App() {
 export default () => {
     const { token, isAdmin, email, login, logout } = useAuth();
     return (
-        <ThemeProvider theme={createMuiTheme(mainTheme)}>
+        <ThemeProvider theme={createTheme(mainTheme)}>
             <AuthContext.Provider
                 value={{
                     isLoggedIn: !!token,

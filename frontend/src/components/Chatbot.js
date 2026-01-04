@@ -1,168 +1,140 @@
-// src/components/Chatbot.js
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const Chatbot = () => {
-    const [messages, setMessages] = useState([]);
-    const [input, setInput] = useState("");
-    const messagesEndRef = useRef(null);
+  const [messages, setMessages] = useState([
+    { role: 'bot', text: "Hello! I am ExCSC Assistant. How can I help you today?" }
+  ]);
+  const [input, setInput] = useState("");
+  const messagesEndRef = useRef(null);
 
-    // 固定關鍵字
-    const keywords = ["Breast", "Lung", "CD44"];
+  const scrollToBottom = () => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  };
 
-    const scrollToBottom = () => {
-        if (messagesEndRef.current) {
-            messagesEndRef.current.scrollIntoView({ 
-                behavior: "smooth", 
-                block: "nearest" 
-            });
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const sendMessage = async (textToSend) => {
+    const messageText = typeof textToSend === 'string' ? textToSend : input;
+    if (!messageText.trim()) return;
+
+    console.log("Sending message:", messageText);
+
+    // 顯示使用者訊息
+    setMessages(prev => [...prev, { role: 'user', text: messageText }]);
+    setInput("");
+
+    try {
+      const response = await axios.post('http://db.cmdm.tw:8000/api/chatbot/', {
+        message: messageText
+      });
+
+      let botReply = response.data.reply;
+      const results = response.data.results || [];
+
+      // 1️⃣ 單基因查詢 (e.g., PC3)
+      if (results.length === 1 && messageText.toLowerCase() === results[0].id.toLowerCase()) {
+        const gene = results[0];
+        const detailUrl = `/search/table/${gene.molecularType.charAt(0).toUpperCase() + gene.molecularType.slice(1)}/${gene.id}/`;
+        botReply = `🧬 Gene Found: ${gene.id}\nDetected in ${gene.tissue} (${gene.cellType}).\n\n👉 [View Detailed Analysis](${detailUrl})`;
+        if (gene.pmcid) {
+          botReply += `\n🔗 Reference (PMCID: ${gene.pmcid})`;
         }
-    };
+      }
 
-    useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
+      // 2️⃣ Tissue / molecularType 查詢 (e.g., lung gene)
+      else if (results.length > 0) {
+        const topResults = results.slice(0, 3); // 前三筆
+        const resultsMarkdown = topResults.map(item => {
+          const url = `/search/table/${item.molecularType.charAt(0).toUpperCase() + item.molecularType.slice(1)}/${item.id}/`;
+          return `- [${item.entrezName || item.id}](${url})`;
+        }).join("\n");
 
-    const sendMessage = async (textToSend) => {
-        const messageText = typeof textToSend === 'string' ? textToSend : input;
-        if (!messageText.trim()) return;
+        const firstItem = results[0];
+        const allUrl = `/search/table/${firstItem.molecularType.charAt(0).toUpperCase() + firstItem.molecularType.slice(1)}/?tissue=${firstItem.tissue}${firstItem.cellType ? `&cellType=${firstItem.cellType}` : ''}`;
 
-        const userMsg = { role: 'user', text: messageText };
-        setMessages(prev => [...prev, userMsg]);
-        setInput(""); 
+        botReply = `🫁 ${messageText.charAt(0).toUpperCase() + messageText.slice(1)} data available\n\n${resultsMarkdown}\n\n👉 View all results [here](${allUrl})`;
+      }
 
-        try {
-            const response = await axios.post('http://db.cmdm.tw:8000/api/chatbot/', {
-                message: messageText
-            });
-            const botMsg = { role: 'bot', text: response.data.reply };
-            setMessages(prev => [...prev, botMsg]);
-        } catch (error) {
-            console.error("API Error:", error);
-            setMessages(prev => [...prev, { role: 'bot', text: "連線失敗，請檢查後端是否開啟。" }]);
-        }
-    };
+      // 3️⃣ 無結果
+      else {
+        botReply = response.data.reply || "No data found.";
+      }
 
-    return (
-        <div style={styles.outerWrapper}>
-            
-            {/* 1. Chatbot 主體 */}
-            <div style={styles.container}>
-                <div style={styles.header}>ExCSC Chatbot</div>
-                <div style={styles.msgBox}>
-                    {messages.map((m, i) => (
-                        <div key={i} style={{ 
-                            ...styles.msg, 
-                            alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start', 
-                            background: m.role === 'user' ? '#DCF8C6' : '#EAEAEA' 
-                        }}>
-                            {m.text}
-                        </div>
-                    ))}
-                    <div ref={messagesEndRef} style={{ height: '1px' }} />
-                </div>
+      setMessages(prev => [...prev, { role: 'bot', text: botReply }]);
+    } catch (error) {
+      console.error("API Error:", error);
+      setMessages(prev => [...prev, { role: 'bot', text: "Connection failed. Please check if the backend server is running." }]);
+    }
+  };
 
-                <div style={styles.inputArea}>
-                    <input 
-                        style={styles.input} 
-                        value={input} 
-                        onChange={(e) => setInput(e.target.value)} 
-                        onKeyPress={(e) => e.key === 'Enter' && sendMessage()} 
-                        placeholder="Ask about cancer stem cells..."
-                    />
-                    <button style={styles.button} onClick={sendMessage}>送出</button>
-                </div>
+  return (
+    <div style={styles.outerWrapper}>
+      <div style={styles.container}>
+        <div style={styles.header}>ExCSC Chatbot</div>
+        <div style={styles.msgBox}>
+          {messages.map((m, i) => (
+            <div key={i} style={{
+              ...styles.msg,
+              alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start',
+              background: m.role === 'user' ? '#DCF8C6' : '#EAEAEA'
+            }}>
+              {m.role === 'bot' ? (
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    a: ({ href, children }) => {
+                      const isInternal = href.startsWith('/');
+                      if (isInternal) {
+                        return <Link to={href} style={styles.markdownLink}>{children}</Link>;
+                      }
+                      return <a href={href} target="_blank" rel="noopener noreferrer" style={styles.markdownLink}>{children}</a>;
+                    },
+                    p: ({ children }) => <p style={{ margin: 0 }}>{children}</p>
+                  }}
+                >
+                  {m.text}
+                </ReactMarkdown>
+              ) : (
+                m.text
+              )}
             </div>
-
-            {/* 🚀 2. Quick Search 區域 (修改為水平平行排列) */}
-            <div style={styles.keywordArea}>
-                <span style={styles.keywordLabel}>Quick Search:</span>
-                <div style={styles.btnGroup}>
-                    {keywords.map((word, index) => (
-                        <button 
-                            key={index} 
-                            style={styles.keywordBtn} 
-                            onClick={() => sendMessage(word)}
-                            onMouseOver={(e) => {
-                                e.target.style.backgroundColor = '#4c7da0';
-                                e.target.style.color = '#fff';
-                            }}
-                            onMouseOut={(e) => {
-                                e.target.style.backgroundColor = '#f1f1f1';
-                                e.target.style.color = '#4c7da0';
-                            }}
-                        >
-                            {word}
-                        </button>
-                    ))}
-                </div>
-            </div>
+          ))}
+          <div ref={messagesEndRef} style={{ height: '1px' }} />
         </div>
-    );
+
+        <div style={styles.inputArea}>
+          <input
+            style={styles.input}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+            placeholder="Ask about cancer stem cells..."
+          />
+          <button style={styles.button} onClick={sendMessage}>Send</button>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 const styles = {
-    outerWrapper: {
-        width: '100%',
-        maxWidth: '700px',
-        margin: '20px auto',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        zoom: 0.6
-    },
-    container: { 
-        width: '100%',
-        height: '400px', 
-        backgroundColor: 'white', 
-        border: '2px solid #4c7da0',
-        borderRadius: '10px', 
-        display: 'flex', 
-        flexDirection: 'column', 
-        boxShadow: '0 5px 15px rgba(0,0,0,0.1)', 
-        overflow: 'hidden'
-    },
-    header: { padding: '10px', backgroundColor: '#4c7da0', color: 'white', fontWeight: 'bold', textAlign: 'center' },
-    msgBox: { flex: 1, padding: '10px', overflowY: 'auto', display: 'flex', flexDirection: 'column' },
-    msg: { margin: '5px', padding: '8px 12px', borderRadius: '15px', maxWidth: '80%', fontSize: '14px', whiteSpace: 'pre-wrap', wordBreak: 'break-word' },
-    
-    /* 🚀 關鍵字區域：水平平行排列佈局 */
-    keywordArea: {
-        display: 'flex',
-        flexDirection: 'row',     // 確保標籤與按鈕在同一行
-        alignItems: 'center',
-        justifyContent: 'center', 
-        marginTop: '15px',
-        width: '100%'
-    },
-    keywordLabel: {
-        fontSize: '14px',
-        color: '#666',
-        fontWeight: 'bold',
-        marginRight: '10px',
-        whiteSpace: 'nowrap'      // 防止 "Quick Search" 字樣換行
-    },
-    btnGroup: {
-        display: 'flex',
-        flexDirection: 'row',     // 按鈕彼此平行
-        gap: '8px'                // 按鈕之間的間距
-    },
-    keywordBtn: {
-        padding: '6px 15px',
-        fontSize: '12px',
-        backgroundColor: '#f1f1f1',
-        border: '1px solid #4c7da0',
-        borderRadius: '15px',
-        color: '#4c7da0',
-        cursor: 'pointer',
-        transition: 'all 0.2s ease',
-        fontWeight: '500',
-        whiteSpace: 'nowrap'      // 防止按鈕內文字換行
-    },
-
-    inputArea: { display: 'flex', borderTop: '1px solid #ddd', padding: '10px' },
-    input: { flex: 1, border: '1px solid #ddd', borderRadius: '5px', padding: '8px' },
-    button: { marginLeft: '8px', backgroundColor: '#4c7da0', color: 'white', border: 'none', borderRadius: '5px', padding: '5px 15px', cursor: 'pointer', fontWeight: 'bold' }
+  outerWrapper: { width: '100%', maxWidth: '850px', margin: '20px auto', display: 'flex', flexDirection: 'column', alignItems: 'center' },
+  container: { width: '100%', height: '400px', backgroundColor: 'white', border: '2px solid #2e3e93', borderRadius: '12px', display: 'flex', flexDirection: 'column', boxShadow: '0 8px 20px rgba(0,0,0,0.12)', overflow: 'hidden' },
+  header: { padding: '12px', backgroundColor: '#2e3e93', color: 'white', fontSize: '18px', fontWeight: 'bold', textAlign: 'center' },
+  msgBox: { flex: 1, padding: '15px', overflowY: 'auto', display: 'flex', flexDirection: 'column' },
+  msg: { margin: '8px', padding: '10px 16px', borderRadius: '18px', maxWidth: '85%', fontSize: '16px', lineHeight: '1.5', whiteSpace: 'pre-wrap', wordBreak: 'break-word', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' },
+  markdownLink: { color: '#2e3e93', fontWeight: 'bold', textDecoration: 'underline', cursor: 'pointer' },
+  inputArea: { display: 'flex', borderTop: '1px solid #eee', padding: '15px', backgroundColor: '#fafafa' },
+  input: { flex: 1, border: '1px solid #ddd', borderRadius: '8px', padding: '10px 15px', fontSize: '15px' },
+  button: { marginLeft: '12px', backgroundColor: '#2e3e93', color: 'white', border: 'none', borderRadius: '8px', padding: '10px 25px', cursor: 'pointer', fontWeight: 'bold', fontSize: '15px' }
 };
 
 export default Chatbot;

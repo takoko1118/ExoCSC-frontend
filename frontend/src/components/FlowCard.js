@@ -34,7 +34,7 @@ export default function FlowCard(props) {
         }}
       >
         <Box padding={theme.spacing(4, 3)}>
-          <Grid container direction="column" spacing={3} justify="center">
+          <Grid container direction="column" spacing={3} justifyContent="center">
             {[
               <Icon style={{ fontSize: 64, color: color }} />,
               <Typography
@@ -47,7 +47,7 @@ export default function FlowCard(props) {
               <Typography color="textSecondary" variant="body1">
                 {description}
               </Typography>,
-              <Grid container direction="row" spacing={2} justify="center">
+              <Grid container direction="row" spacing={2} justifyContent="center">
                 {[["enter", ""]].map(([buttonName, urlPostfix]) => (
                   <Grid item>
                     <AdaptiveLink

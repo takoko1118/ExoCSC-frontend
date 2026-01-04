@@ -105,14 +105,14 @@ function ModelScatterChart({ columns, data }) {
     <Section>
         <Grid container
           alignItems="center"
-          justify="center"
+          justifyContent="center"
           className={classes.root}
           spacing={2}
         >
           <Grid item md={3} lg={2}
             direction="column"
             alignItems="center"
-            justify="flex-start"
+            justifyContent="flex-start"
             spacing={6}
           >
             <Grid item>
@@ -215,7 +215,7 @@ function ModelRadarChart ( {inters} ) {
     <Section>
         <Grid container
           alignItems="center"
-          justify="center"
+          justifyContent="center"
           className={classes.root}
         >
           <Grid item md={12}>

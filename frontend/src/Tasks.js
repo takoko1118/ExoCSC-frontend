@@ -55,7 +55,7 @@ function Tasks(props) {
             </span>
           }
         />
-        <Grid container direction="row" spacing={2} justify="center">
+        <Grid container direction="row" spacing={2} justifyContent="center">
           {domains.map(({ name }) => (
             <Grid item>
               <AdaptiveLink link={`/tasks#${name}`}>
@@ -74,7 +74,7 @@ function Tasks(props) {
               title={capitalizeFirstLetter(name.toLowerCase())}
               description={description}
             />
-            <Grid container spacing={5} justify="center">
+            <Grid container spacing={5} justifyContent="center">
               {tasks.map(({ name, description }) => {
                 return (
                   <Grid item xs={12} sm={6} md={4} className={classes.taskCard} >
@@ -121,7 +121,7 @@ function OldTasks(props) {
             </span>
           }
         />
-        <Grid container direction="row" spacing={2} justify="center">
+        <Grid container direction="row" spacing={2} justifyContent="center">
           {domains.map(({ name }) => (
             <Grid item>
               <AdaptiveLink link={`/tasks#${name}`}>
@@ -140,7 +140,7 @@ function OldTasks(props) {
               title={capitalizeFirstLetter(name.toLowerCase())}
               description={description}
             />
-            <Grid container spacing={5} justify="center">
+            <Grid container spacing={5} justifyContent="center">
               {tasks.map(({ name, description }) => {
                 return (
                   <Grid item xs={12} sm={6} md={4}>

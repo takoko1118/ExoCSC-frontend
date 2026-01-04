@@ -73,7 +73,7 @@ export default function Landing(props) {
                         >
                             Browse Content Type
                         </Typography>
-                        <Grid container justify="center" spacing={5}>
+                        <Grid container justifyContent="center" spacing={5}>
                             <Grid item><CancerType /></Grid>
                             <Grid item><Content /></Grid>
                         </Grid>
@@ -124,7 +124,7 @@ export default function Landing(props) {
                 </SubSection>
 
                 <SubSection>
-                    <Grid container justify="space-evenly" alignItems="center" spacing={4} style={{ marginTop: '40px', marginBottom: '80px' }}>
+                    <Grid container justifyContent="space-evenly" alignItems="center" spacing={4} style={{ marginTop: '40px', marginBottom: '80px' }}>
                         {[
                             { src: "ntu-logo.png", url: "https://www.ntu.edu.tw/", type: "ntu" },
                             { src: "CMDM-Lab.png", url: "https://www.cmdm.tw/", type: "cmdm" },
@@ -147,6 +147,7 @@ export default function Landing(props) {
                             </Grid>
                         ))}
                     </Grid>
+
                 </SubSection>
             </div>
         </Box>
