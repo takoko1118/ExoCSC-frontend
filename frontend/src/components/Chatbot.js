@@ -25,10 +25,8 @@ const Chatbot = () => {
     const messageText = typeof textToSend === 'string' ? textToSend : input;
     if (!messageText.trim()) return;
 
-    console.log("Sending message:", messageText);
-
-    // 顯示使用者訊息
-    setMessages(prev => [...prev, { role: 'user', text: messageText }]);
+    const userMsg = { role: 'user', text: messageText };
+    setMessages(prev => [...prev, userMsg]);
     setInput("");
 
     try {
@@ -36,38 +34,7 @@ const Chatbot = () => {
         message: messageText
       });
 
-      let botReply = response.data.reply;
-      const results = response.data.results || [];
-
-      // 1️⃣ 單基因查詢 (e.g., PC3)
-      if (results.length === 1 && messageText.toLowerCase() === results[0].id.toLowerCase()) {
-        const gene = results[0];
-        const detailUrl = `/search/table/${gene.molecularType.charAt(0).toUpperCase() + gene.molecularType.slice(1)}/${gene.id}/`;
-        botReply = `🧬 Gene Found: ${gene.id}\nDetected in ${gene.tissue} (${gene.cellType}).\n\n👉 [View Detailed Analysis](${detailUrl})`;
-        if (gene.pmcid) {
-          botReply += `\n🔗 Reference (PMCID: ${gene.pmcid})`;
-        }
-      }
-
-      // 2️⃣ Tissue / molecularType 查詢 (e.g., lung gene)
-      else if (results.length > 0) {
-        const topResults = results.slice(0, 3); // 前三筆
-        const resultsMarkdown = topResults.map(item => {
-          const url = `/search/table/${item.molecularType.charAt(0).toUpperCase() + item.molecularType.slice(1)}/${item.id}/`;
-          return `- [${item.entrezName || item.id}](${url})`;
-        }).join("\n");
-
-        const firstItem = results[0];
-        const allUrl = `/search/table/${firstItem.molecularType.charAt(0).toUpperCase() + firstItem.molecularType.slice(1)}/?tissue=${firstItem.tissue}${firstItem.cellType ? `&cellType=${firstItem.cellType}` : ''}`;
-
-        botReply = `🫁 ${messageText.charAt(0).toUpperCase() + messageText.slice(1)} data available\n\n${resultsMarkdown}\n\n👉 View all results [here](${allUrl})`;
-      }
-
-      // 3️⃣ 無結果
-      else {
-        botReply = response.data.reply || "No data found.";
-      }
-
+      const botReply = response.data.reply || "No response from server.";
       setMessages(prev => [...prev, { role: 'bot', text: botReply }]);
     } catch (error) {
       console.error("API Error:", error);
