@@ -10,13 +10,13 @@ class Browse extends Component{
                     <th>Tissue</th>
                     <th>Gene symbol</th>
                     <th>Metabolite</th>
-                    <th>Curated</th>
+                    {/* <th>Curated</th> */}
                 </tr>
                 <tr>
                     <td><a href="http://db.cmdm.tw:13007/Breast">Breast</a></td>
                     <td><a href="http://db.cmdm.tw:13007/Gene">Gene</a></td>
                     <td><a href="http://db.cmdm.tw:13007/Lipid">Lipid</a></td>
-                    <td><a href="http://db.cmdm.tw:13007/Lung">Lung cancaer cell exosome</a></td>
+                    {/* <td><a href="http://db.cmdm.tw:13007/Lung">Lung cancaer cell exosome</a></td> */}
                     
                 </tr>
                 <tr>
