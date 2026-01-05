@@ -42,6 +42,27 @@ const Chatbot = () => {
     }
   };
 
+  // 處理 Markdown 內連結：支援內部路由 / gene / rna / protein / lipid
+  const renderMarkdownLink = (href, children) => {
+    const isInternal = href.startsWith('/');
+    if (isInternal) {
+      // 根據 pattern 自動修正內部 domain
+      const match = href.match(/\/(gene|rna|protein|lipid)\/(\d+)/i);
+      if (match) {
+        const type = match[1].toLowerCase();
+        const id = match[2];
+        return (
+          <a href={`http://db.cmdm.tw:13007/${type}/${id}`} target="_blank" rel="noopener noreferrer" style={styles.markdownLink}>
+            {children}
+          </a>
+        );
+      }
+      // 其他內部路由使用 react-router Link
+      return <Link to={href} style={styles.markdownLink}>{children}</Link>;
+    }
+    return <a href={href} target="_blank" rel="noopener noreferrer" style={styles.markdownLink}>{children}</a>;
+  };
+
   return (
     <div style={styles.outerWrapper}>
       <div style={styles.container}>
@@ -57,13 +78,7 @@ const Chatbot = () => {
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   components={{
-                    a: ({ href, children }) => {
-                      const isInternal = href.startsWith('/');
-                      if (isInternal) {
-                        return <Link to={href} style={styles.markdownLink}>{children}</Link>;
-                      }
-                      return <a href={href} target="_blank" rel="noopener noreferrer" style={styles.markdownLink}>{children}</a>;
-                    },
+                    a: ({ href, children }) => renderMarkdownLink(href, children),
                     p: ({ children }) => <p style={{ margin: 0 }}>{children}</p>
                   }}
                 >
