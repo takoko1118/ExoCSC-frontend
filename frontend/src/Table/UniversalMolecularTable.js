@@ -4,7 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import 'mdbreact/dist/css/mdb.css';
 import './page.css';
 
-const UniversalMolecularTable = ({ title, endpoint }) => {
+const UniversalMolecularTable = ({ type, title, endpoint }) => {
   const [alphabet, setAlphabet] = useState('');
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [allData, setAllData] = useState([]);
@@ -31,13 +31,13 @@ const UniversalMolecularTable = ({ title, endpoint }) => {
         const fullData = await fullRes.json();
         setAllData(fullData.results || []);
       } catch (error) {
-        console.error(`Error fetching ALL data:`, error);
+        console.error(`Error fetching ${type} data:`, error);
         setIsInitialLoading(false);
       }
     };
 
     fetchData();
-  }, [endpoint, location.search]);
+  }, [endpoint, type, location.search]);
 
   // 動態標題
   const dynamicTitle = useMemo(() => {
@@ -66,7 +66,7 @@ const UniversalMolecularTable = ({ title, endpoint }) => {
         molecularType: item.molecularType || "-",
         cargo: (
           <Link
-            to={`/all/${item.id}`}
+            to={`/${type.toLowerCase()}/${item.id}`}
             style={{ color: '#2e3e93', fontWeight: 'bold', textDecoration: 'none' }}
           >
             {item.cargo}
@@ -88,7 +88,7 @@ const UniversalMolecularTable = ({ title, endpoint }) => {
         ) : "-",
       })),
     };
-  }, [allData, alphabet]);
+  }, [allData, alphabet, type]);
 
   // 字母篩選按鈕
   const renderAlphabets = () => {
@@ -116,7 +116,7 @@ const UniversalMolecularTable = ({ title, endpoint }) => {
         {isInitialLoading ? (
           <div className="loading-spinner text-center p-5">
             <div className="spinner-border text-primary" role="status"></div>
-            <p style={{ marginTop: '10px' }}>Loading data...</p>
+            <p style={{ marginTop: '10px' }}>Loading {type} data...</p>
           </div>
         ) : (
           <MDBDataTable

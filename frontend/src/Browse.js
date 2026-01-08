@@ -1,41 +1,85 @@
 import React, { Component } from "react";
-//import "./Browse.css"
-// import{Link} from 'react-router-dom';
 
-class Browse extends Component{
-    render(){
-        return(
-            <table>
-                <tr>
-                    <th>Tissue</th>
-                    <th>Gene symbol</th>
-                    <th>Metabolite</th>
-                    {/* <th>Curated</th> */}
-                </tr>
-                <tr>
-                    <td><a href="http://db.cmdm.tw:13007/Breast">Breast</a></td>
-                    <td><a href="http://db.cmdm.tw:13007/Gene">Gene</a></td>
-                    <td><a href="http://db.cmdm.tw:13007/Lipid">Lipid</a></td>
-                    {/* <td><a href="http://db.cmdm.tw:13007/Lung">Lung cancaer cell exosome</a></td> */}
-                    
-                </tr>
-                <tr>
-                    <td><a href="http://db.cmdm.tw:13007/Lung">Lung</a></td>
-                    <td><a href="http://db.cmdm.tw:13007/Protein">Proteins</a></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                <td><a href="http://db.cmdm.tw:13007/Colon">Colon</a></td>
-                <td><a href="http://db.cmdm.tw:13007/miRNA">miRNA</a></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            </table>
-            
-        )
-    }
+class Browse extends Component {
+  render() {
+    return (
+      <div style={styles.wrapper}>
+        <h2 style={styles.header}>ExCSC Browse Table</h2>
+        <table style={styles.table}>
+          <thead>
+            <tr>
+              <th style={styles.th}>Tissue</th>
+              <th style={styles.th}>Gene / Protein / RNA</th>
+              <th style={styles.th}>Metabolite</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style={styles.tr}>
+              <td style={styles.td}><a href="http://db.cmdm.tw:13007/Breast" style={styles.link}>Breast</a></td>
+              <td style={styles.td}><a href="http://db.cmdm.tw:13007/Gene" style={styles.link}>Gene</a></td>
+              <td style={styles.td}><a href="http://db.cmdm.tw:13007/Lipid" style={styles.link}>Lipid</a></td>
+            </tr>
+            <tr style={styles.tr}>
+              <td style={styles.td}><a href="http://db.cmdm.tw:13007/Lung" style={styles.link}>Lung</a></td>
+              <td style={styles.td}><a href="http://db.cmdm.tw:13007/Protein" style={styles.link}>Protein</a></td>
+              <td style={styles.td}></td>
+            </tr>
+            <tr style={styles.tr}>
+              <td style={styles.td}><a href="http://db.cmdm.tw:13007/Colon" style={styles.link}>Colon</a></td>
+              <td style={styles.td}><a href="http://db.cmdm.tw:13007/miRNA" style={styles.link}>miRNA</a></td>
+              <td style={styles.td}></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    );
+  }
 }
-export default Browse
 
+const styles = {
+  wrapper: {
+    width: '95%',
+    maxWidth: '900px',
+    margin: '30px auto',
+    fontFamily: 'Arial, sans-serif',
+    padding: '20px',
+    backgroundColor: '#fff',
+    borderRadius: '12px',
+    boxShadow: '0 8px 20px rgba(0,0,0,0.12)',
+  },
+  header: {
+    textAlign: 'center',
+    fontSize: '22px',
+    fontWeight: 'bold',
+    marginBottom: '20px'
+  },
+  table: {
+    width: '100%',
+    borderCollapse: 'separate',
+    borderSpacing: '0',
+    borderRadius: '12px',
+    overflow: 'hidden',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+  },
+  th: {
+    backgroundColor: '#2e3e93',
+    color: '#fff',
+    padding: '12px',
+    textAlign: 'left',
+    fontWeight: 'bold',
+  },
+  tr: {
+    transition: 'background 0.3s',
+  },
+  td: {
+    padding: '12px',
+    borderBottom: '1px solid #eee',
+  },
+  link: {
+    color: '#2e3e93',
+    fontWeight: 'bold',
+    textDecoration: 'none',
+  }
+};
 
+export default Browse;

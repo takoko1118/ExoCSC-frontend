@@ -41,7 +41,8 @@ html, body {
 
 /* 2. 星空背景區塊 */
 .hero-background-section {
-    background-image: url("https://img.freepik.com/free-photo/night-sky-glows-with-iridescent-starry-nebula-generated-by-ai_188544-15577.jpg");
+    /* background-image: url("https://img.freepik.com/free-photo/night-sky-glows-with-iridescent-starry-nebula-generated-by-ai_188544-15577.jpg"); */
+    background-image:url('./CSC.png');
     background-size: cover;
     background-position: center;
     padding: 100px 0;

@@ -13,7 +13,8 @@ import {
     createTheme, // 新名稱
 } from "@material-ui/core/styles";
 
-import Homepage from "./Homepage"
+import Homepage from "./Homepage";
+import ChatbotHelp from "./ChatbotHelp"
 import Browse from "./Browse";
 
 import ALLTable from "./Table/ALLTable";
@@ -297,7 +298,8 @@ function App() {
                 
                 <Route path="/help" exact>
                 <div className={`${classes.narrowViewport}`}>
-                        <Homepage />
+                        {/* <Homepage /> */}
+                        <ChatbotHelp />
                     </div>
                 </Route>
 

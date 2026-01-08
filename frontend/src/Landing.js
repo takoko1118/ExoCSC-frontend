@@ -9,6 +9,7 @@ import { Title } from "./components/Titles";
 import { CancerType, Content } from './components/Button';
 import 'semantic-ui-css/semantic.min.css';
 import Chatbot from './components/Chatbot';
+import RAGChatbot from "./components/RAGChatbot";
 
 const useStyles = makeStyles((theme) => ({
     mainWrapper: {
@@ -85,7 +86,8 @@ export default function Landing(props) {
             <div className={classes.centeredWrapper}>
                 
                 <Box style={{ marginTop: '40px', marginBottom: '60px' }}>
-                    <Chatbot />
+                    <RAGChatbot/>
+                    {/* <Chatbot /> */}
                 </Box>
                 
                 <Box className={classes.introTitleBox}>
