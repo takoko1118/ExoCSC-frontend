@@ -15,7 +15,7 @@ const BreastTable = () => {
   useEffect(() => {
     setIsLoading(true);
     // 假設使用與 Lung 相同的 API 端點
-    fetch('http://db.cmdm.tw:8000/search/table/ALL/?tissue=Breast&limit=30000')
+    fetch('http://172.16.146.196:8000/search/table/ALL/?tissue=Breast&limit=30000')
       .then((res) => res.json())
       .then((data) => {
         const results = data.results || data;

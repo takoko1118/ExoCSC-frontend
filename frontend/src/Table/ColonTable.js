@@ -14,7 +14,7 @@ const ColonTable = () => {
   // 1. 從 API 獲取 Colon 相關資料
   useEffect(() => {
     setIsLoading(true);
-    fetch('http://db.cmdm.tw:8000/search/table/ALL/?tissue=Colon&limit=30000')
+    fetch('http://172.16.146.196:8000/search/table/ALL/?tissue=Colon&limit=30000')
       .then((res) => res.json())
       .then((data) => {
         const results = data.results || data;

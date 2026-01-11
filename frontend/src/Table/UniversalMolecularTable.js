@@ -17,7 +17,7 @@ const UniversalMolecularTable = ({ type, title, endpoint }) => {
         const queryParams = new URLSearchParams(location.search);
         const tissueFilter = queryParams.get('tissue');
 
-        const baseApiUrl = `http://db.cmdm.tw:8000/search/table/${endpoint}/`;
+        const baseApiUrl = `http://172.16.146.196:8000/search/table/${endpoint}/`;
         const filterQuery = tissueFilter ? `&tissue=${encodeURIComponent(tissueFilter)}` : '';
 
         // Step A: 快速抓取

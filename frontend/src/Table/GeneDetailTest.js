@@ -16,7 +16,7 @@ function GeneDetail() {
   const [genedata, setgenedata] = useState(null);
 
   useEffect(() => {
-    fetch(`http://db.cmdm.tw:8000/search/table/Gene/${index}`)
+    fetch(`http://172.16.146.196:8000/search/table/Gene/${index}`)
       .then((response) => response.json())
       .then((res) => {
         setData(res);

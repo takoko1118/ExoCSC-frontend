@@ -14,7 +14,7 @@ function ALLTable() {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch("http://db.cmdm.tw:8000/ALL/");
+        const response = await fetch("http://172.16.146.196:8000/ALL/");
         const res = await response.json();
         setRawData(res.results || []);
       } catch (error) {

@@ -10,7 +10,7 @@ const QUICK_SEARCH = [
 ];
 
 // 🔹 修改成你的 Django RAG API URL
-const RAG_API_URL = "http://db.cmdm.tw:8000/api/lit-search/";
+const RAG_API_URL = "http://172.16.146.196:8000/api/lit-search/";
 
 const RAGChatbot = () => {
   const [messages, setMessages] = useState([

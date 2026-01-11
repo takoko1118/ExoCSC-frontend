@@ -35,7 +35,7 @@ const Chatbot = () => {
     setInput("");
 
     try {
-      const response = await axios.post('http://db.cmdm.tw:8000/api/chatbot/', {
+      const response = await axios.post('http://172.16.146.196:8000/api/chatbot/', {
         message: messageText
       });
 

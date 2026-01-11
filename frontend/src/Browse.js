@@ -15,18 +15,18 @@ class Browse extends Component {
           </thead>
           <tbody>
             <tr style={styles.tr}>
-              <td style={styles.td}><a href="http://db.cmdm.tw:13007/Breast" style={styles.link}>Breast</a></td>
-              <td style={styles.td}><a href="http://db.cmdm.tw:13007/Gene" style={styles.link}>Gene</a></td>
-              <td style={styles.td}><a href="http://db.cmdm.tw:13007/Lipid" style={styles.link}>Lipid</a></td>
+              <td style={styles.td}><a href="http://172.16.146.196:3000/Breast" style={styles.link}>Breast</a></td>
+              <td style={styles.td}><a href="http://172.16.146.196:3000/Gene" style={styles.link}>Gene</a></td>
+              <td style={styles.td}><a href="http://172.16.146.196:3000/Lipid" style={styles.link}>Lipid</a></td>
             </tr>
             <tr style={styles.tr}>
-              <td style={styles.td}><a href="http://db.cmdm.tw:13007/Lung" style={styles.link}>Lung</a></td>
-              <td style={styles.td}><a href="http://db.cmdm.tw:13007/Protein" style={styles.link}>Protein</a></td>
+              <td style={styles.td}><a href="http://172.16.146.196:3000/Lung" style={styles.link}>Lung</a></td>
+              <td style={styles.td}><a href="http://172.16.146.196:3000/Protein" style={styles.link}>Protein</a></td>
               <td style={styles.td}></td>
             </tr>
             <tr style={styles.tr}>
-              <td style={styles.td}><a href="http://db.cmdm.tw:13007/Colon" style={styles.link}>Colon</a></td>
-              <td style={styles.td}><a href="http://db.cmdm.tw:13007/miRNA" style={styles.link}>miRNA</a></td>
+              <td style={styles.td}><a href="http://172.16.146.196:3000/Colon" style={styles.link}>Colon</a></td>
+              <td style={styles.td}><a href="http://172.16.146.196:3000/miRNA" style={styles.link}>miRNA</a></td>
               <td style={styles.td}></td>
             </tr>
           </tbody>

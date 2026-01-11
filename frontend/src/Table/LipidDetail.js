@@ -17,7 +17,7 @@ function LipidDetail() {
   useEffect(() => {
     setIsLoading(true);
 
-    fetch(`http://db.cmdm.tw:8000/search/table/Lipid/${index}`)
+    fetch(`http://172.16.146.196:8000/search/table/Lipid/${index}`)
       .then((response) => response.json())
       .then((res) => {
         setData(res);
@@ -42,7 +42,7 @@ function LipidDetail() {
           setGenedata({
             columns: commonCols,
             rows: dataEs.map(d => ({
-              gene: <a href={`http://db.cmdm.tw:13007/gene/${d.gene_url}`} style={{ color: 'blue' }}>{d.cargo_gene}</a>,
+              gene: <a href={`http://172.16.146.196:3000/gene/${d.gene_url}`} style={{ color: 'blue' }}>{d.cargo_gene}</a>,
               tissue: d.tissue,
               score: d.score_y,
               pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a>,
@@ -56,7 +56,7 @@ function LipidDetail() {
           setProteindata({
             columns: commonCols,
             rows: dataDs.map(d => ({
-              gene: <a href={`http://db.cmdm.tw:13007/protein/${d.protein_url}`} style={{ color: 'blue' }}>{d.cargo_protein}</a>,
+              gene: <a href={`http://172.16.146.196:3000/protein/${d.protein_url}`} style={{ color: 'blue' }}>{d.cargo_protein}</a>,
               tissue: d.tissue,
               score: d.score_y,
               cellline: d.cellLine,
@@ -70,7 +70,7 @@ function LipidDetail() {
           setmRNAdata({
             columns: commonCols,
             rows: dataBs.map(d => ({
-              gene: <a href={`http://db.cmdm.tw:13007/rna/${d.rna_url}`} style={{ color: 'blue' }}>{d.cargo_rna}</a>,
+              gene: <a href={`http://172.16.146.196:3000/rna/${d.rna_url}`} style={{ color: 'blue' }}>{d.cargo_rna}</a>,
               tissue: d.tissue,
               score: d.score_y,
               cellline: d.cellLine_y,

@@ -12,7 +12,7 @@ function DetailPage() {
   const [genedata, setgenedata] = useState(null); // new state variable
   const [mRNAdata, setmRNAdata] = useState(null);
   useEffect(() => {
-    fetch(`http://db.cmdm.tw:8000/search/table/ALL/${index}`)
+    fetch(`http://172.16.146.196:8000/search/table/ALL/${index}`)
       .then((response) => response.json())
       .then((res) => {
         setData(res);
@@ -124,7 +124,7 @@ function DetailPage() {
   }, [index]);
   
   // useEffect(() => {
-  //   fetch(`http://db.cmdm.tw:8000/search/table/ALL/${index}`)
+  //   fetch(`http://172.16.146.196:8000/search/table/ALL/${index}`)
   //     .then((response) => response.json())
   //     .then((res) => {
   //       setData(res);

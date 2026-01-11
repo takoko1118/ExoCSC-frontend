@@ -26,13 +26,13 @@ function GeneDetail() {
   ];
 
   useEffect(() => {
-    fetch(`http://db.cmdm.tw:8000/search/table/Gene/${index}`)
+    fetch(`http://172.16.146.196:8000/search/table/Gene/${index}`)
       .then((response) => response.json())
       .then((res) => {
         setData(res);
         if (res.entrezID) {
           const cleanID = Math.floor(parseFloat(res.entrezID));
-          fetch(`http://db.cmdm.tw:8000/api/ppi/?entrez_id=${cleanID}`)
+          fetch(`http://172.16.146.196:8000/api/ppi/?entrez_id=${cleanID}`)
             .then(r => r.json())
             .then(ppiRes => { if (ppiRes && ppiRes.length > 0) setPpiElements(ppiRes); })
             .catch(err => console.error('Error PPI:', err));
@@ -51,23 +51,23 @@ function GeneDetail() {
           setGeneRnaRaw(dataBs);
           setmRNAdata({
             columns: commonCols,
-            rows: dataBs.map(d => ({ gene: <a href={`http://db.cmdm.tw:13007/rna/${d.rna_url}`} style={{ color: 'blue' }}>{d.cargo_rna}</a>, tissue: d.tissue, score: d.score_y, cellline: d.cellLine, pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> }))
+            rows: dataBs.map(d => ({ gene: <a href={`http://172.16.146.196:3000/rna/${d.rna_url}`} style={{ color: 'blue' }}>{d.cargo_rna}</a>, tissue: d.tissue, score: d.score_y, cellline: d.cellLine, pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> }))
           });
         });
 
-        fetchAll(dataDUrls).then(ds => setCSCdata({ columns: commonCols, rows: ds.map(d => ({ gene: <a href={`http://db.cmdm.tw:13007/gene/${d.id}`} style={{ color: 'blue' }}>{d.cargo}</a>, tissue: d.tissue, score: d.score, cellline: d.cellLine, pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> })) }));
-        fetchAll(dataEUrls).then(es => setCCdata({ columns: commonCols, rows: es.map(d => ({ gene: <a href={`http://db.cmdm.tw:13007/gene/${d.id}`} style={{ color: 'blue' }}>{d.cargo}</a>, tissue: d.tissue, score: d.score, cellline: d.cellLine, pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> })) }));
-        fetchAll(dataFUrls).then(fs => setLipiddata({ columns: commonCols, rows: fs.map(d => ({ gene: <a href={`http://db.cmdm.tw:13007/lipid/${d.lipid_url}`} style={{ color: 'blue' }}>{d.cargo_lipid}</a>, tissue: d.tissue, score: d.score_y, cellline: d.cellLine, pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> })) }));
+        fetchAll(dataDUrls).then(ds => setCSCdata({ columns: commonCols, rows: ds.map(d => ({ gene: <a href={`http://172.16.146.196:3000/gene/${d.id}`} style={{ color: 'blue' }}>{d.cargo}</a>, tissue: d.tissue, score: d.score, cellline: d.cellLine, pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> })) }));
+        fetchAll(dataEUrls).then(es => setCCdata({ columns: commonCols, rows: es.map(d => ({ gene: <a href={`http://172.16.146.196:3000/gene/${d.id}`} style={{ color: 'blue' }}>{d.cargo}</a>, tissue: d.tissue, score: d.score, cellline: d.cellLine, pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> })) }));
+        fetchAll(dataFUrls).then(fs => setLipiddata({ columns: commonCols, rows: fs.map(d => ({ gene: <a href={`http://172.16.146.196:3000/lipid/${d.lipid_url}`} style={{ color: 'blue' }}>{d.cargo_lipid}</a>, tissue: d.tissue, score: d.score_y, cellline: d.cellLine, pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> })) }));
         fetchAll(dataCUrls).then(cs => setRefdata({ columns: [{ label: 'Title', field: 'title', width: 250 }, { label: 'Journal', field: 'journal', width: 150 }, { label: 'Year', field: 'year', width: 80 }, { label: 'Author', field: 'author', width: 120 }, { label: 'PMCID', field: 'pmcid', width: 120 }], rows: cs.map(d => ({ title: d.title, journal: d.journal, year: d.year, author: d.author ? d.author.split(',')[0] : '', pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> })) }));
-        fetch(`http://db.cmdm.tw:8000/gene/${parseInt(res.entrezID)}/go/`).then(r => r.json()).then(go => setGOdata({ columns: [{ label: 'GO ID', field: 'go_id', width: 150 }, { label: 'GO Name', field: 'go_name', width: 350 }, { label: 'Domain', field: 'domain', width: 100 }], rows: go.map(g => ({ go_id: g.go_id, go_name: g.go_name, domain: g.domain })) }));
+        fetch(`http://172.16.146.196:8000/gene/${parseInt(res.entrezID)}/go/`).then(r => r.json()).then(go => setGOdata({ columns: [{ label: 'GO ID', field: 'go_id', width: 150 }, { label: 'GO Name', field: 'go_name', width: 350 }, { label: 'Domain', field: 'domain', width: 100 }], rows: go.map(g => ({ go_id: g.go_id, go_name: g.go_name, domain: g.domain })) }));
 
-        fetch(`http://db.cmdm.tw:8000/search/table/GeneKegg/${index}/`).then(r => r.json()).then(kegg => {
+        fetch(`http://172.16.146.196:8000/search/table/GeneKegg/${index}/`).then(r => r.json()).then(kegg => {
           const fmt = (list, cls) => ({ columns: [{ label: 'Pathway ID', field: 'id', width: 120 }, { label: 'Pathway Name', field: 'name', width: 300 }, { label: 'P-value', field: 'p', width: 120 }, { label: 'Score', field: 's', width: 100 }], rows: (list || []).map(k => ({ id: <a href={`https://www.kegg.jp/pathway/${k.pathway_id}`} target="_blank" rel="noreferrer" style={{color: 'blue'}}>{k.pathway_id}</a>, name: k.pathway_name, p: k.p_value ? k.p_value.toExponential(4) : '-', s: <span className={`badge ${cls}`} style={{padding: '5px 10px'}}>{parseFloat(k.score).toFixed(2)}</span> })) });
           setKEGGdata({ csc: fmt(kegg.csc_pathways, 'badge-danger'), cancer: fmt(kegg.cancer_pathways, 'badge-primary') });
         });
 
         if (res.entrezID) {
-          fetch(`http://db.cmdm.tw:8000/api/gene-detail/?entrez_id=${Math.floor(parseFloat(res.entrezID))}`).then(r => r.json()).then(enr => {
+          fetch(`http://172.16.146.196:8000/api/gene-detail/?entrez_id=${Math.floor(parseFloat(res.entrezID))}`).then(r => r.json()).then(enr => {
             const fmt = (list, cls) => ({ columns: [{ label: 'Term', field: 't', width: 300 }, { label: 'Score', field: 's', width: 100 }, { label: 'FDR', field: 'f', width: 120 }], rows: (list || []).map(c => ({ t: c.Term, s: <span className={`badge ${cls}`} style={{padding: '5px 10px'}}>{c.Score.toFixed(2)}</span>, f: c.Adjusted_P.toExponential(2) })) });
             setGOEnrichContext({ csc: fmt(enr.csc_context, 'badge-danger'), cancer: fmt(enr.cancer_context, 'badge-primary') });
           });

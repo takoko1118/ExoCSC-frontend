@@ -16,7 +16,7 @@ function ProteinDetail() {
   useEffect(() => {
     setIsLoading(true);
 
-    fetch(`http://db.cmdm.tw:8000/search/table/Protein/${index}`)
+    fetch(`http://172.16.146.196:8000/search/table/Protein/${index}`)
       .then((response) => response.json())
       .then((res) => {
         setData(res);
@@ -40,7 +40,7 @@ function ProteinDetail() {
           setmRNAdata({
             columns: commonCols,
             rows: dataBs.map(d => ({
-              gene: <a href={`http://db.cmdm.tw:13007/rna/${d.rna_url}`} style={{ color: 'blue' }}>{d.cargo_rna}</a>,
+              gene: <a href={`http://172.16.146.196:3000/rna/${d.rna_url}`} style={{ color: 'blue' }}>{d.cargo_rna}</a>,
               tissue: d.tissue,
               score: d.score_y,
               cellline: d.cellLine,
@@ -54,7 +54,7 @@ function ProteinDetail() {
           setLipiddata({
             columns: commonCols,
             rows: dataDs.map(d => ({
-              gene: <a href={`http://db.cmdm.tw:13007/Lipid/${d.lipid_url}`} style={{ color: 'blue' }}>{d.cargo_lipid}</a>,
+              gene: <a href={`http://172.16.146.196:3000/Lipid/${d.lipid_url}`} style={{ color: 'blue' }}>{d.cargo_lipid}</a>,
               tissue: d.tissue,
               score: d.score_x,
               cellline: d.cellLine,

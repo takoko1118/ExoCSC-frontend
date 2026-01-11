@@ -22,7 +22,7 @@ function LungDetail() {
   useEffect(() => {
     setIsLoading(true); // Set isLoading to true when the effect starts
 
-    fetch(`http://db.cmdm.tw:8000/search/table/Lipid/${index}`)
+    fetch(`http://172.16.146.196:8000/search/table/Lipid/${index}`)
       .then((response) => response.json())
       .then((res) => {
         setData(res);
@@ -76,7 +76,7 @@ function LungDetail() {
             };
             dataEs.forEach((dataE) => {
                 Genedata.rows.push({
-                gene:<a href={`http://db.cmdm.tw:13007/gene/${dataE.gene_url}`} style={{ color: 'blue' }}>{dataE.cargo_gene}</a>,
+                gene:<a href={`http://172.16.146.196:3000/gene/${dataE.gene_url}`} style={{ color: 'blue' }}>{dataE.cargo_gene}</a>,
                 tissue: dataE.tissue,
                 scroe: dataE.scroe,
                 pmcid:<a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${dataE.pmcid}`} style={{ color: 'blue' }}>{dataE.pmcid}</a>
@@ -124,7 +124,7 @@ function LungDetail() {
             };
             dataDs.forEach((dataD) => {
                 Proteindata.rows.push({
-                gene: <a href={`http://db.cmdm.tw:13007/protein/${dataD.protein_url}`} style={{ color: 'blue' }}>{dataD.cargo_protein}</a>,
+                gene: <a href={`http://172.16.146.196:3000/protein/${dataD.protein_url}`} style={{ color: 'blue' }}>{dataD.cargo_protein}</a>,
                 tissue: dataD.tissue,
                 scroe: dataD.scroe,
                 pmcid:<a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${dataD.pmcid}`} style={{ color: 'blue' }}>{dataD.pmcid}</a>
@@ -170,7 +170,7 @@ function LungDetail() {
             };
             dataBs.forEach((dataB) => {
               mRNAdata.rows.push({
-                gene:<a href={`http://db.cmdm.tw:13007/rna/${dataB.rna_url}`} style={{ color: 'blue' }}>{dataB.cargo_rna}</a>,
+                gene:<a href={`http://172.16.146.196:3000/rna/${dataB.rna_url}`} style={{ color: 'blue' }}>{dataB.cargo_rna}</a>,
                 tissue: dataB.tissue,
                 scroe: dataB.scroe,
                 pmcid:<a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${dataB.pmcid}`} style={{ color: 'blue' }}>{dataB.pmcid}</a>
