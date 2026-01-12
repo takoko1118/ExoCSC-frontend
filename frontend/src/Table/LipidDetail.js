@@ -24,6 +24,7 @@ function LipidDetail() {
 
         const dataBUrls = res.lipid_rna_urls.slice(0, MAX_URLS).map(obj => obj.id_url);
         const dataCUrls = res.lipid_ref_urls.map(obj => obj.id_url);
+        const refUrls = res.ref_urls ? res.ref_urls.slice(0, MAX_URLS).map(obj => obj.id_url) : [];
         const dataDUrls = res.lipid_protein_urls.slice(0, MAX_URLS).map(obj => obj.id_url);
         const dataEUrls = res.lipid_gene_urls.slice(0, MAX_URLS).map(obj => obj.id_url);
 
@@ -80,7 +81,8 @@ function LipidDetail() {
         });
 
         // Fetch References (修正 Author 顯示第一作者)
-        fetchAll(dataCUrls).then(dataCs => {
+        const refUrlsToUse = refUrls.length > 0 ? refUrls : dataCUrls;
+        fetchAll(refUrlsToUse).then(dataCs => {
           setRefdata({
             columns: [
               { label: 'Title', field: 'title', width: 250 },
@@ -90,11 +92,11 @@ function LipidDetail() {
               { label: 'PMCID', field: 'pmcid', width: 120 },
             ],
             rows: dataCs.map(d => ({
-              title: d.title,
-              journal: d.journal,
-              year: d.year,
+              title: d.title || '',
+              journal: d.journal || '',
+              year: d.year || '',
               author: d.author ? d.author.split(',')[0] : '', // 這裡執行切割
-              pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a>
+              pmcid: d.pmcid ? <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> : ''
             }))
           });
         }).finally(() => {

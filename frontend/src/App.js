@@ -4,13 +4,11 @@ import {
     BrowserRouter as Router,
     Switch,
     Route,
-    // Redirect,
 } from "react-router-dom";
 import {
-    // useTheme,
     ThemeProvider,
     makeStyles,
-    createTheme, // 新名稱
+    createTheme,
 } from "@material-ui/core/styles";
 
 import Homepage from "./Homepage";
@@ -36,6 +34,7 @@ import ProteinDetail from "./Table/ProteinDetail.js";
 import RNADetail from "./Table/RNADetail.js";
 import LipidDetail from "./Table/LipidDetail.js";
 
+import AIAgentPage from './AIAgentPage'; // 👈 導入新組件
 
 import Landing from "./Landing";
 import News from "./News";
@@ -56,7 +55,6 @@ import { useContext } from "react";
 import { challenge_overview, framework, upstream, submission, metrics } from "./policy";
 import { policy_aaai2022 } from "./history/AAAI2022_policy";
 
-
 const useStyles = makeStyles((theme) => ({
     narrowViewport: {
         width: "85%",
@@ -67,6 +65,12 @@ const useStyles = makeStyles((theme) => ({
         height: "30vh",
         paddingTop: "10vh",
     },
+    // 🚀 新增：全螢幕容器，專給 AI Agent 使用
+    fullWidthViewport: {
+        width: "100%",
+        margin: 0,
+        padding: 0,
+    }
 }));
 
 function App() {
@@ -79,131 +83,70 @@ function App() {
     const setViewPort = () => {
         setWidth(window.innerWidth);
         setHeight(window.innerHeight);
-        setNavbarHeight(document.getElementById("navbar").offsetHeight);
+        const navbar = document.getElementById("navbar");
+        if (navbar) setNavbarHeight(navbar.offsetHeight);
     };
-    React.useEffect(setViewPort);
-    window.addEventListener("resize", setViewPort);
+
+    React.useEffect(() => {
+        setViewPort();
+        window.addEventListener("resize", setViewPort);
+        return () => window.removeEventListener("resize", setViewPort);
+    }, []);
 
     const classes = useStyles();
+
+    // 🚀 核心改動：將 /ai-agent 放在 Switch 的最上方，確保優先匹配且不被 narrowViewport 包裹
+    const sharedRoutes = (
+        <Route path="/ai-agent" exact>
+            <div className={classes.fullWidthViewport}>
+                <AIAgentPage />
+            </div>
+        </Route>
+    );
+
     let routes;
     if (auth.isLoggedIn) {
         routes = (
             <Switch>
-
-                {/* <Route path="/detail/:id" component={DetailPage} /> */}
-
-
-                
-
-
-
+                {sharedRoutes}
                 <Route path="/all/:index" exact>
-                    <div className={`${classes.narrowViewport}`}>
-                        <DetailPage />
-                    </div>
+                    <div className={classes.narrowViewport}><DetailPage /></div>
                 </Route>
                 <Route path="/gene/:index" exact>
-                    <div className={`${classes.narrowViewport}`}>
-                        <GeneDetail />
-                    </div>
+                    <div className={classes.narrowViewport}><GeneDetail /></div>
                 </Route>
-
                 <Route path="/protein/:index" exact>
-                    <div className={`${classes.narrowViewport}`}>
-                        <ProteinDetail />
-                    </div>
+                    <div className={classes.narrowViewport}><ProteinDetail /></div>
                 </Route>
-
                 <Route path="/rna/:index" exact>
-                    <div className={`${classes.narrowViewport}`}>
-                        <RNADetail />
-                    </div>
+                    <div className={classes.narrowViewport}><RNADetail /></div>
                 </Route>
-
-
-
                 <Route path="/Gene" exact>
-                    <div className={`${classes.narrowViewport}`}>
-                        <GeneTable />
-                    </div>
+                    <div className={classes.narrowViewport}><GeneTable /></div>
                 </Route>
-
-
-
                 <Route path="/histograme" exact>
-                    <div className={`${classes.narrowViewport}`}>
-                        <Histograme />
-                    </div>
+                    <div className={classes.narrowViewport}><Histograme /></div>
                 </Route>
-
                 <Route path="/cystoscape" exact>
-                    <div className={`${classes.narrowViewport}`}>
-                        <Cytoscape/>
-                    </div>
+                    <div className={classes.narrowViewport}><Cytoscape/></div>
                 </Route>
-
-
                 <Route path="/home" exact>
-                    <div className={`${classes.narrowViewport}`}>
-                        <Homepage />
-                    </div>
+                    <div className={classes.narrowViewport}><Homepage /></div>
                 </Route>
                 <Route path="/" exact>
-                    <div className={`${classes.narrowViewport}`}>
-                        <Landing />
-                    </div>
+                    <Landing />
                 </Route>
                 <Route path="/news">
-                    <div className={`${classes.narrowViewport}`}>
-                    <News />
-                    </div>
+                    <div className={classes.narrowViewport}><News /></div>
                 </Route>
                 <Route path="/tasks">
-                    <div className={`${classes.narrowViewport}`}>
-                        <Tasks />
-                    </div>
+                    <div className={classes.narrowViewport}><Tasks /></div>
                 </Route>
                 <Route path="/rules">
-                    <div className={`${classes.narrowViewport}`}>
-                        <Rules />
-                    </div>
+                    <div className={classes.narrowViewport}><Rules /></div>
                 </Route>
-                
                 <Route path="/leaderboard">
-                    <Leaderboard
-                        height={`${height - navbarHeight}px`}
-                        tableControlRef={tableControlRef}
-                    />
-                </Route>
-                <Route path="/challenge-slt2022/challenge_overview">
-                    <div className={`${classes.narrowViewport}`}>
-                        <Challenge policy={challenge_overview} />
-                    </div>
-                </Route>
-                <Route path="/challenge-slt2022/framework">
-                    <div className={`${classes.narrowViewport}`}>
-                        <Challenge policy={framework} />
-                    </div>
-                </Route>
-                <Route path="/challenge-slt2022/upstream">
-                    <div className={`${classes.narrowViewport}`}>
-                        <Challenge policy={upstream} />
-                    </div>
-                </Route>
-                <Route path="/challenge-slt2022/submission">
-                    <div className={`${classes.narrowViewport}`}>
-                        <Challenge policy={submission} />
-                    </div>
-                </Route>
-                <Route path="/challenge-slt2022/metrics">
-                    <div className={`${classes.narrowViewport}`}>
-                        <Challenge policy={metrics} />
-                    </div>
-                </Route>
-                <Route path="/challenge-aaai2022">
-                    <div className={`${classes.narrowViewport}`}>
-                        <Challenge policy={policy_aaai2022} />
-                    </div>
+                    <Leaderboard height={`${height - navbarHeight}px`} tableControlRef={tableControlRef} />
                 </Route>
                 <Route path="/profile" exact>
                     <Profile tableControlRef={tableControlRef} />
@@ -212,186 +155,58 @@ function App() {
                     <Logout />
                 </Route>
                 <Route path="/submit">
-                    <div className={`${classes.narrowViewport}`}>
-                        <SubmitForm login={true} />
-                    </div>
+                    <div className={classes.narrowViewport}><SubmitForm login={true} /></div>
                 </Route>
             </Switch>
         );
     } else {
         routes = (
             <Switch>
-
-                <Route path="/all/:index" exact> 
-                <DetailPage />   
-                </Route>
-                
-                <Route path="/gene/:index" exact> 
-                <GeneDetail />
-                </Route>
-
-                <Route path="/protein/:index" exact>
-                    <div >
-                        <ProteinDetail />
-                    </div>
-                </Route>
-                <Route path="/rna/:index" exact>
-                    <div >
-                        <RNADetail />
-                    </div>
-                </Route>
-
-                <Route path="/lipid/:index" exact>
-                    <div >
-                        <LipidDetail />
-                    </div>
-                </Route>
-
-                <Route path="/ALL" exact>
-                <ALLTable />
-                </Route>
-                
-                <Route path="/Lung" exact>
-                <LungTable />
-                </Route>
-
-
-                <Route path="/Breast" exact>
-                <BreastTable />
-                </Route>
-
-                <Route path="/Colon" exact>
-                <ColonTable />
-                </Route>
-
-                <Route path="/Gene" exact>
-                <GeneTable />
-                </Route>
-                <Route path="/Protein" exact>
-                <ProteinTable />
-                </Route>
-                <Route path="/Lipid" exact>
-                <LipidTable />
-                </Route>
-                <Route path="/miRNA" exact>
-                <RNATable />
-                </Route>
-
-                
-
-                <Route path="/home" exact>
-                {/* <div className={`${classes.narrowViewport}`}> */}
-                        <Landing />
-                    {/* </div> */}
-                </Route>
-
+                {sharedRoutes}
+                <Route path="/all/:index" exact><DetailPage /></Route>
+                <Route path="/gene/:index" exact><GeneDetail /></Route>
+                <Route path="/protein/:index" exact><ProteinDetail /></Route>
+                <Route path="/rna/:index" exact><RNADetail /></Route>
+                <Route path="/lipid/:index" exact><LipidDetail /></Route>
+                <Route path="/ALL" exact><ALLTable /></Route>
+                <Route path="/Lung" exact><LungTable /></Route>
+                <Route path="/Breast" exact><BreastTable /></Route>
+                <Route path="/Colon" exact><ColonTable /></Route>
+                <Route path="/Gene" exact><GeneTable /></Route>
+                <Route path="/Protein" exact><ProteinTable /></Route>
+                <Route path="/Lipid" exact><LipidTable /></Route>
+                <Route path="/miRNA" exact><RNATable /></Route>
+                <Route path="/home" exact><Landing /></Route>
                 <Route path="/search" exact>
-                <div className={`${classes.narrowViewport}`}>
-                        <ALLTable />
-                    </div>
+                    <div className={classes.narrowViewport}><ALLTable /></div>
                 </Route>
                 <Route path="/browse" exact>
-                <div className={`${classes.narrowViewport}`}>
-                        <Browse />
-                    </div>
+                    <div className={classes.narrowViewport}><Browse /></div>
                 </Route>
-                
                 <Route path="/help" exact>
-                <div className={`${classes.narrowViewport}`}>
-                        {/* <Homepage /> */}
-                        <ChatbotHelp />
-                    </div>
+                    <div className={classes.narrowViewport}><ChatbotHelp /></div>
                 </Route>
-
                 <Route path="/histograme" exact>
-                    <div className={`${classes.narrowViewport}`}>
-                        <Histograme />
-                    </div>
+                    <div className={classes.narrowViewport}><Histograme /></div>
                 </Route>
-
-                <Route path="/cytoscape" exact>
-                    <div >
-                        <Cytoscape/>
-                    </div>
-                </Route>
-                <Route path="/" exact>
-                    {/* <div className={`${classes.narrowViewport}`}> */}
-                        <Landing />{/* 👈 移除外層 div，讓 Landing 自己控制寬度 */}
-                    {/* </div> */}
-                </Route>
+                <Route path="/cytoscape" exact><div><Cytoscape/></div></Route>
+                <Route path="/" exact><Landing /></Route>
                 <Route path="/news">
-                    <div className={`${classes.narrowViewport}`}>
-                    <News />
-                    </div>
-                </Route>
-                <Route path="/tasks">
-                    <div className={`${classes.narrowViewport}`}>
-                        <Tasks />
-                    </div>
-                </Route>
-                <Route path="/rules">
-                    <div className={`${classes.narrowViewport}`}>
-                        <Rules />
-                    </div>
-                </Route>
-                <Route path="/leaderboard">
-                    <Leaderboard
-                       f height={`${height - navbarHeight}px`}
-                        tableControlRef={tableControlRef}
-                    />
-                </Route>
-                <Route path="/challenge-slt2022/challenge_overview">
-                    <div className={`${classes.narrowViewport}`}>
-                        <Challenge policy={challenge_overview} />
-                    </div>
-                </Route>
-                <Route path="/challenge-slt2022/framework">
-                    <div className={`${classes.narrowViewport}`}>
-                        <Challenge policy={framework} />
-                    </div>
-                </Route>
-                <Route path="/challenge-slt2022/upstream">
-                    <div className={`${classes.narrowViewport}`}>
-                        <Challenge policy={upstream} />
-                    </div>
-                </Route>
-                <Route path="/challenge-slt2022/submission">
-                    <div className={`${classes.narrowViewport}`}>
-                        <Challenge policy={submission} />
-                    </div>
-                </Route>
-                <Route path="/challenge-slt2022/metrics">
-                    <div className={`${classes.narrowViewport}`}>
-                        <Challenge policy={metrics} />
-                    </div>
-                </Route>
-                <Route path="/challenge-aaai2022">
-                    <div className={`${classes.narrowViewport}`}>
-                        <Challenge policy={policy_aaai2022} />
-                    </div>
+                    <div className={classes.narrowViewport}><News /></div>
                 </Route>
                 <Route path="/submit">
-                    <div className={`${classes.narrowViewport}`}>
-                        <SubmitForm login={false} />
-                    </div>
+                    <div className={classes.narrowViewport}><SubmitForm login={false} /></div>
                 </Route>
                 <Route path="/login">
-                    <div
-                        className={`${classes.narrowViewport} ${classes.LoginButton}`}
-                    >
-                        <Login />
-                    </div>
+                    <div className={`${classes.narrowViewport} ${classes.LoginButton}`}><Login /></div>
                 </Route>
-
-                {/* 當路徑匹配 /detail/:index 時，也渲染 GeneDetail 組件 */}
                 <Route path="/detail/:index" exact>
-                    <div className={classes.narrowViewport}>
-                        <GeneDetail />
-                    </div>
+                    <div className={classes.narrowViewport}><GeneDetail /></div>
                 </Route>
             </Switch>
         );
     }
+
     return (
         <div className="App">
             <Router>
@@ -399,8 +214,6 @@ function App() {
                     <NavigationBar tableControlRef={tableControlRef} />
                 </div>
                 {routes}
-
-                
             </Router>
         </div>
     );

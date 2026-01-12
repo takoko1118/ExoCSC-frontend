@@ -26,7 +26,7 @@ function RNADetail() {
         const dataCUrls = res.rna_ref_urls.slice(0, MAX_URLS).map(obj => obj.id_url);
         const dataDUrls = res.lipid_rna_urls.slice(0, MAX_URLS).map(obj => obj.id_url);
         const dataEUrls = res.protein_rna_urls.slice(0, MAX_URLS).map(obj => obj.id_url);
-
+        const refUrls = res.ref_urls ? res.ref_urls.slice(0, MAX_URLS).map(obj => obj.id_url) : [];
         const fetchAll = (urls) => Promise.all(urls.map(url => fetch(url).then(r => r.json())));
 
         const commonCols = [
@@ -50,7 +50,7 @@ function RNADetail() {
             }))
           });
         });
-
+        
         // Fetch Associated Lipids
         fetchAll(dataDUrls).then(dataDs => {
           setLipiddata({
@@ -65,22 +65,24 @@ function RNADetail() {
           });
         });
 
-        // Fetch Associated Genes
+                        // Fetch Associated Genes
         fetchAll(dataBUrls).then(dataBs => {
           setGenedata({
             columns: commonCols,
             rows: dataBs.map(d => ({
-              gene: <a href={`http://172.16.146.196:3000/gene/${d.gene_url}`} style={{ color: 'blue' }}>{d.cargo_gene}</a>,
-              tissue: d.tissue,
-              score: d.score_x,
-              cellline: d.cellLine,
-              pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a>
+              gene: d.cargo_gene ? <a href={`http://172.16.146.196:3000/gene/${d.gene_url}`} style={{ color: 'blue' }}>{d.cargo_gene}</a> : '',
+              tissue: d.tissue || '',
+              score: d.score_x || '',
+              cellline: d.cell_line_x || '',
+              pmcid: d.pmcid ? <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> : ''
             }))
           });
         });
 
+
+        const refUrlsToUse = refUrls.length > 0 ? refUrls : dataCUrls;
         // Fetch References (取第一作者)
-        fetchAll(dataCUrls).then(dataCs => {
+        fetchAll(refUrlsToUse).then(dataCs => {
           setRefdata({
             columns: [
               { label: 'Title', field: 'title', width: 250 },
@@ -90,11 +92,11 @@ function RNADetail() {
               { label: 'PMCID', field: 'pmcid', width: 120 },
             ],
             rows: dataCs.map(d => ({
-              title: d.title,
-              journal: d.journal,
-              year: d.year,
+              title: d.title || '',
+              journal: d.journal || '',
+              year: d.year || '',
               author: d.author ? d.author.split(',')[0] : '',
-              pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a>
+              pmcid: d.pmcid ? <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> : ''
             }))
           });
         }).finally(() => {

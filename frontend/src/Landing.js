@@ -10,7 +10,7 @@ import { CancerType, Content } from './components/Button';
 import 'semantic-ui-css/semantic.min.css';
 import Chatbot from './components/Chatbot';
 import RAGChatbot from "./components/RAGChatbot";
-
+import { useHistory } from "react-router-dom"; // 假設你使用 react-router
 const useStyles = makeStyles((theme) => ({
     mainWrapper: {
         width: '100%',
@@ -33,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Landing(props) {
     const classes = useStyles();
+    const history = useHistory(); // 用於跳轉頁面
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
     const ref = useRef(null);
@@ -85,9 +86,37 @@ export default function Landing(props) {
             {/* 🚀 第二部分：下方白色內容區塊 (置中排版) */}
             <div className={classes.centeredWrapper}>
                 
-                <Box style={{ marginTop: '40px', marginBottom: '60px' }}>
-                    <RAGChatbot/>
-                    {/* <Chatbot /> */}
+               {/* 🚀 修改重點：將原 RAGChatbot 換成 AI Agent 入口按鈕 */}
+                <Box style={{ 
+                    marginTop: '60px', 
+                    marginBottom: '80px', 
+                    textAlign: 'center',
+                    padding: '40px',
+                    background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+                    borderRadius: '20px',
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
+                }}>
+                    <Typography variant="h4" style={{ fontWeight: 700, color: '#2e3e93', marginBottom: '20px' }}>
+                        ExoCSC AI Analysis Intelligence
+                    </Typography>
+                    <Typography variant="body1" style={{ color: '#555', marginBottom: '30px', maxWidth: '600px', margin: '0 auto 30px' }}>
+                        Access our RAG-powered AI Agent to explore over 16,000 literatures. 
+                        Get instant insights on exosomal markers, mechanisms, and cell-to-cell communication.
+                    </Typography>
+                    
+                    <button 
+                        onClick={() => history.push("/ai-agent")} // 跳轉至新路由
+                        className="ui massive primary button"
+                        style={{ 
+                            backgroundColor: '#2e3e93', 
+                            borderRadius: '30px',
+                            padding: '15px 40px',
+                            fontSize: '1.2rem',
+                            transition: 'transform 0.3s'
+                        }}
+                    >
+                        <i className="magic icon"></i> Start AI Exploration
+                    </button>
                 </Box>
                 
                 <Box className={classes.introTitleBox}>
