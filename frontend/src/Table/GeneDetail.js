@@ -4,6 +4,7 @@ import { MDBDataTable } from 'mdbreact';
 import './Detail.css';
 import 'mdbreact/dist/css/mdb.css';
 import CytoscapeComponent from 'react-cytoscapejs';
+import Plotly from 'plotly.js-dist-min';
 
 const parseNarrative = (text) => {
   if (!text) return [];
@@ -61,6 +62,7 @@ function GeneDetail() {
   const [GOdata, setGOdata] = useState(null);
   const [KEGGdata, setKEGGdata] = useState(null);
   const [GOEnrichContext, setGOEnrichContext] = useState(null);
+  const [goEnrichmentRaw, setGoEnrichmentRaw] = useState({ csc: [], cancer: [] }); // 保存原始数据用于热图
   const [ppiElements, setPpiElements] = useState(null);
   const [isRnaSummaryExpanded, setIsRnaSummaryExpanded] = useState(false);
   const [isLipidSummaryExpanded, setIsLipidSummaryExpanded] = useState(false);
@@ -143,12 +145,127 @@ function GeneDetail() {
 
         if (res.entrezID) {
           fetch(`http://172.16.146.196:8000/api/gene-detail/?entrez_id=${Math.floor(parseFloat(res.entrezID))}`).then(r => r.json()).then(enr => {
+            // 保存原始数据用于热图
+            setGoEnrichmentRaw({
+              csc: enr.csc_context || [],
+              cancer: enr.cancer_context || []
+            });
+            
+            // 格式化数据用于表格
             const fmt = (list, cls) => ({ columns: [{ label: 'Term', field: 't', width: 300 }, { label: 'Score', field: 's', width: 100 }, { label: 'FDR', field: 'f', width: 120 }], rows: (list || []).map(c => ({ t: c.Term, s: <span className={`badge ${cls}`} style={{padding: '5px 10px'}}>{c.Score.toFixed(2)}</span>, f: c.Adjusted_P.toExponential(2) })) });
             setGOEnrichContext({ csc: fmt(enr.csc_context, 'badge-danger'), cancer: fmt(enr.cancer_context, 'badge-primary') });
           });
         }
       });
   }, [index]);
+
+  // 准备热图数据的函数
+  const prepareHeatmapData = (rawCscData, rawCancerData, topN = 15) => {
+    const allTermsMap = new Map();
+    
+    // 处理 CSC 数据
+    (rawCscData || []).forEach(item => {
+      allTermsMap.set(item.Term, {
+        term: item.Term,
+        csc_score: item.Score,
+        cancer_score: null
+      });
+    });
+    
+    // 处理 Cancer 数据
+    (rawCancerData || []).forEach(item => {
+      if (allTermsMap.has(item.Term)) {
+        allTermsMap.get(item.Term).cancer_score = item.Score;
+      } else {
+        allTermsMap.set(item.Term, {
+          term: item.Term,
+          csc_score: null,
+          cancer_score: item.Score
+        });
+      }
+    });
+    
+    // 转换为数组并排序
+    const allTerms = Array.from(allTermsMap.values())
+      .sort((a, b) => {
+        const maxA = Math.max(a.csc_score || 0, a.cancer_score || 0);
+        const maxB = Math.max(b.csc_score || 0, b.cancer_score || 0);
+        return maxB - maxA;
+      })
+      .slice(0, topN);
+    
+    const z = [
+      allTerms.map(t => t.csc_score || 0),
+      allTerms.map(t => t.cancer_score || 0)
+    ];
+    
+    const y = ['CSC Specific', 'Cancer General'];
+    const x = allTerms.map(t => {
+      const termName = t.term.split('(')[0].trim();
+      return termName.length > 60 ? termName.substring(0, 57) + '...' : termName;
+    });
+    
+    return { z, x, y };
+  };
+
+  // 渲染热图的 useEffect
+  useEffect(() => {
+    if (goEnrichmentRaw.csc.length > 0 || goEnrichmentRaw.cancer.length > 0) {
+      const heatmapData = prepareHeatmapData(goEnrichmentRaw.csc, goEnrichmentRaw.cancer, 15);
+      
+      const data = [{
+        z: heatmapData.z,
+        x: heatmapData.x,
+        y: heatmapData.y,
+        type: 'heatmap',
+        colorscale: [
+          [0, '#ffffff'],
+          [0.25, '#d1ecf1'],
+          [0.5, '#bee5eb'],
+          [0.75, '#0dcaf0'],
+          [1, '#0aa2c0']
+        ],
+        showscale: true,
+        colorbar: {
+          title: 'Score',
+          titleside: 'right'
+        }
+      }];
+      
+      const layout = {
+        title: {
+          text: 'GO Enrichment Heatmap (Top 15 Terms)',
+          font: { size: 16 }
+        },
+        xaxis: {
+          title: 'GO Terms',
+          tickangle: -45,
+          tickfont: { size: 9 }
+        },
+        yaxis: {
+          title: 'Category'
+        },
+        width: 1200,
+        height: 300,
+        margin: { l: 150, r: 100, t: 80, b: 200 }
+      };
+      
+      const config = {
+        responsive: true,
+        displayModeBar: true
+      };
+      
+      Plotly.newPlot('go-enrichment-heatmap', data, layout, config);
+    }
+    
+    // 清理函数
+    return () => {
+      const plotDiv = document.getElementById('go-enrichment-heatmap');
+      if (plotDiv) {
+        Plotly.purge(plotDiv);
+      }
+    };
+  }, [goEnrichmentRaw]);
 
   if (!data) return <div className="p-5 text-center">Loading...</div>;
 
@@ -329,6 +446,15 @@ function GeneDetail() {
 
         <div id="go-enrichment" className="section-container" style={{ padding: '20px', backgroundColor: '#fcfcfc', border: '1px solid #eee', borderRadius: '10px' }}>
           <h2>GO Enrichment</h2>
+          
+          {/* 添加热图 */}
+          {(goEnrichmentRaw.csc.length > 0 || goEnrichmentRaw.cancer.length > 0) && (
+            <div style={{ marginBottom: '30px', padding: '20px', backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
+              <h4 style={{ marginBottom: '15px', fontSize: '16px', color: '#333' }}>Heatmap (Top 15 GO Terms)</h4>
+              <div id="go-enrichment-heatmap" style={{ width: '100%', minHeight: '300px' }}></div>
+            </div>
+          )}
+          
           <div className="row">
             <div className="col-md-6">
               <h4 style={{ color: '#d9534f' }}>CSC Specific</h4>
