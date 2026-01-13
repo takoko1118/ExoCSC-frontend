@@ -62,6 +62,8 @@ function GeneDetail() {
   const [KEGGdata, setKEGGdata] = useState(null);
   const [GOEnrichContext, setGOEnrichContext] = useState(null);
   const [ppiElements, setPpiElements] = useState(null);
+  const [isRnaSummaryExpanded, setIsRnaSummaryExpanded] = useState(false);
+  const [isLipidSummaryExpanded, setIsLipidSummaryExpanded] = useState(false);
 
   const ppiStylesheet = [
     { selector: 'node', style: { 'label': 'data(label)', 'background-color': '#0275d8', 'width': 25, 'height': 25, 'font-size': '10px', 'color': '#333' } },
@@ -204,41 +206,58 @@ function GeneDetail() {
           
           {/* 新增 Interaction Summary 在這裡 */}
           <div style={{ marginTop: '30px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
-            <h3 style={{ marginBottom: '15px', fontSize: '18px', color: '#333' }}>Interaction Summary</h3>
-            <div style={{ textAlign: 'left', padding: '15px', lineHeight: '1.6' }}>
-              {geneRnaRaw.length > 0 ? geneRnaRaw.map((item, idx) => (
-                item.llm_narrative && (
-                  <div key={idx} className="narrative-box" style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#fff', borderRadius: '5px', border: '1px solid #ddd' }}>
-                    <div style={{ fontWeight: 'bold', fontSize: '11px', color: '#666', marginBottom: '10px' }}>Associated miRNA: {item.cargo_rna}</div>
-                    {parseNarrative(item.llm_narrative).map((section, secIdx) => (
-                      <div key={secIdx} style={{ marginBottom: section.label ? '15px' : '10px' }}>
-                        {section.label && (
-                          <div style={{ 
-                            fontWeight: 'bold', 
-                            fontSize: '13px', 
-                            color: '#2c3e50',
-                            marginBottom: '8px',
-                            paddingBottom: '5px',
-                            borderBottom: '1px solid #ddd'
-                          }}>
-                            {section.label}:
-                          </div>
-                        )}
-                        <div style={{ 
-                          whiteSpace: 'pre-wrap', 
-                          fontSize: '14px',
-                          lineHeight: '1.6',
-                          color: '#444',
-                          paddingLeft: section.label ? '10px' : '0'
-                        }}>
-                          {section.content}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )
-              )) : <span className="text-muted">Narrative not available.</span>}
+            <div 
+              style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                cursor: 'pointer',
+                userSelect: 'none',
+                marginBottom: isRnaSummaryExpanded ? '15px' : '0'
+              }}
+              onClick={() => setIsRnaSummaryExpanded(!isRnaSummaryExpanded)}
+            >
+              <h3 style={{ margin: 0, fontSize: '18px', color: '#333' }}>Interaction Summary</h3>
+              <span style={{ fontSize: '16px', color: '#666' }}>
+                {isRnaSummaryExpanded ? '▼' : '▶'}
+              </span>
             </div>
+            {isRnaSummaryExpanded && (
+              <div style={{ textAlign: 'left', padding: '15px', lineHeight: '1.6' }}>
+                {geneRnaRaw.length > 0 ? geneRnaRaw.map((item, idx) => (
+                  item.llm_narrative && (
+                    <div key={idx} className="narrative-box" style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#fff', borderRadius: '5px', border: '1px solid #ddd' }}>
+                      <div style={{ fontWeight: 'bold', fontSize: '11px', color: '#666', marginBottom: '10px' }}>Associated miRNA: {item.cargo_rna}</div>
+                      {parseNarrative(item.llm_narrative).map((section, secIdx) => (
+                        <div key={secIdx} style={{ marginBottom: section.label ? '15px' : '10px' }}>
+                          {section.label && (
+                            <div style={{ 
+                              fontWeight: 'bold', 
+                              fontSize: '13px', 
+                              color: '#2c3e50',
+                              marginBottom: '8px',
+                              paddingBottom: '5px',
+                              borderBottom: '1px solid #ddd'
+                            }}>
+                              {section.label}:
+                            </div>
+                          )}
+                          <div style={{ 
+                            whiteSpace: 'pre-wrap', 
+                            fontSize: '14px',
+                            lineHeight: '1.6',
+                            color: '#444',
+                            paddingLeft: section.label ? '10px' : '0'
+                          }}>
+                            {section.content}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )
+                )) : <span className="text-muted">Narrative not available.</span>}
+              </div>
+            )}
           </div>
         </div>
 
@@ -248,41 +267,58 @@ function GeneDetail() {
           
           {/* 新增 Interaction Summary 在這裡 */}
           <div style={{ marginTop: '30px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
-            <h3 style={{ marginBottom: '15px', fontSize: '18px', color: '#333' }}>Interaction Summary</h3>
-            <div style={{ textAlign: 'left', padding: '15px', lineHeight: '1.6' }}>
-              {geneLipidRaw.length > 0 ? geneLipidRaw.map((item, idx) => (
-                item.llm_narrative && (
-                  <div key={idx} className="narrative-box" style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#fff', borderRadius: '5px', border: '1px solid #ddd' }}>
-                    <div style={{ fontWeight: 'bold', fontSize: '11px', color: '#666', marginBottom: '10px' }}>Associated Lipid: {item.cargo_lipid}</div>
-                    {parseNarrative(item.llm_narrative).map((section, secIdx) => (
-                      <div key={secIdx} style={{ marginBottom: section.label ? '15px' : '10px' }}>
-                        {section.label && (
-                          <div style={{ 
-                            fontWeight: 'bold', 
-                            fontSize: '13px', 
-                            color: '#2c3e50',
-                            marginBottom: '8px',
-                            paddingBottom: '5px',
-                            borderBottom: '1px solid #ddd'
-                          }}>
-                            {section.label}:
-                          </div>
-                        )}
-                        <div style={{ 
-                          whiteSpace: 'pre-wrap', 
-                          fontSize: '14px',
-                          lineHeight: '1.6',
-                          color: '#444',
-                          paddingLeft: section.label ? '10px' : '0'
-                        }}>
-                          {section.content}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )
-              )) : <span className="text-muted">Narrative not available.</span>}
+            <div 
+              style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                cursor: 'pointer',
+                userSelect: 'none',
+                marginBottom: isLipidSummaryExpanded ? '15px' : '0'
+              }}
+              onClick={() => setIsLipidSummaryExpanded(!isLipidSummaryExpanded)}
+            >
+              <h3 style={{ margin: 0, fontSize: '18px', color: '#333' }}>Interaction Summary</h3>
+              <span style={{ fontSize: '16px', color: '#666' }}>
+                {isLipidSummaryExpanded ? '▼' : '▶'}
+              </span>
             </div>
+            {isLipidSummaryExpanded && (
+              <div style={{ textAlign: 'left', padding: '15px', lineHeight: '1.6' }}>
+                {geneLipidRaw.length > 0 ? geneLipidRaw.map((item, idx) => (
+                  item.llm_narrative && (
+                    <div key={idx} className="narrative-box" style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#fff', borderRadius: '5px', border: '1px solid #ddd' }}>
+                      <div style={{ fontWeight: 'bold', fontSize: '11px', color: '#666', marginBottom: '10px' }}>Associated Lipid: {item.cargo_lipid}</div>
+                      {parseNarrative(item.llm_narrative).map((section, secIdx) => (
+                        <div key={secIdx} style={{ marginBottom: section.label ? '15px' : '10px' }}>
+                          {section.label && (
+                            <div style={{ 
+                              fontWeight: 'bold', 
+                              fontSize: '13px', 
+                              color: '#2c3e50',
+                              marginBottom: '8px',
+                              paddingBottom: '5px',
+                              borderBottom: '1px solid #ddd'
+                            }}>
+                              {section.label}:
+                            </div>
+                          )}
+                          <div style={{ 
+                            whiteSpace: 'pre-wrap', 
+                            fontSize: '14px',
+                            lineHeight: '1.6',
+                            color: '#444',
+                            paddingLeft: section.label ? '10px' : '0'
+                          }}>
+                            {section.content}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )
+                )) : <span className="text-muted">Narrative not available.</span>}
+              </div>
+            )}
           </div>
         </div>
 
