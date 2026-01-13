@@ -4,6 +4,47 @@ import { MDBDataTable } from 'mdbreact';
 import './Detail.css';
 import 'mdbreact/dist/css/mdb.css';
 
+const parseNarrative = (text) => {
+  if (!text) return [];
+  
+  const sections = [];
+  const patterns = [
+    { label: 'Mechanism', key: 'Mechanism:' },
+    { label: 'Summary', key: 'Summary:' },
+    { label: 'Key Finding', key: 'Key Finding:' },
+    { label: 'Literature Contribution', key: 'Literature Contribution:' }
+  ];
+  
+  const positions = [];
+  patterns.forEach(pattern => {
+    const index = text.indexOf(pattern.key);
+    if (index !== -1) {
+      positions.push({ index, pattern });
+    }
+  });
+  
+  if (positions.length === 0) {
+    return [{ label: '', content: text }];
+  }
+  
+  positions.sort((a, b) => a.index - b.index);
+  
+  positions.forEach((pos, idx) => {
+    const startIndex = pos.index + pos.pattern.key.length;
+    const endIndex = idx < positions.length - 1 ? positions[idx + 1].index : text.length;
+    const content = text.substring(startIndex, endIndex).trim();
+    
+    if (content) {
+      sections.push({
+        label: pos.pattern.label,
+        content: content
+      });
+    }
+  });
+  
+  return sections;
+};
+
 function ProteinDetail() {
   const { index } = useParams();
   const [data, setData] = useState(null);
@@ -154,8 +195,32 @@ function ProteinDetail() {
               {rnaRaw.length > 0 ? rnaRaw.map((item, idx) => (
                 item.llm_narrative && (
                   <div key={idx} className="narrative-box" style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#fff', borderRadius: '5px', border: '1px solid #ddd' }}>
-                    <div style={{ fontWeight: 'bold', fontSize: '11px', color: '#666', marginBottom: '5px' }}>Associated miRNA: {item.cargo_rna}</div>
-                    <div style={{ whiteSpace: 'pre-wrap' }}>{item.llm_narrative}</div>
+                    <div style={{ fontWeight: 'bold', fontSize: '11px', color: '#666', marginBottom: '10px' }}>Associated miRNA: {item.cargo_rna}</div>
+                    {parseNarrative(item.llm_narrative).map((section, secIdx) => (
+                      <div key={secIdx} style={{ marginBottom: section.label ? '15px' : '10px' }}>
+                        {section.label && (
+                          <div style={{ 
+                            fontWeight: 'bold', 
+                            fontSize: '13px', 
+                            color: '#2c3e50',
+                            marginBottom: '8px',
+                            paddingBottom: '5px',
+                            borderBottom: '1px solid #ddd'
+                          }}>
+                            {section.label}:
+                          </div>
+                        )}
+                        <div style={{ 
+                          whiteSpace: 'pre-wrap', 
+                          fontSize: '14px',
+                          lineHeight: '1.6',
+                          color: '#444',
+                          paddingLeft: section.label ? '10px' : '0'
+                        }}>
+                          {section.content}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )
               )) : <span className="text-muted">Narrative not available.</span>}
@@ -174,8 +239,32 @@ function ProteinDetail() {
               {lipidRaw.length > 0 ? lipidRaw.map((item, idx) => (
                 item.llm_narrative && (
                   <div key={idx} className="narrative-box" style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#fff', borderRadius: '5px', border: '1px solid #ddd' }}>
-                    <div style={{ fontWeight: 'bold', fontSize: '11px', color: '#666', marginBottom: '5px' }}>Associated Lipid: {item.cargo_lipid}</div>
-                    <div style={{ whiteSpace: 'pre-wrap' }}>{item.llm_narrative}</div>
+                    <div style={{ fontWeight: 'bold', fontSize: '11px', color: '#666', marginBottom: '10px' }}>Associated Lipid: {item.cargo_lipid}</div>
+                    {parseNarrative(item.llm_narrative).map((section, secIdx) => (
+                      <div key={secIdx} style={{ marginBottom: section.label ? '15px' : '10px' }}>
+                        {section.label && (
+                          <div style={{ 
+                            fontWeight: 'bold', 
+                            fontSize: '13px', 
+                            color: '#2c3e50',
+                            marginBottom: '8px',
+                            paddingBottom: '5px',
+                            borderBottom: '1px solid #ddd'
+                          }}>
+                            {section.label}:
+                          </div>
+                        )}
+                        <div style={{ 
+                          whiteSpace: 'pre-wrap', 
+                          fontSize: '14px',
+                          lineHeight: '1.6',
+                          color: '#444',
+                          paddingLeft: section.label ? '10px' : '0'
+                        }}>
+                          {section.content}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )
               )) : <span className="text-muted">Narrative not available.</span>}
