@@ -11,8 +11,26 @@ const UniversalMolecularTable = ({ type, title, endpoint }) => {
 
   const location = useLocation();
 
+  // 調試：確認組件渲染
+  console.log(`[${type}] Component rendered with endpoint: ${endpoint}, pathname: ${location.pathname}`);
+
   useEffect(() => {
+    console.log(`[${type}] useEffect triggered, endpoint: ${endpoint}, search: ${location.search}`);
+    let isMounted = true;
+    let loadingCleared = false;
+    
+    // 最終安全機制：無論如何，8秒後必須停止loading
+    const finalTimeout = setTimeout(() => {
+      if (isMounted && !loadingCleared) {
+        console.warn(`[${type}] Force clearing loading state after 8 seconds`);
+        setIsInitialLoading(false);
+        loadingCleared = true;
+      }
+    }, 8000);
+    
     const fetchData = async () => {
+      console.log(`[${type}] Starting fetch for endpoint: ${endpoint}`);
+      
       try {
         const queryParams = new URLSearchParams(location.search);
         const tissueFilter = queryParams.get('tissue');
@@ -20,23 +38,88 @@ const UniversalMolecularTable = ({ type, title, endpoint }) => {
         const baseApiUrl = `http://172.16.146.196:8000/search/table/${endpoint}/`;
         const filterQuery = tissueFilter ? `&tissue=${encodeURIComponent(tissueFilter)}` : '';
 
-        // Step A: 快速抓取
-        const quickRes = await fetch(`${baseApiUrl}?limit=50${filterQuery}`);
-        const quickData = await quickRes.json();
-        setAllData(quickData.results || []);
-        setIsInitialLoading(false);
+        // Step A: 快速抓取（縮短超時時間到5秒）
+        let quickDataLoaded = false;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => {
+          console.log(`[${type}] Quick fetch timeout after 5 seconds`);
+          controller.abort();
+        }, 5000);
 
-        // Step B: 背景抓取完整資料
-        const fullRes = await fetch(`${baseApiUrl}?limit=10000${filterQuery}`);
-        const fullData = await fullRes.json();
-        setAllData(fullData.results || []);
+        try {
+          console.log(`[${type}] Fetching quick data from: ${baseApiUrl}?limit=50${filterQuery}`);
+          const quickRes = await fetch(`${baseApiUrl}?limit=50${filterQuery}`, {
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
+          
+          if (!quickRes.ok) {
+            throw new Error(`HTTP error! status: ${quickRes.status}`);
+          }
+          const quickData = await quickRes.json();
+          console.log(`[${type}] Quick data received, count: ${quickData.results?.length || 0}`);
+          
+          if (isMounted) {
+            setAllData(quickData.results || []);
+            setIsInitialLoading(false);
+            loadingCleared = true;
+            clearTimeout(finalTimeout);
+            quickDataLoaded = true;
+          }
+        } catch (quickError) {
+          clearTimeout(timeoutId);
+          if (quickError.name === 'AbortError') {
+            console.error(`[${type}] Quick fetch timeout`);
+          } else {
+            console.error(`[${type}] Error in quick fetch:`, quickError);
+          }
+          // 即使快速抓取失敗，也要停止loading
+          if (isMounted && !loadingCleared) {
+            setIsInitialLoading(false);
+            loadingCleared = true;
+            clearTimeout(finalTimeout);
+          }
+        }
+
+        // Step B: 背景抓取完整資料（使用更大的limit以確保獲取所有數據）
+        if (isMounted) {
+          try {
+            console.log(`[${type}] Fetching full data from: ${baseApiUrl}?limit=20000${filterQuery}`);
+            const fullRes = await fetch(`${baseApiUrl}?limit=20000${filterQuery}`);
+            if (fullRes.ok) {
+              const fullData = await fullRes.json();
+              console.log(`[${type}] Full data received, count: ${fullData.results?.length || 0}`);
+              if (isMounted) {
+                setAllData(fullData.results || []);
+              }
+            } else if (!quickDataLoaded) {
+              console.error(`[${type}] Full fetch failed with status: ${fullRes.status}`);
+            }
+          } catch (fullError) {
+            console.error(`[${type}] Error in full fetch:`, fullError);
+            // 如果快速抓取失敗且完整抓取也失敗，確保有數據顯示
+            if (!quickDataLoaded && isMounted) {
+              setAllData([]);
+            }
+          }
+        }
       } catch (error) {
-        console.error(`Error fetching ${type} data:`, error);
-        setIsInitialLoading(false);
+        console.error(`[${type}] Error fetching data:`, error);
+        if (isMounted && !loadingCleared) {
+          setIsInitialLoading(false);
+          loadingCleared = true;
+          clearTimeout(finalTimeout);
+        }
       }
     };
 
     fetchData();
+    
+    // Cleanup function
+    return () => {
+      isMounted = false;
+      clearTimeout(finalTimeout);
+    };
   }, [endpoint, type, location.search]);
 
   // 動態標題

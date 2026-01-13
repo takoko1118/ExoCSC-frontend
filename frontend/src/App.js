@@ -112,6 +112,9 @@ function App() {
                 <Route path="/all/:index" exact>
                     <div className={classes.narrowViewport}><DetailPage /></div>
                 </Route>
+                <Route path="/Gene" exact>
+                    <div className={classes.narrowViewport}><GeneTable /></div>
+                </Route>
                 <Route path="/gene/:index" exact>
                     <div className={classes.narrowViewport}><GeneDetail /></div>
                 </Route>
@@ -123,9 +126,6 @@ function App() {
                 </Route>
                 <Route path="/rna/:index" exact>
                     <div className={classes.narrowViewport}><RNADetail /></div>
-                </Route>
-                <Route path="/Gene" exact>
-                    <div className={classes.narrowViewport}><GeneTable /></div>
                 </Route>
                 <Route path="/histograme" exact>
                     <div className={classes.narrowViewport}><Histograme /></div>
@@ -167,6 +167,7 @@ function App() {
             <Switch>
                 {sharedRoutes}
                 <Route path="/all/:index" exact><DetailPage /></Route>
+                <Route path="/Gene" exact><GeneTable /></Route>
                 <Route path="/gene/:index" exact><GeneDetail /></Route>
                 <Route path="/gene" exact><GeneDetail /></Route>
                 <Route path="/protein/:index" exact><ProteinDetail /></Route>
@@ -176,7 +177,6 @@ function App() {
                 <Route path="/Lung" exact><LungTable /></Route>
                 <Route path="/Breast" exact><BreastTable /></Route>
                 <Route path="/Colon" exact><ColonTable /></Route>
-                <Route path="/Gene" exact><GeneTable /></Route>
                 <Route path="/Protein" exact><ProteinTable /></Route>
                 <Route path="/Lipid" exact><LipidTable /></Route>
                 <Route path="/miRNA" exact><RNATable /></Route>
