@@ -115,6 +115,9 @@ function App() {
                 <Route path="/gene/:index" exact>
                     <div className={classes.narrowViewport}><GeneDetail /></div>
                 </Route>
+                <Route path="/gene" exact>
+                    <div className={classes.narrowViewport}><GeneDetail /></div>
+                </Route>
                 <Route path="/protein/:index" exact>
                     <div className={classes.narrowViewport}><ProteinDetail /></div>
                 </Route>
@@ -165,6 +168,7 @@ function App() {
                 {sharedRoutes}
                 <Route path="/all/:index" exact><DetailPage /></Route>
                 <Route path="/gene/:index" exact><GeneDetail /></Route>
+                <Route path="/gene" exact><GeneDetail /></Route>
                 <Route path="/protein/:index" exact><ProteinDetail /></Route>
                 <Route path="/rna/:index" exact><RNADetail /></Route>
                 <Route path="/lipid/:index" exact><LipidDetail /></Route>

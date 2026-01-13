@@ -11,6 +11,9 @@ function RNADetail() {
   const [Lipiddata, setLipiddata] = useState(null);
   const [Proteindata, setProteindata] = useState(null);
   const [Refdata, setRefdata] = useState(null);
+  const [geneRaw, setGeneRaw] = useState([]); // 新增 state 儲存 gene 原始資料
+  const [proteinRaw, setProteinRaw] = useState([]); // 新增 state 儲存 protein 原始資料
+  const [lipidRaw, setLipidRaw] = useState([]); // 新增 state 儲存 lipid 原始資料
   const [isLoading, setIsLoading] = useState(true);
   const MAX_URLS = 20;
 
@@ -39,6 +42,7 @@ function RNADetail() {
 
         // Fetch Associated Proteins
         fetchAll(dataEUrls).then(dataEs => {
+          setProteinRaw(dataEs); // 儲存原始資料
           setProteindata({
             columns: commonCols,
             rows: dataEs.map(d => ({
@@ -53,6 +57,7 @@ function RNADetail() {
         
         // Fetch Associated Lipids
         fetchAll(dataDUrls).then(dataDs => {
+          setLipidRaw(dataDs); // 儲存原始資料
           setLipiddata({
             columns: commonCols,
             rows: dataDs.map(d => ({
@@ -65,8 +70,9 @@ function RNADetail() {
           });
         });
 
-                        // Fetch Associated Genes
+        // Fetch Associated Genes
         fetchAll(dataBUrls).then(dataBs => {
+          setGeneRaw(dataBs); // 儲存原始資料
           setGenedata({
             columns: commonCols,
             rows: dataBs.map(d => ({
@@ -155,16 +161,61 @@ function RNADetail() {
         <div id="gene-gene" className="section-container">
           <h2>Associated Genes</h2>
           {Genedata && <MDBDataTable striped responsive small noBottomColumns searching={false} paging={false} data={Genedata} />}
+          
+          {/* 新增 Interaction Summary 在這裡 */}
+          <div style={{ marginTop: '30px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
+            <h3 style={{ marginBottom: '15px', fontSize: '18px', color: '#333' }}>Interaction Summary</h3>
+            <div style={{ textAlign: 'left', padding: '15px', lineHeight: '1.6' }}>
+              {geneRaw.length > 0 ? geneRaw.map((item, idx) => (
+                item.llm_narrative && (
+                  <div key={idx} className="narrative-box" style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#fff', borderRadius: '5px', border: '1px solid #ddd' }}>
+                    <div style={{ fontWeight: 'bold', fontSize: '11px', color: '#666', marginBottom: '5px' }}>Associated Gene: {item.cargo_gene}</div>
+                    <div style={{ whiteSpace: 'pre-wrap' }}>{item.llm_narrative}</div>
+                  </div>
+                )
+              )) : <span className="text-muted">Narrative not available.</span>}
+            </div>
+          </div>
         </div>
 
         <div id="gene-protein" className="section-container">
           <h2>Associated Proteins</h2>
           {Proteindata && <MDBDataTable striped responsive small noBottomColumns searching={false} paging={false} data={Proteindata} />}
+          
+          {/* 新增 Interaction Summary 在這裡 */}
+          <div style={{ marginTop: '30px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
+            <h3 style={{ marginBottom: '15px', fontSize: '18px', color: '#333' }}>Interaction Summary</h3>
+            <div style={{ textAlign: 'left', padding: '15px', lineHeight: '1.6' }}>
+              {proteinRaw.length > 0 ? proteinRaw.map((item, idx) => (
+                item.llm_narrative && (
+                  <div key={idx} className="narrative-box" style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#fff', borderRadius: '5px', border: '1px solid #ddd' }}>
+                    <div style={{ fontWeight: 'bold', fontSize: '11px', color: '#666', marginBottom: '5px' }}>Associated Protein: {item.cargo_protein}</div>
+                    <div style={{ whiteSpace: 'pre-wrap' }}>{item.llm_narrative}</div>
+                  </div>
+                )
+              )) : <span className="text-muted">Narrative not available.</span>}
+            </div>
+          </div>
         </div>
 
         <div id="gene-lipid" className="section-container">
           <h2>Associated Lipids</h2>
           {Lipiddata && <MDBDataTable striped responsive small noBottomColumns searching={false} paging={false} data={Lipiddata} />}
+          
+          {/* 新增 Interaction Summary 在這裡 */}
+          <div style={{ marginTop: '30px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
+            <h3 style={{ marginBottom: '15px', fontSize: '18px', color: '#333' }}>Interaction Summary</h3>
+            <div style={{ textAlign: 'left', padding: '15px', lineHeight: '1.6' }}>
+              {lipidRaw.length > 0 ? lipidRaw.map((item, idx) => (
+                item.llm_narrative && (
+                  <div key={idx} className="narrative-box" style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#fff', borderRadius: '5px', border: '1px solid #ddd' }}>
+                    <div style={{ fontWeight: 'bold', fontSize: '11px', color: '#666', marginBottom: '5px' }}>Associated Lipid: {item.cargo_lipid}</div>
+                    <div style={{ whiteSpace: 'pre-wrap' }}>{item.llm_narrative}</div>
+                  </div>
+                )
+              )) : <span className="text-muted">Narrative not available.</span>}
+            </div>
+          </div>
         </div>
 
         <div id="references" className="section-container">

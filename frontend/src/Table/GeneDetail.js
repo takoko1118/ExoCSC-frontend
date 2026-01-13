@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory, useLocation } from 'react-router-dom';
 import { MDBDataTable } from 'mdbreact';
 import './Detail.css';
 import 'mdbreact/dist/css/mdb.css';
@@ -7,6 +7,8 @@ import CytoscapeComponent from 'react-cytoscapejs';
 
 function GeneDetail() {
   const { index } = useParams();
+  const history = useHistory();
+  const location = useLocation();
   const [data, setData] = useState(null);
   const [geneRnaRaw, setGeneRnaRaw] = useState([]);
   const [geneLipidRaw, setGeneLipidRaw] = useState([]); // 新增 state 儲存 lipid 原始資料
@@ -26,7 +28,32 @@ function GeneDetail() {
     { selector: 'edge', style: { 'width': 1.5, 'line-color': '#ccc', 'curve-style': 'bezier', 'opacity': 0.7 } }
   ];
 
+  // 处理URL查询参数中的entrez_id
   useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const entrezId = searchParams.get('entrez_id');
+    
+    // 如果有entrez_id查询参数，先查找对应的gene ID
+    if (entrezId && !index) {
+      fetch(`http://172.16.146.196:8000/api/gene-by-entrez/?entrez_id=${entrezId}`)
+        .then(response => response.json())
+        .then(result => {
+          if (result.gene_id) {
+            // 重定向到对应的gene ID页面
+            history.replace(`/gene/${result.gene_id}`);
+          } else {
+            console.error('Gene not found for entrez_id:', entrezId);
+          }
+        })
+        .catch(err => {
+          console.error('Error fetching gene by entrez_id:', err);
+        });
+    }
+  }, [location.search, history, index]);
+
+  useEffect(() => {
+    // 如果没有index（可能是通过entrez_id查询），不执行数据获取
+    if (!index) return;
     fetch(`http://172.16.146.196:8000/search/table/Gene/${index}`)
       .then((response) => response.json())
       .then((res) => {
