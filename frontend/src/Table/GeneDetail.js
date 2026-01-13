@@ -227,8 +227,24 @@ function GeneDetail() {
         ],
         showscale: true,
         colorbar: {
-          title: 'Score',
-          titleside: 'right'
+          title: {
+            text: 'Score',
+            side: 'right',
+            font: { size: 14 }
+          },
+          thickness: 20,
+          xref: 'paper',     // 添加这个，使用独立坐标系
+          yref: 'paper',    // 添加这个
+          x: 0.0,          // 从 1.1 减小到 1.02，向左移动
+          xanchor: 'left',
+          xpad: 2,          // 从 3 减小到 2
+          y: 1.5,           // 从 1.5 改为 0.5（paper 坐标系使用 0-1）
+          yanchor: 'middle',
+          len: 1.0,         // 从 1.0 改为 0.4（使用比例）
+          lenmode: 'fraction',  // 启用比例模式
+          tickfont: { size: 8 },
+          ticklen: 8,
+          ticklabelposition: 'outside'
         }
       }];
       
@@ -243,11 +259,13 @@ function GeneDetail() {
           tickfont: { size: 9 }
         },
         yaxis: {
-          title: 'Category'
+          title: 'Category',
+          tickfont: { size: 12 }  // 可以增加 y 轴标签字体大小
         },
         width: 1200,
-        height: 300,
-        margin: { l: 150, r: 100, t: 80, b: 200 }
+        height: 350,// 从 300 增加到 500（或更大），单元格会变高
+        margin: { l: 150, r: 200, t: 80, b: 200 }
+
       };
       
       const config = {
