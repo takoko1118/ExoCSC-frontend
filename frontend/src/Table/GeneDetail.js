@@ -112,7 +112,7 @@ function GeneDetail() {
         }
 
         const dataBUrls = res.gene_rna_urls.map((obj) => obj.id_url);
-        const dataCUrls = res.gene_ref_urls.map((obj) => obj.id_url);
+        // 不再使用 GeneRefTable，只使用 ref_urls（通过 pmcid 映射到 Ref 表）
         const refUrls = res.ref_urls ? res.ref_urls.slice(0, 20).map(obj => obj.id_url) : [];
         const dataDUrls = res.other_gene_ids.filter((obj) => obj.cellType === 'CSC').slice(0, 20).map((obj) => obj.url);
         const dataEUrls = res.other_gene_ids.filter((obj) => obj.cellType === 'cancer').slice(0, 20).map((obj) => obj.url);
@@ -134,8 +134,15 @@ function GeneDetail() {
         fetchAll(dataFUrls).then(fs => {
           setGeneLipidRaw(fs); // 儲存原始資料
           setLipiddata({ columns: commonCols, rows: fs.map(d => ({ gene: <a href={`http://172.16.146.196:3000/lipid/${d.lipid_url}`} style={{ color: 'blue' }}>{d.cargo_lipid}</a>, tissue: d.tissue, score: d.score_y, cellline: d.cellLine, pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> })) });
-        });        const refUrlsToUse = refUrls.length > 0 ? refUrls : dataCUrls;
-        fetchAll(refUrlsToUse).then(cs => setRefdata({ columns: [{ label: 'Title', field: 'title', width: 250 }, { label: 'Journal', field: 'journal', width: 150 }, { label: 'Year', field: 'year', width: 80 }, { label: 'Author', field: 'author', width: 120 }, { label: 'PMCID', field: 'pmcid', width: 120 }], rows: cs.map(d => ({ title: d.title || '', journal: d.journal || '', year: d.year || '', author: d.author ? d.author.split(',')[0] : '', pmcid: d.pmcid ? <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> : '' })) }));
+        });
+        
+        // 只使用 refUrls（通过 pmcid 映射到 Ref 表），不再使用 GeneRefTable
+        if (refUrls.length > 0) {
+          fetchAll(refUrls).then(cs => setRefdata({ columns: [{ label: 'Title', field: 'title', width: 250 }, { label: 'Journal', field: 'journal', width: 150 }, { label: 'Year', field: 'year', width: 80 }, { label: 'Author', field: 'author', width: 120 }, { label: 'PMCID', field: 'pmcid', width: 120 }], rows: cs.map(d => ({ title: d.title || '', journal: d.journal || '', year: d.year || '', author: d.author ? d.author.split(',')[0] : '', pmcid: d.pmcid ? <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> : '' })) }));
+        } else {
+          // 如果没有 ref_urls，设置为空数据
+          setRefdata({ columns: [{ label: 'Title', field: 'title', width: 250 }, { label: 'Journal', field: 'journal', width: 150 }, { label: 'Year', field: 'year', width: 80 }, { label: 'Author', field: 'author', width: 120 }, { label: 'PMCID', field: 'pmcid', width: 120 }], rows: [] });
+        }
         fetch(`http://172.16.146.196:8000/gene/${parseInt(res.entrezID)}/go/`).then(r => r.json()).then(go => setGOdata({ columns: [{ label: 'GO ID', field: 'go_id', width: 150 }, { label: 'GO Name', field: 'go_name', width: 350 }, { label: 'Domain', field: 'domain', width: 100 }], rows: go.map(g => ({ go_id: g.go_id, go_name: g.go_name, domain: g.domain })) }));
 
         fetch(`http://172.16.146.196:8000/search/table/GeneKegg/${index}/`).then(r => r.json()).then(kegg => {
