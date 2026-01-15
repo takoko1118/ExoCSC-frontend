@@ -4,30 +4,30 @@ class Browse extends Component {
   render() {
     return (
       <div style={styles.wrapper}>
-        <h2 style={styles.header}>ExCSC Browse Table</h2>
+        <h2 style={styles.header}>Browse by</h2>
         <table style={styles.table}>
           <thead>
             <tr>
-              <th style={styles.th}>Tissue</th>
-              <th style={styles.th}>Gene / Protein / RNA</th>
-              <th style={styles.th}>Metabolite</th>
+              <th style={styles.th}>Tissue Source</th>
+              <th style={styles.th}>Molecular Type</th>
             </tr>
           </thead>
           <tbody>
             <tr style={styles.tr}>
               <td style={styles.td}><a href="http://172.16.146.196:3000/Breast" style={styles.link}>Breast</a></td>
               <td style={styles.td}><a href="http://172.16.146.196:3000/Gene" style={styles.link}>Gene</a></td>
-              <td style={styles.td}><a href="http://172.16.146.196:3000/Lipid" style={styles.link}>Lipid</a></td>
             </tr>
             <tr style={styles.tr}>
               <td style={styles.td}><a href="http://172.16.146.196:3000/Lung" style={styles.link}>Lung</a></td>
               <td style={styles.td}><a href="http://172.16.146.196:3000/Protein" style={styles.link}>Protein</a></td>
-              <td style={styles.td}></td>
             </tr>
             <tr style={styles.tr}>
               <td style={styles.td}><a href="http://172.16.146.196:3000/Colon" style={styles.link}>Colon</a></td>
               <td style={styles.td}><a href="http://172.16.146.196:3000/miRNA" style={styles.link}>miRNA</a></td>
+            </tr>
+            <tr style={styles.tr}>
               <td style={styles.td}></td>
+              <td style={styles.td}><a href="http://172.16.146.196:3000/Lipid" style={styles.link}>Lipid</a></td>
             </tr>
           </tbody>
         </table>
@@ -65,7 +65,7 @@ const styles = {
     backgroundColor: '#2e3e93',
     color: '#fff',
     padding: '12px',
-    textAlign: 'left',
+    textAlign: 'center',  // 從 'left' 改為 'center'
     fontWeight: 'bold',
   },
   tr: {

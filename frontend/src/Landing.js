@@ -73,7 +73,7 @@ export default function Landing(props) {
                             variant="body2" 
                             style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '15px', textTransform: 'uppercase', letterSpacing: '1px' }}
                         >
-                            Browse Content Type
+                            {/* Browse Content Type */}
                         </Typography>
                         <Grid container justifyContent="center" spacing={5}>
                             <Grid item><CancerType /></Grid>
@@ -97,11 +97,10 @@ export default function Landing(props) {
                     boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
                 }}>
                     <Typography variant="h4" style={{ fontWeight: 700, color: '#2e3e93', marginBottom: '20px' }}>
-                        ExoCSC AI Analysis Intelligence
+                        Chatbot
                     </Typography>
                     <Typography variant="body1" style={{ color: '#555', marginBottom: '30px', maxWidth: '600px', margin: '0 auto 30px' }}>
-                        Access our RAG-powered AI Agent to explore over 16,000 literatures. 
-                        Get instant insights on exosomal markers, mechanisms, and cell-to-cell communication.
+                    Exploration AI: RAG-Powered Marker Discovery Navigate 16,000+ articles via text-mining to instantly identify cancer and CSC-specific exosomal markers and their molecular signatures.
                     </Typography>
                     
                     <button 
@@ -115,7 +114,7 @@ export default function Landing(props) {
                             transition: 'transform 0.3s'
                         }}
                     >
-                        <i className="magic icon"></i> Start AI Exploration
+                        <i className="magic icon"></i> Start 
                     </button>
                 </Box>
                 

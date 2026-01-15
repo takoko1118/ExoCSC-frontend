@@ -18,7 +18,7 @@ const optionsCancerType = [
 
 export const CancerType = () => (
   <Button.Group color='teal'>
-    <Button >Browse Cancer Type</Button>
+    <Button >Browse by Tissue Source</Button>
 
     <Dropdown
       className='button icon'
@@ -31,7 +31,7 @@ export const CancerType = () => (
 
 export const Content = () => (
   <Button.Group color='teal'>
-    <Button >Browse Content Type</Button>
+    <Button >Browse by Molecular Type</Button>
     <Dropdown
       className='button icon'
       floating
