@@ -47,6 +47,97 @@ const parseNarrative = (text) => {
   return sections;
 };
 
+const parseMolecularNarrative = (text) => {
+  if (!text) return [];
+  
+  // 过滤引用标记的函数
+  const removeSourceReferences = (str) => {
+    if (!str) return '';
+    
+    let result = str;
+    // 使用函数来匹配和移除 [Source: ...] 格式，包括嵌套的方括号
+    // 匹配模式：[Source: 任意内容] 或 [Source: 任意内容, Ref[...]]
+    // 策略：找到所有 [Source: 的位置，然后找到对应的结束 ]
+    let index = 0;
+    while (index < result.length) {
+      const sourceIndex = result.indexOf('[Source:', index);
+      if (sourceIndex === -1) break;
+      
+      // 从 [Source: 开始查找对应的结束 ]
+      let bracketCount = 0;
+      let endIndex = sourceIndex;
+      let found = false;
+      
+      for (let i = sourceIndex; i < result.length; i++) {
+        if (result[i] === '[') {
+          bracketCount++;
+        } else if (result[i] === ']') {
+          bracketCount--;
+          if (bracketCount === 0) {
+            endIndex = i;
+            found = true;
+            break;
+          }
+        }
+      }
+      
+      if (found) {
+        // 移除这个引用标记
+        result = result.substring(0, sourceIndex) + result.substring(endIndex + 1);
+        index = sourceIndex; // 继续从当前位置查找
+      } else {
+        // 如果找不到匹配的 ]，跳过这个 [Source:
+        index = sourceIndex + 8; // 跳过 '[Source:'
+      }
+    }
+    
+    // 清理多余的空格
+    result = result.replace(/\s+/g, ' ').trim();
+    return result;
+  };
+  
+  const sections = [];
+  const patterns = [
+    { label: 'General Role', key: 'General Role:' },
+    { label: 'Exosomal Involvement', key: 'Exosomal Involvement:' },
+    { label: 'Synergistic Interactions', key: 'Synergistic Interactions:' },
+    { label: 'Clinical Potential', key: 'Clinical Potential:' }
+  ];
+  
+  const positions = [];
+  patterns.forEach(pattern => {
+    const index = text.indexOf(pattern.key);
+    if (index !== -1) {
+      positions.push({ index, pattern });
+    }
+  });
+  
+  if (positions.length === 0) {
+    const cleanedText = removeSourceReferences(text);
+    return cleanedText ? [{ label: '', content: cleanedText }] : [];
+  }
+  
+  positions.sort((a, b) => a.index - b.index);
+  
+  positions.forEach((pos, idx) => {
+    const startIndex = pos.index + pos.pattern.key.length;
+    const endIndex = idx < positions.length - 1 ? positions[idx + 1].index : text.length;
+    let content = text.substring(startIndex, endIndex).trim();
+    
+    // 过滤引用标记
+    content = removeSourceReferences(content);
+    
+    if (content) {
+      sections.push({
+        label: pos.pattern.label,
+        content: content
+      });
+    }
+  });
+  
+  return sections;
+};
+
 function GeneDetail() {
   const { index } = useParams();
   const history = useHistory();
@@ -330,6 +421,40 @@ function GeneDetail() {
               
             </tbody>
           </table>
+          
+          {/* Molecular Narrative Section */}
+          {data.molecular_narrative && (
+            <div style={{ marginTop: '30px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
+              <h3 style={{ marginTop: 0, marginBottom: '20px', fontSize: '18px', color: '#333' }}>Molecular Summary</h3>
+              <div style={{ textAlign: 'left', padding: '15px', lineHeight: '1.6', backgroundColor: '#fff', borderRadius: '5px', border: '1px solid #ddd' }}>
+                {parseMolecularNarrative(data.molecular_narrative).map((section, secIdx) => (
+                  <div key={secIdx} style={{ marginBottom: section.label ? '15px' : '10px' }}>
+                    {section.label && (
+                      <div style={{ 
+                        fontWeight: 'bold', 
+                        fontSize: '13px', 
+                        color: '#2c3e50',
+                        marginBottom: '8px',
+                        paddingBottom: '5px',
+                        borderBottom: '1px solid #ddd'
+                      }}>
+                        {section.label}:
+                      </div>
+                    )}
+                    <div style={{ 
+                      whiteSpace: 'pre-wrap', 
+                      fontSize: '14px',
+                      lineHeight: '1.6',
+                      color: '#444',
+                      paddingLeft: section.label ? '10px' : '0'
+                    }}>
+                      {section.content}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <div id="geneCC" className="section-container">
