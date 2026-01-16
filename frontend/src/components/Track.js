@@ -6,7 +6,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import { useTheme } from '@material-ui/core/styles';
 import { Box, Typography, Divider } from '@material-ui/core';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 
 import { capitalizeFirstLetter } from './Utilies';
 
@@ -32,7 +32,7 @@ export default function Track(props) {
   const { urlTrack } = useParams();
   const { Icon, intro, color, rules } = props.infos.filter((info) => (info.name == urlTrack))[0];
 
-  const trackTheme = createMuiTheme({
+  const trackTheme = createTheme({
     ...theme,
   })
   trackTheme.palette.primary.main = color;

@@ -7,6 +7,52 @@ import 'mdbreact/dist/css/mdb.css';
 const parseNarrative = (text) => {
   if (!text) return [];
   
+  // 过滤引用标记的函数
+  const removeSourceReferences = (str) => {
+    if (!str) return '';
+    
+    let result = str;
+    // 使用函数来匹配和移除 [Source: ...] 格式，包括嵌套的方括号
+    // 匹配模式：[Source: 任意内容] 或 [Source: 任意内容, Ref[...]]
+    // 策略：找到所有 [Source: 的位置，然后找到对应的结束 ]
+    let index = 0;
+    while (index < result.length) {
+      const sourceIndex = result.indexOf('[Source:', index);
+      if (sourceIndex === -1) break;
+      
+      // 从 [Source: 开始查找对应的结束 ]
+      let bracketCount = 0;
+      let endIndex = sourceIndex;
+      let found = false;
+      
+      for (let i = sourceIndex; i < result.length; i++) {
+        if (result[i] === '[') {
+          bracketCount++;
+        } else if (result[i] === ']') {
+          bracketCount--;
+          if (bracketCount === 0) {
+            endIndex = i;
+            found = true;
+            break;
+          }
+        }
+      }
+      
+      if (found) {
+        // 移除这个引用标记
+        result = result.substring(0, sourceIndex) + result.substring(endIndex + 1);
+        index = sourceIndex; // 继续从当前位置查找
+      } else {
+        // 如果找不到匹配的 ]，跳过这个 [Source:
+        index = sourceIndex + 8; // 跳过 '[Source:'
+      }
+    }
+    
+    // 清理多余的空格
+    result = result.replace(/\s+/g, ' ').trim();
+    return result;
+  };
+  
   const sections = [];
   const patterns = [
     { label: 'Mechanism', key: 'Mechanism:' },
@@ -24,7 +70,8 @@ const parseNarrative = (text) => {
   });
   
   if (positions.length === 0) {
-    return [{ label: '', content: text }];
+    const cleanedText = removeSourceReferences(text);
+    return cleanedText ? [{ label: '', content: cleanedText }] : [];
   }
   
   positions.sort((a, b) => a.index - b.index);
@@ -32,7 +79,10 @@ const parseNarrative = (text) => {
   positions.forEach((pos, idx) => {
     const startIndex = pos.index + pos.pattern.key.length;
     const endIndex = idx < positions.length - 1 ? positions[idx + 1].index : text.length;
-    const content = text.substring(startIndex, endIndex).trim();
+    let content = text.substring(startIndex, endIndex).trim();
+    
+    // 过滤引用标记
+    content = removeSourceReferences(content);
     
     if (content) {
       sections.push({
@@ -335,8 +385,12 @@ function ProteinDetail() {
             </div>
             {isRnaSummaryExpanded && (
               <div style={{ textAlign: 'left', padding: '15px', lineHeight: '1.6' }}>
-                {rnaRaw.length > 0 ? rnaRaw.map((item, idx) => (
-                  item.llm_narrative && (
+                {(() => {
+                  const narratives = rnaRaw.filter(item => item.llm_narrative);
+                  if (narratives.length === 0) {
+                    return <span className="text-muted">Narrative not available.</span>;
+                  }
+                  return narratives.map((item, idx) => (
                     <div key={idx} className="narrative-box" style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#fff', borderRadius: '5px', border: '1px solid #ddd' }}>
                       <div style={{ fontWeight: 'bold', fontSize: '11px', color: '#666', marginBottom: '10px' }}>Associated miRNA: {item.cargo_rna}</div>
                       {parseNarrative(item.llm_narrative).map((section, secIdx) => (
@@ -365,8 +419,8 @@ function ProteinDetail() {
                         </div>
                       ))}
                     </div>
-                  )
-                )) : <span className="text-muted">Narrative not available.</span>}
+                  ));
+                })()}
               </div>
             )}
           </div>
@@ -396,8 +450,12 @@ function ProteinDetail() {
             </div>
             {isLipidSummaryExpanded && (
               <div style={{ textAlign: 'left', padding: '15px', lineHeight: '1.6' }}>
-                {lipidRaw.length > 0 ? lipidRaw.map((item, idx) => (
-                  item.llm_narrative && (
+                {(() => {
+                  const narratives = lipidRaw.filter(item => item.llm_narrative);
+                  if (narratives.length === 0) {
+                    return <span className="text-muted">Narrative not available.</span>;
+                  }
+                  return narratives.map((item, idx) => (
                     <div key={idx} className="narrative-box" style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#fff', borderRadius: '5px', border: '1px solid #ddd' }}>
                       <div style={{ fontWeight: 'bold', fontSize: '11px', color: '#666', marginBottom: '10px' }}>Associated Lipid: {item.cargo_lipid}</div>
                       {parseNarrative(item.llm_narrative).map((section, secIdx) => (
@@ -426,8 +484,8 @@ function ProteinDetail() {
                         </div>
                       ))}
                     </div>
-                  )
-                )) : <span className="text-muted">Narrative not available.</span>}
+                  ));
+                })()}
               </div>
             )}
           </div>

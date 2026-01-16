@@ -9,10 +9,17 @@ import 'semantic-ui-css/semantic.min.css';
 import { createTheme } from '@material-ui/core/styles'
 
 // 🚀 在這裡注入修補程式，解決 "process is not defined" 錯誤
-if (typeof window !== 'undefined' && typeof window.process === 'undefined') {
-  window.process = {
-    env: { NODE_ENV: 'development' },
-  };
+if (typeof window !== 'undefined') {
+  if (typeof window.process === 'undefined') {
+    window.process = {
+      env: { NODE_ENV: process.env.NODE_ENV || 'development' },
+    };
+  }
+  if (typeof process === 'undefined') {
+    window.process = window.process || {
+      env: { NODE_ENV: 'development' },
+    };
+  }
 }
 
 

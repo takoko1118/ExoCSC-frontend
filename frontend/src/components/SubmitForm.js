@@ -3,7 +3,7 @@ import { HashLink } from 'react-router-hash-link';
 import Clock from "react-live-clock";
 
 import { Typography } from "@material-ui/core";
-import { useTheme, createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import { useTheme, createTheme, ThemeProvider } from "@material-ui/core/styles";
 import { useLocation } from "react-router-dom";
 
 import { submitFormTheme } from "./Theme";
@@ -39,7 +39,7 @@ export default function SubmitForm(props) {
       }
 
     return (
-        <ThemeProvider theme={createMuiTheme(submitFormTheme)}>
+        <ThemeProvider theme={createTheme(submitFormTheme)}>
             <>
                 <SubSubSection margin={theme.spacing(8, "auto", 1)}>
                     <SubTitle

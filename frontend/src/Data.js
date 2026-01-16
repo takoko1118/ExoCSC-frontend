@@ -1,4 +1,4 @@
-import { createMuiTheme } from "@material-ui/core/styles";
+import { createTheme } from "@material-ui/core/styles";
 import LockIcon from "@material-ui/icons/Lock";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
 import AllInclusive from "@material-ui/icons/AllInclusive";
@@ -188,7 +188,7 @@ const tracks = [
         ),
         submit: "Make sure to read the rules before submitting.",
         Icon: LockIcon,
-        theme: createMuiTheme(constrainedTheme),
+        theme: createTheme(constrainedTheme),
     },
     {
         name: "less-constrained",
@@ -202,7 +202,7 @@ const tracks = [
         ),
         submit: false,
         Icon: LockOpenIcon,
-        theme: createMuiTheme(lessConstrainedTheme),
+        theme: createTheme(lessConstrainedTheme),
     },
     {
         name: "unconstrained",
@@ -216,7 +216,7 @@ const tracks = [
         ),
         submit: false,
         Icon: AllInclusive,
-        theme: createMuiTheme(unconstrainedTheme),
+        theme: createTheme(unconstrainedTheme),
     },
 ];
 
@@ -224,30 +224,30 @@ const tracks = [
 const leaderboard_selections = [
     {
         name: "all",
-        theme: createMuiTheme(submitFormTheme),
+        theme: createTheme(submitFormTheme),
     },
     {
         name: "constrained",
-        theme: createMuiTheme(constrainedTheme),
+        theme: createTheme(constrainedTheme),
     },
     {
         name: "less-constrained",
-        theme: createMuiTheme(lessConstrainedTheme),
+        theme: createTheme(lessConstrainedTheme),
     },
     {
         name: "unconstrained",
-        theme: createMuiTheme(unconstrainedTheme),
+        theme: createTheme(unconstrainedTheme),
     },
 ];
 
 const public_hidden_selections = [
     {
         name: "public",
-        theme: createMuiTheme(submitFormTheme),
+        theme: createTheme(submitFormTheme),
     },
     {
         name: "hidden",
-        theme: createMuiTheme(submitFormTheme),
+        theme: createTheme(submitFormTheme),
     },
 ];
 
