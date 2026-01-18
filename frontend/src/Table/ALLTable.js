@@ -214,7 +214,7 @@ function ALLTable() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search markers (e.g., lipid, gene, protein, miRNA...)"
+            placeholder="Search markers (e.g., CD133, PD-L1, mir-21, 27-hydroxycholesterol...)"
             style={{
               flex: 1,
               padding: '10px 15px',

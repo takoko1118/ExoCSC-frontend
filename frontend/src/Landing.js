@@ -64,7 +64,7 @@ export default function Landing(props) {
                             variant={isMobile ? "body1" : "h5"}
                             style={{ color: 'rgba(255,255,255,0.9)', fontWeight: '300' }}
                         >
-                            Cancer Stem cell exosome Database
+                            Cancer Stem Cell Exosomal Markers Database
                         </Typography>
                     </Box>
 
