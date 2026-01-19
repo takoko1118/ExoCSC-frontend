@@ -246,9 +246,23 @@ function GeneDetail() {
         setData(res);
         if (res.entrezID) {
           const cleanID = Math.floor(parseFloat(res.entrezID));
+          console.log('Fetching PPI data for entrez_id:', cleanID);
           fetch(`http://172.16.146.196:8000/api/ppi/?entrez_id=${cleanID}`)
             .then(r => r.json())
-            .then(ppiRes => { if (ppiRes && ppiRes.length > 0) setPpiElements(ppiRes); })
+            .then(ppiRes => { 
+              console.log('PPI API Response:', ppiRes);
+              console.log('PPI Response length:', ppiRes ? ppiRes.length : 0);
+              if (ppiRes && Array.isArray(ppiRes) && ppiRes.length > 0) {
+                console.log('Setting PPI elements:', ppiRes.length, 'elements');
+                // 使用 normalizeElements 确保数据格式正确
+                const normalizedElements = CytoscapeComponent.normalizeElements(ppiRes);
+                console.log('Normalized elements count:', normalizedElements.length);
+                setPpiElements(normalizedElements);
+              } else {
+                console.warn('PPI data is empty or invalid:', ppiRes);
+                setPpiElements(null);
+              }
+            })
             .catch(err => console.error('Error PPI:', err));
         }
 
@@ -710,7 +724,16 @@ function GeneDetail() {
         <div id="ppi-network" className="section-container" style={{ padding: '20px', backgroundColor: '#fff', border: '1px solid #eee', borderRadius: '10px' }}>
           <h2>Protein-Protein Interaction Network</h2>
           <div style={{ border: '1px solid #ddd', borderRadius: '8px', height: '500px', backgroundColor: '#fafafa' }}>
-            {ppiElements ? <CytoscapeComponent elements={ppiElements} style={{ width: '100%', height: '100%' }} layout={{ name: 'cose', nodeRepulsion: 4000, padding: 30 }} stylesheet={ppiStylesheet} /> : <div className="text-center p-5 text-muted">No interaction data.</div>}
+            {ppiElements ? (
+              <CytoscapeComponent 
+                elements={ppiElements} 
+                style={{ width: '100%', height: '100%' }} 
+                layout={{ name: 'cose', nodeRepulsion: 4000, padding: 30 }} 
+                stylesheet={ppiStylesheet} 
+              />
+            ) : (
+              <div className="text-center p-5 text-muted">No interaction data.</div>
+            )}
           </div>
         </div>
 
