@@ -342,9 +342,27 @@ function GeneDetail() {
       })
       .slice(0, topN);
     
+    // 收集所有 CSC 和 Cancer 的分数用于标准化
+    const cscScores = allTerms.map(t => t.csc_score).filter(score => score !== null && score !== undefined);
+    const cancerScores = allTerms.map(t => t.cancer_score).filter(score => score !== null && score !== undefined);
+    
+    // 计算每个类别的 min 和 max
+    const cscMin = cscScores.length > 0 ? Math.min(...cscScores) : 0;
+    const cscMax = cscScores.length > 0 ? Math.max(...cscScores) : 1;
+    const cancerMin = cancerScores.length > 0 ? Math.min(...cancerScores) : 0;
+    const cancerMax = cancerScores.length > 0 ? Math.max(...cancerScores) : 1;
+    
+    // Min-Max 标准化函数
+    const normalize = (value, min, max) => {
+      if (value === null || value === undefined) return 0;
+      if (min === max) return 0.5; // 如果所有值相同，返回中间值
+      return (value - min) / (max - min);
+    };
+    
+    // 对每个类别分别进行标准化
     const z = [
-      allTerms.map(t => t.csc_score || 0),
-      allTerms.map(t => t.cancer_score || 0)
+      allTerms.map(t => normalize(t.csc_score, cscMin, cscMax)),
+      allTerms.map(t => normalize(t.cancer_score, cancerMin, cancerMax))
     ];
     
     const y = ['CSC Specific', 'Cancer General'];
@@ -376,7 +394,7 @@ function GeneDetail() {
         showscale: true,
         colorbar: {
           title: {
-            text: 'Score',
+            text: 'Normalized Score',
             side: 'right',
             font: { size: 14 }
           },
