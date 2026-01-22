@@ -32,15 +32,16 @@
 .detail-page .nav-bar {
     margin-left: 60px;
     position: sticky;
-    top: 100px;
+    top: 190px;
     z-index: 1000;
+    
 }
 
 .detail-page .nav-bar h4 {
     font-weight: 900;
     color: #2e3e93;
     margin-bottom: 20px;
-    font-size: 1.2rem;
+    font-size: 14px;
 }
 
 .detail-page .nav-bar ul {
@@ -51,7 +52,7 @@
 .detail-page .nav-bar li a {
     text-decoration: none;
     color: #666;
-    font-size: 1.05rem;
+    font-size: 12px;
     font-weight: bold;
     display: block;
     padding: 10px 0;
@@ -71,7 +72,7 @@
     width: 100%;
     /* 限制寬度在 1000px 以內，配合 padding-right 產生更多留白 */
     max-width: 1000px; 
-    scroll-margin-top: 120px;
+    scroll-margin-top: 170px;
 }
 
 .detail-page h1 {
@@ -80,7 +81,7 @@
     color: #333;
     margin-left: 80px;
     margin-top: 40px;
-    margin-bottom: 30px;
+    margin-bottom: 5px;
 }
 
 .detail-page h2 {
@@ -99,7 +100,7 @@
 .detail-page .table.dataTable {
     border-collapse: collapse !important;
     font-weight: 700 !important; /* 加強粗細 */
-    font-size: 1.05rem;
+    font-size: 12px;
     background-color: #fff;
     width: 100% !important;
 }
@@ -166,4 +167,13 @@
     padding: 40px 0;
     font-weight: bold;
     color: #444;
+}
+
+/* ==========================================================================
+   GO Enrichment 热图样式
+   ========================================================================== */
+#go-enrichment-heatmap rect.nsewdrag.drag[data-subplot="xy"] {
+    stroke: #0d0d0e !important;
+    stroke-width: 1px !important;
+    fill: transparent !important;
 }

@@ -97,10 +97,10 @@ export default function Landing(props) {
                     boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
                 }}>
                     <Typography variant="h4" style={{ fontWeight: 700, color: '#2e3e93', marginBottom: '20px' }}>
-                        Chatbot
+                        ExoCSC Chatbot
                     </Typography>
                     <Typography variant="body1" style={{ color: '#555', marginBottom: '30px', maxWidth: '600px', margin: '0 auto 30px' }}>
-                    Exploration AI: RAG-Powered Marker Discovery Navigate 16,000+ articles via text-mining to instantly identify cancer and CSC-specific exosomal markers and their molecular signatures.
+                    Exploration AI: RAG-Powered Marker Discovery Navigate 21,000+ articles via text-mining to instantly identify cancer and CSC-specific exosomal markers and their molecular signatures.
                     </Typography>
                     
                     <button 
@@ -143,12 +143,20 @@ export default function Landing(props) {
                         
                         <div className="STATISTICS">Statistics</div>
                         <ul className="stats-list">
-                            <li className="Landing"><span className="item">Cancer stem cell</span><span className="number">6,450</span></li>
-                            <li className="Landing"><span className="item">Cancer cell</span><span className="number">3,332</span></li>
-                            <li className="Landing"><span className="item">Genes</span><span className="number">7,826</span></li>
-                            <li className="Landing"><span className="item">Proteins</span><span className="number">1,852</span></li>
-                            <li className="Landing"><span className="item">mRNAs</span><span className="number">279</span></li>
-                            <li className="Landing"><span className="item">Lipids</span><span className="number">87</span></li>
+                            <li className="Landing"><span className="item">Cancer cell</span><span className="number">4,864</span></li>
+                            <li className="Landing"><span className="item">Genes</span><span className="number">4,864</span></li>
+                            <li className="Landing"><span className="item">Proteins</span><span className="number">6,784</span></li>
+                            <li className="Landing"><span className="item">miRNAs</span><span className="number">1,503</span></li>
+                            <li className="Landing"><span className="item">Lipids</span><span className="number">29</span></li>
+                            
+                            <li className="Landing"><span className="item">Total</span><span className="number">21,732</span></li>
+                            <li className="Landing"><span className="item">Cancer stem cell</span><span className="number">107</span></li>
+                            <li className="Landing"><span className="item">CSC Genes</span><span className="number">166</span></li>
+                            <li className="Landing"><span className="item">CSC Proteins</span><span className="number">22</span></li>
+                            <li className="Landing"><span className="item">CSC miRNAs</span><span className="number">1</span></li>
+                            <li className="Landing"><span className="item">CSC Lipids</span><span className="number">1</span></li>
+                            <li className="Landing"><span className="item">Total</span><span className="number">21,732</span></li>
+                            <li className="Landing"><span className="item">Literatures</span><span className="number">21732</span></li>
                         </ul>
                     </SubSubSection>
                 </SubSection>

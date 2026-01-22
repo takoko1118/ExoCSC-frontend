@@ -405,12 +405,16 @@ function GeneDetail() {
           [0.75, '#0dcaf0'],
           [1, '#0aa2c0']
         ],
+        line: {
+          color: '#000000',
+          width: 1
+        },
         showscale: true,
         colorbar: {
           title: {
             text: 'Normalized Score',
-            side: 'right',
-            font: { size: 14 }
+            side: 'left',
+            font: { size: 8 }
           },
           thickness: 20,
           xref: 'paper',     // 添加这个，使用独立坐标系
@@ -430,11 +434,17 @@ function GeneDetail() {
       
       const layout = {
         title: {
-          text: 'GO Enrichment Heatmap (Top 15 Terms)',
+          text: '',
           font: { size: 16 }
         },
         xaxis: {
-          title: 'GO Terms',
+          title: {
+            text: 'GO Terms',
+            standoff: 0,
+            xref: 'paper',
+            x: 0,
+            xanchor: 'left'
+          },
           tickangle: -45,
           tickfont: { size: 9 }
         },
@@ -442,10 +452,42 @@ function GeneDetail() {
           title: 'Category',
           tickfont: { size: 12 }  // 可以增加 y 轴标签字体大小
         },
-        width: 1200,
+        // width: 1200,
+        autosize: true,
         height: 350,// 从 300 增加到 500（或更大），单元格会变高
-        margin: { l: 150, r: 200, t: 80, b: 200 }
-
+        margin: { l: 150, r: 200, t: 80, b: 200 },
+        // 添加边框形状
+        shapes: [
+          {
+            type: 'rect',
+            xref: 'paper',
+            yref: 'paper',
+            x0: 0,
+            y0: 0,
+            x1: 1,
+            y1: 1,
+            line: {
+              color: '#0d0d0e',
+              width: 1
+            },
+            layer: 'above'
+          },
+          // 在两个类别之间添加分隔线
+          {
+            type: 'line',
+            xref: 'paper',
+            yref: 'y',
+            x0: 0,
+            y0: 0.5,
+            x1: 1,
+            y1: 0.5,
+            line: {
+              color: '#0d0d0e',
+              width: 1
+            },
+            layer: 'above'
+          }
+        ]
       };
       
       const config = {
@@ -453,7 +495,18 @@ function GeneDetail() {
         displayModeBar: true
       };
       
-      Plotly.newPlot('go-enrichment-heatmap', data, layout, config);
+      Plotly.newPlot('go-enrichment-heatmap', data, layout, config).then(() => {
+        // 绘制完成后，为 drag rect 元素添加边框
+        const plotDiv = document.getElementById('go-enrichment-heatmap');
+        if (plotDiv) {
+          const dragRect = plotDiv.querySelector('rect.nsewdrag.drag[data-subplot="xy"]');
+          if (dragRect) {
+            dragRect.setAttribute('stroke', '#0d0d0e');
+            dragRect.setAttribute('stroke-width', '1');
+            dragRect.setAttribute('fill', 'transparent');
+          }
+        }
+      });
     }
     
     // 清理函数
@@ -492,51 +545,53 @@ function GeneDetail() {
 
         <div id="description" className="section-container">
           <h2>Description</h2>
-          <table className='detailTable'>
-            <thead>
-              <tr><th colSpan="2" style={{ backgroundColor: '#f4f4f4', textAlign: 'center' }}>Gene Information</th></tr>
-            </thead>
-            <tbody>
-              <tr><th style={{ width: '25%' }}>Gene name</th><td>{data.cargo}</td></tr>
-              <tr><th>Gene symbol</th><td>{data.entrezName}</td></tr>
-              <tr><th>Entrez Gene</th><td>{data.entrezID ? Math.floor(parseFloat(data.entrezID)) : ''}</td></tr>
-              
-            </tbody>
-          </table>
-          
-          {/* Molecular Narrative Section */}
-          {data.molecular_narrative && (
-            <div style={{ marginTop: '30px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
-              <h3 style={{ marginTop: 0, marginBottom: '20px', fontSize: '18px', color: '#333' }}>Molecular Summary</h3>
-              <div style={{ textAlign: 'left', padding: '15px', lineHeight: '1.6', backgroundColor: '#fff', borderRadius: '5px', border: '1px solid #ddd' }}>
-                {parseMolecularNarrative(data.molecular_narrative).map((section, secIdx) => (
-                  <div key={secIdx} style={{ marginBottom: section.label ? '15px' : '10px' }}>
-                    {section.label && (
+          <div style={{ border: '2px solid #2e3e93', borderRadius: '4px', overflow: 'hidden' }}>
+            <table className='detailTable' style={{ border: 'none', margin: 0 }}>
+              <thead>
+                <tr><th colSpan="2" style={{ backgroundColor: '#f4f4f4', textAlign: 'center' }}>Gene Information</th></tr>
+              </thead>
+              <tbody>
+                <tr><th style={{ width: '25%' }}>Gene name</th><td>{data.cargo}</td></tr>
+                <tr><th>Gene symbol</th><td>{data.entrezName}</td></tr>
+                <tr><th>Entrez Gene</th><td>{data.entrezID ? Math.floor(parseFloat(data.entrezID)) : ''}</td></tr>
+                
+              </tbody>
+            </table>
+            
+            {/* Molecular Narrative Section */}
+            {data.molecular_narrative && (
+              <div style={{ marginTop: 0, padding: '20px', backgroundColor: '#f9f9f9', borderTop: '1px solid #ddd' }}>
+                <h3 style={{ marginTop: 0, marginBottom: '20px', fontSize: '18px', color: '#333' }}>Molecular Summary</h3>
+                <div style={{ textAlign: 'left', padding: '15px', lineHeight: '1.6', backgroundColor: '#fff', borderRadius: '5px', border: '1px solid #ddd' }}>
+                  {parseMolecularNarrative(data.molecular_narrative).map((section, secIdx) => (
+                    <div key={secIdx} style={{ marginBottom: section.label ? '15px' : '10px' }}>
+                      {section.label && (
+                        <div style={{ 
+                          fontWeight: 'bold', 
+                          fontSize: '13px', 
+                          color: '#2c3e50',
+                          marginBottom: '8px',
+                          paddingBottom: '5px',
+                          borderBottom: '1px solid #ddd'
+                        }}>
+                          {section.label}:
+                        </div>
+                      )}
                       <div style={{ 
-                        fontWeight: 'bold', 
-                        fontSize: '13px', 
-                        color: '#2c3e50',
-                        marginBottom: '8px',
-                        paddingBottom: '5px',
-                        borderBottom: '1px solid #ddd'
+                        whiteSpace: 'pre-wrap', 
+                        fontSize: '14px',
+                        lineHeight: '1.6',
+                        color: '#444',
+                        paddingLeft: section.label ? '10px' : '0'
                       }}>
-                        {section.label}:
+                        {section.content}
                       </div>
-                    )}
-                    <div style={{ 
-                      whiteSpace: 'pre-wrap', 
-                      fontSize: '14px',
-                      lineHeight: '1.6',
-                      color: '#444',
-                      paddingLeft: section.label ? '10px' : '0'
-                    }}>
-                      {section.content}
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         <div id="geneCC" className="section-container">
@@ -690,7 +745,7 @@ function GeneDetail() {
           {/* 添加热图 */}
           {(goEnrichmentRaw.csc.length > 0 || goEnrichmentRaw.cancer.length > 0) && (
             <div style={{ marginBottom: '30px', padding: '20px', backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
-              <h4 style={{ marginBottom: '15px', fontSize: '16px', color: '#333' }}>Heatmap (Top 15 GO Terms)</h4>
+              <h4 style={{ marginBottom: '15px', fontSize: '16px', color: '#333' }}>GO Enrichment Heatmap (Top 15 Terms)</h4>
               <div id="go-enrichment-heatmap" style={{ width: '100%', minHeight: '300px' }}></div>
             </div>
           )}

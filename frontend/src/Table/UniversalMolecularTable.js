@@ -387,7 +387,6 @@ const UniversalMolecularTable = ({ type, title, endpoint }) => {
       columns: [
         
         { label: "Marker", field: "cargo", sort: "asc", width: 150 },
-        { label: "Gene symbol", field: "entrezname", sort: "asc", width: 150 },
         { label: "Molecular Type", field: "molecularType", sort: "asc", width: 150 },
         { label: "Tissue", field: "tissue", sort: "asc", width: 150 },
         { label: "Cancer cell type", field: "cellType", sort: "asc", width: 150 },

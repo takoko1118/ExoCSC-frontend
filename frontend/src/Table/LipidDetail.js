@@ -320,57 +320,59 @@ function LipidDetail() {
 
         <div id="description" className="section-container">
           <h2>Description</h2>
-          <table className='detailTable'>
-            <thead>
-              <tr>
-                <th colSpan="2" style={{ backgroundColor: '#f4f4f4', textAlign: 'center' }}>Lipid Information</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th style={{ width: '25%' }}>Lipid name</th>
-                <td>{data.cargo}</td>
-              </tr>
-              <tr>
-                <th>Formula / Description</th>
-                <td style={{ textAlign: 'left', padding: '15px' }}>{data.description}</td>
-              </tr>
-            </tbody>
-          </table>
-          
-          {/* Molecular Summary Section */}
-          {data.molecular_narrative && (
-            <div style={{ marginTop: '30px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
-              <h3 style={{ marginTop: 0, marginBottom: '20px', fontSize: '18px', color: '#333' }}>Molecular Summary</h3>
-              <div style={{ textAlign: 'left', padding: '15px', lineHeight: '1.6', backgroundColor: '#fff', borderRadius: '5px', border: '1px solid #ddd' }}>
-                {parseMolecularNarrative(data.molecular_narrative).map((section, secIdx) => (
-                  <div key={secIdx} style={{ marginBottom: section.label ? '15px' : '10px' }}>
-                    {section.label && (
+          <div style={{ border: '2px solid #2e3e93', borderRadius: '4px', overflow: 'hidden' }}>
+            <table className='detailTable' style={{ border: 'none', margin: 0 }}>
+              <thead>
+                <tr>
+                  <th colSpan="2" style={{ backgroundColor: '#f4f4f4', textAlign: 'center' }}>Lipid Information</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th style={{ width: '25%' }}>Lipid name</th>
+                  <td>{data.cargo}</td>
+                </tr>
+                <tr>
+                  <th>Formula / Description</th>
+                  <td style={{ textAlign: 'left', padding: '15px' }}>{data.description}</td>
+                </tr>
+              </tbody>
+            </table>
+            
+            {/* Molecular Summary Section */}
+            {data.molecular_narrative && (
+              <div style={{ marginTop: 0, padding: '20px', backgroundColor: '#f9f9f9', borderTop: '1px solid #ddd' }}>
+                <h3 style={{ marginTop: 0, marginBottom: '20px', fontSize: '18px', color: '#333' }}>Molecular Summary</h3>
+                <div style={{ textAlign: 'left', padding: '15px', lineHeight: '1.6', backgroundColor: '#fff', borderRadius: '5px', border: '1px solid #ddd' }}>
+                  {parseMolecularNarrative(data.molecular_narrative).map((section, secIdx) => (
+                    <div key={secIdx} style={{ marginBottom: section.label ? '15px' : '10px' }}>
+                      {section.label && (
+                        <div style={{ 
+                          fontWeight: 'bold', 
+                          fontSize: '13px', 
+                          color: '#2c3e50',
+                          marginBottom: '8px',
+                          paddingBottom: '5px',
+                          borderBottom: '1px solid #ddd'
+                        }}>
+                          {section.label}:
+                        </div>
+                      )}
                       <div style={{ 
-                        fontWeight: 'bold', 
-                        fontSize: '13px', 
-                        color: '#2c3e50',
-                        marginBottom: '8px',
-                        paddingBottom: '5px',
-                        borderBottom: '1px solid #ddd'
+                        whiteSpace: 'pre-wrap', 
+                        fontSize: '14px',
+                        lineHeight: '1.6',
+                        color: '#444',
+                        paddingLeft: section.label ? '10px' : '0'
                       }}>
-                        {section.label}:
+                        {section.content}
                       </div>
-                    )}
-                    <div style={{ 
-                      whiteSpace: 'pre-wrap', 
-                      fontSize: '14px',
-                      lineHeight: '1.6',
-                      color: '#444',
-                      paddingLeft: section.label ? '10px' : '0'
-                    }}>
-                      {section.content}
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         <div id="gene-gene" className="section-container">
