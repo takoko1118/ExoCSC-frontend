@@ -301,7 +301,14 @@ function GeneDetail() {
         fetch(`http://172.16.146.196:8000/gene/${parseInt(res.entrezID)}/go/`).then(r => r.json()).then(go => setGOdata({ columns: [{ label: 'GO ID', field: 'go_id', width: 150 }, { label: 'GO Name', field: 'go_name', width: 350 }, { label: 'Domain', field: 'domain', width: 100 }], rows: go.map(g => ({ go_id: g.go_id, go_name: g.go_name, domain: g.domain })) }));
 
         fetch(`http://172.16.146.196:8000/search/table/GeneKegg/${index}/`).then(r => r.json()).then(kegg => {
-          const fmt = (list, cls) => ({ columns: [{ label: 'Pathway ID', field: 'id', width: 120 }, { label: 'Pathway Name', field: 'name', width: 300 }, { label: 'P-value', field: 'p', width: 120 }, { label: 'Score', field: 's', width: 100 }], rows: (list || []).map(k => ({ id: <a href={`https://www.kegg.jp/pathway/${k.pathway_id}`} target="_blank" rel="noreferrer" style={{color: 'blue'}}>{k.pathway_id}</a>, name: k.pathway_name, p: k.p_value ? k.p_value.toExponential(4) : '-', s: <span className={`badge ${cls}`} style={{padding: '5px 10px'}}>{parseFloat(k.score).toFixed(2)}</span> })) });
+          const formatPValue = (pValue) => {
+            if (!pValue) return '-';
+            const exp = pValue.toExponential();
+            const [base, exponent] = exp.split('e');
+            const roundedBase = parseFloat(base).toFixed(2);
+            return `${roundedBase}e${exponent}`;
+          };
+          const fmt = (list, cls) => ({ columns: [{ label: 'Pathway ID', field: 'id', width: 120 }, { label: 'Pathway Name', field: 'name', width: 300 }, { label: 'P-value', field: 'p', width: 120 }, { label: 'Score', field: 's', width: 100 }], rows: (list || []).map(k => ({ id: <a href={`https://www.kegg.jp/pathway/${k.pathway_id}`} target="_blank" rel="noreferrer" style={{color: 'blue'}}>{k.pathway_id}</a>, name: k.pathway_name, p: formatPValue(k.p_value), s: <span className={`badge ${cls}`} style={{padding: '5px 10px'}}>{parseFloat(k.score).toFixed(2)}</span> })) });
           setKEGGdata({ csc: fmt(kegg.csc_pathways, 'badge-danger'), cancer: fmt(kegg.cancer_pathways, 'badge-primary') });
         });
 
@@ -399,11 +406,11 @@ function GeneDetail() {
         y: heatmapData.y,
         type: 'heatmap',
         colorscale: [
-          [0, '#ffffff'],
-          [0.25, '#d1ecf1'],
-          [0.5, '#bee5eb'],
-          [0.75, '#0dcaf0'],
-          [1, '#0aa2c0']
+          [0, '#ff0000'],      // 红色 - 标准分数 0（最小值）
+          [0.25, '#ff8080'],   // 浅红色
+          [0.5, '#ffffff'],    // 白色 - 中间值
+          [0.75, '#8080ff'],   // 浅蓝色
+          [1, '#0000ff']       // 蓝色 - 最大值
         ],
         line: {
           color: '#000000',
