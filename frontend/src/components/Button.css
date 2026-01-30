@@ -13,14 +13,14 @@
 .ui.buttons .button:first-child {
     background-color: #2e3e93 !important;
     color: white !important;
-    font-family: 'Arial', sans-serif !important;
-    font-size: 1.2rem !important;
     padding: 15px 25px !important;
     font-weight: bold !important;
     
-    /* 精確設定左側圓角，移除右側圓角 */
+    /* 設定 上、左、下 的白色邊框 */
+    border: 2px solid white !important;
+    border-right: none !important; /* 關鍵：移除右邊框 */
+    
     border-radius: 12px 0 0 12px !important; 
-    border: none !important;
     margin: 0 !important;
 }
 
@@ -30,16 +30,18 @@
     color: white !important;
     padding: 15px 15px !important;
     
-    /* 精確設定右側圓角，移除左側圓角 */
+    /* 設定 上、右、下 的白色邊框 */
+    border: 2px solid white !important;
+    border-left: none !important; /* 關鍵：移除左邊框，達成無縫效果 */
+    
     border-radius: 0 12px 12px 0 !important;
-    border-left: 1px solid rgba(255, 255, 255, 0.3) !important; /* 中間的分隔線 */
     margin: 0 !important;
     min-width: auto !important;
 }
 
 /* 4. 解決按鈕組內部可能產生的尖角背景 */
 .ui.buttons .button {
-    box-shadow: none !important;
+    gap: 0 !important; /* 確保中間沒有任何縫隙 */
 }
 
 /* 5. 懸停效果 (Hover) */
