@@ -214,6 +214,9 @@ function GeneDetail() {
     { selector: 'edge', style: { 'width': 1.5, 'line-color': '#ccc', 'curve-style': 'bezier', 'opacity': 0.7 } }
   ];
 
+  // 空值顯示為 NA（所有表格欄位統一）
+  const na = (v) => (v != null && v !== '' && (typeof v !== 'string' || v.trim() !== '')) ? v : 'NA';
+
   // 处理URL查询参数中的entrez_id
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -280,25 +283,49 @@ function GeneDetail() {
           setGeneRnaRaw(dataBs);
           setmRNAdata({
             columns: commonCols,
-            rows: dataBs.map(d => ({ gene: <a href={`http://172.16.146.196:3000/rna/${d.rna_url}`} style={{ color: 'blue' }}>{d.cargo_rna}</a>, tissue: d.tissue, score: d.score_y, cellline: d.cellLine, pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> }))
+            rows: dataBs.map(d => ({
+              gene: d.rna_url ? <a href={`http://172.16.146.196:3000/rna/${d.rna_url}`} style={{ color: 'blue' }}>{na(d.cargo_rna)}</a> : na(d.cargo_rna),
+              tissue: na(d.tissue),
+              score: na(d.score_y),
+              cellline: na(d.cellLine),
+              pmcid: d.pmcid ? <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> : 'NA'
+            }))
           });
         });
 
-        fetchAll(dataDUrls).then(ds => setCSCdata({ columns: commonCols, rows: ds.map(d => ({ gene: <a href={`http://172.16.146.196:3000/gene/${d.id}`} style={{ color: 'blue' }}>{d.cargo}</a>, tissue: d.tissue, score: d.score, cellline: d.cellLine, pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> })) }));
-        fetchAll(dataEUrls).then(es => setCCdata({ columns: commonCols, rows: es.map(d => ({ gene: <a href={`http://172.16.146.196:3000/gene/${d.id}`} style={{ color: 'blue' }}>{d.cargo}</a>, tissue: d.tissue, score: d.score, cellline: d.cellLine, pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> })) }));
+        fetchAll(dataDUrls).then(ds => setCSCdata({ columns: commonCols, rows: ds.map(d => ({
+          gene: d.id ? <a href={`http://172.16.146.196:3000/gene/${d.id}`} style={{ color: 'blue' }}>{na(d.cargo)}</a> : na(d.cargo),
+          tissue: na(d.tissue),
+          score: na(d.score),
+          cellline: na(d.cellLine),
+          pmcid: d.pmcid ? <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> : 'NA'
+        })) }));
+        fetchAll(dataEUrls).then(es => setCCdata({ columns: commonCols, rows: es.map(d => ({
+          gene: d.id ? <a href={`http://172.16.146.196:3000/gene/${d.id}`} style={{ color: 'blue' }}>{na(d.cargo)}</a> : na(d.cargo),
+          tissue: na(d.tissue),
+          score: na(d.score),
+          cellline: na(d.cellLine),
+          pmcid: d.pmcid ? <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> : 'NA'
+        })) }));
         fetchAll(dataFUrls).then(fs => {
           setGeneLipidRaw(fs); // 儲存原始資料
-          setLipiddata({ columns: commonCols, rows: fs.map(d => ({ gene: <a href={`http://172.16.146.196:3000/lipid/${d.lipid_url}`} style={{ color: 'blue' }}>{d.cargo_lipid}</a>, tissue: d.tissue, score: d.score_y, cellline: d.cellLine, pmcid: <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> })) });
+          setLipiddata({ columns: commonCols, rows: fs.map(d => ({
+            gene: d.lipid_url ? <a href={`http://172.16.146.196:3000/lipid/${d.lipid_url}`} style={{ color: 'blue' }}>{na(d.cargo_lipid)}</a> : na(d.cargo_lipid),
+            tissue: na(d.tissue),
+            score: na(d.score_y),
+            cellline: na(d.cellLine),
+            pmcid: d.pmcid ? <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> : 'NA'
+          })) });
         });
         
         // 只使用 refUrls（通过 pmcid 映射到 Ref 表），不再使用 GeneRefTable
         if (refUrls.length > 0) {
-          fetchAll(refUrls).then(cs => setRefdata({ columns: [{ label: 'Title', field: 'title', width: 250 }, { label: 'Journal', field: 'journal', width: 150 }, { label: 'Year', field: 'year', width: 80 }, { label: 'Author', field: 'author', width: 120 }, { label: 'PMCID', field: 'pmcid', width: 120 }], rows: cs.map(d => ({ title: d.title || '', journal: d.journal || '', year: d.year || '', author: d.author ? d.author.split(',')[0] : '', pmcid: d.pmcid ? <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> : '' })) }));
+          fetchAll(refUrls).then(cs => setRefdata({ columns: [{ label: 'Title', field: 'title', width: 250 }, { label: 'Journal', field: 'journal', width: 150 }, { label: 'Year', field: 'year', width: 80 }, { label: 'Author', field: 'author', width: 120 }, { label: 'PMCID', field: 'pmcid', width: 120 }], rows: cs.map(d => ({ title: na(d.title), journal: na(d.journal), year: na(d.year), author: na(d.author ? d.author.split(',')[0].trim() : ''), pmcid: d.pmcid ? <a href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${d.pmcid}`} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>{d.pmcid}</a> : 'NA' })) }));
         } else {
           // 如果没有 ref_urls，设置为空数据
           setRefdata({ columns: [{ label: 'Title', field: 'title', width: 250 }, { label: 'Journal', field: 'journal', width: 150 }, { label: 'Year', field: 'year', width: 80 }, { label: 'Author', field: 'author', width: 120 }, { label: 'PMCID', field: 'pmcid', width: 120 }], rows: [] });
         }
-        fetch(`http://172.16.146.196:8000/gene/${parseInt(res.entrezID)}/go/`).then(r => r.json()).then(go => setGOdata({ columns: [{ label: 'GO ID', field: 'go_id', width: 150 }, { label: 'GO Name', field: 'go_name', width: 350 }, { label: 'Domain', field: 'domain', width: 100 }], rows: go.map(g => ({ go_id: g.go_id, go_name: g.go_name, domain: g.domain })) }));
+        fetch(`http://172.16.146.196:8000/gene/${parseInt(res.entrezID)}/go/`).then(r => r.json()).then(go => setGOdata({ columns: [{ label: 'GO ID', field: 'go_id', width: 150 }, { label: 'GO Name', field: 'go_name', width: 350 }, { label: 'Domain', field: 'domain', width: 100 }], rows: go.map(g => ({ go_id: na(g.go_id), go_name: na(g.go_name), domain: na(g.domain) })) }));
 
         fetch(`http://172.16.146.196:8000/search/table/GeneKegg/${index}/`).then(r => r.json()).then(kegg => {
           const formatPValue = (pValue) => {
@@ -308,7 +335,7 @@ function GeneDetail() {
             const roundedBase = parseFloat(base).toFixed(2);
             return `${roundedBase}e${exponent}`;
           };
-          const fmt = (list, cls) => ({ columns: [{ label: 'Pathway ID', field: 'id', width: 120 }, { label: 'Pathway Name', field: 'name', width: 300 }, { label: 'P-value', field: 'p', width: 120 }, { label: 'Score', field: 's', width: 100 }], rows: (list || []).map(k => ({ id: <a href={`https://www.kegg.jp/pathway/${k.pathway_id}`} target="_blank" rel="noreferrer" style={{color: 'blue'}}>{k.pathway_id}</a>, name: k.pathway_name, p: formatPValue(k.p_value), s: <span className={`badge ${cls}`} style={{padding: '5px 10px'}}>{parseFloat(k.score).toFixed(2)}</span> })) });
+          const fmt = (list, cls) => ({ columns: [{ label: 'Pathway ID', field: 'id', width: 120 }, { label: 'Pathway Name', field: 'name', width: 300 }, { label: 'P-value', field: 'p', width: 120 }, { label: 'Score', field: 's', width: 100 }], rows: (list || []).map(k => ({ id: k.pathway_id ? <a href={`https://www.kegg.jp/pathway/${k.pathway_id}`} target="_blank" rel="noreferrer" style={{color: 'blue'}}>{na(k.pathway_id)}</a> : 'NA', name: na(k.pathway_name), p: formatPValue(k.p_value) || 'NA', s: k.score != null && k.score !== '' ? <span className={`badge ${cls}`} style={{padding: '5px 10px'}}>{parseFloat(k.score).toFixed(2)}</span> : 'NA' })) });
           setKEGGdata({ csc: fmt(kegg.csc_pathways, 'badge-danger'), cancer: fmt(kegg.cancer_pathways, 'badge-primary') });
         });
 
@@ -321,7 +348,7 @@ function GeneDetail() {
             });
             
             // 格式化数据用于表格
-            const fmt = (list, cls) => ({ columns: [{ label: 'Term', field: 't', width: 300 }, { label: 'Score', field: 's', width: 100 }, { label: 'FDR', field: 'f', width: 120 }], rows: (list || []).map(c => ({ t: c.Term, s: <span className={`badge ${cls}`} style={{padding: '5px 10px'}}>{c.Score.toFixed(2)}</span>, f: c.Adjusted_P.toExponential(2) })) });
+            const fmt = (list, cls) => ({ columns: [{ label: 'Term', field: 't', width: 300 }, { label: 'Score', field: 's', width: 100 }, { label: 'FDR', field: 'f', width: 120 }], rows: (list || []).map(c => ({ t: na(c.Term), s: c.Score != null && c.Score !== '' ? <span className={`badge ${cls}`} style={{padding: '5px 10px'}}>{Number(c.Score).toFixed(2)}</span> : 'NA', f: c.Adjusted_P != null && c.Adjusted_P !== '' ? Number(c.Adjusted_P).toExponential(2) : 'NA' })) });
             setGOEnrichContext({ csc: fmt(enr.csc_context, 'badge-danger'), cancer: fmt(enr.cancer_context, 'badge-primary') });
           });
         }
@@ -548,7 +575,7 @@ function GeneDetail() {
       </aside>
 
       <div className="content">
-        <h1>{data.cargo}</h1>
+        <h1>{na(data.cargo)}</h1>
 
         <div id="description" className="section-container">
           <h2>Description</h2>
@@ -558,9 +585,9 @@ function GeneDetail() {
                 <tr><th colSpan="2" style={{ backgroundColor: '#f4f4f4', textAlign: 'center' }}>Gene Information</th></tr>
               </thead>
               <tbody>
-                <tr><th style={{ width: '25%' }}>Gene name</th><td>{data.cargo}</td></tr>
-                <tr><th>Gene symbol</th><td>{data.entrezName}</td></tr>
-                <tr><th>Entrez Gene</th><td>{data.entrezID ? Math.floor(parseFloat(data.entrezID)) : ''}</td></tr>
+                <tr><th style={{ width: '25%' }}>Gene name</th><td>{na(data.cargo)}</td></tr>
+                <tr><th>Gene symbol</th><td>{na(data.entrezName)}</td></tr>
+                <tr><th>Entrez Gene</th><td>{data.entrezID != null && data.entrezID !== '' ? Math.floor(parseFloat(data.entrezID)) : 'NA'}</td></tr>
                 
               </tbody>
             </table>
@@ -642,7 +669,7 @@ function GeneDetail() {
                   }
                   return narratives.map((item, idx) => (
                     <div key={idx} className="narrative-box" style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#fff', borderRadius: '5px', border: '1px solid #ddd' }}>
-                      <div style={{ fontWeight: 'bold', fontSize: '11px', color: '#666', marginBottom: '10px' }}>Associated miRNA: {item.cargo_rna}</div>
+                      <div style={{ fontWeight: 'bold', fontSize: '11px', color: '#666', marginBottom: '10px' }}>Associated miRNA: {na(item.cargo_rna)}</div>
                       {parseNarrative(item.llm_narrative).map((section, secIdx) => (
                         <div key={secIdx} style={{ marginBottom: section.label ? '15px' : '10px' }}>
                           {section.label && (
@@ -707,7 +734,7 @@ function GeneDetail() {
                   }
                   return narratives.map((item, idx) => (
                     <div key={idx} className="narrative-box" style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#fff', borderRadius: '5px', border: '1px solid #ddd' }}>
-                      <div style={{ fontWeight: 'bold', fontSize: '11px', color: '#666', marginBottom: '10px' }}>Associated Lipid: {item.cargo_lipid}</div>
+                      <div style={{ fontWeight: 'bold', fontSize: '11px', color: '#666', marginBottom: '10px' }}>Associated Lipid: {na(item.cargo_lipid)}</div>
                       {parseNarrative(item.llm_narrative).map((section, secIdx) => (
                         <div key={secIdx} style={{ marginBottom: section.label ? '15px' : '10px' }}>
                           {section.label && (

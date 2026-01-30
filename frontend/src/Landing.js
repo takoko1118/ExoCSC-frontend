@@ -117,6 +117,41 @@ export default function Landing(props) {
                         <i className="magic icon"></i> Start 
                     </button>
                 </Box>
+
+                {/* 精選分子卡片區塊（Chatbot 下方） */}
+                <section className="landing-featured-section">
+                    <Typography variant="h5" className="landing-featured-title">
+                        Featured Markers
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary" className="landing-featured-subtitle">
+                        Exosomal markers in cancer and cancer stem cells
+                    </Typography>
+                    <div className="landing-card-grid">
+                        {[
+                            { id: 310224, cargo: 'CD44', entrezName: 'CD44 molecule', category: 'CSC' },
+                            { id: 310299, cargo: 'EGFR', entrezName: 'epidermal growth factor receptor', category: 'Cancer' },
+                            { id: 314127, cargo: 'CD133', entrezName: 'prominin 1', category: 'CSC' },
+                            { id: 313996, cargo: 'KRAS', entrezName: 'KRAS proto-oncogene', category: 'Cancer' },
+                            { id: 312380, cargo: 'ALDH1A1', entrezName: 'aldehyde dehydrogenase 1 family member A1', category: 'CSC' },
+                            { id: 313452, cargo: 'TP53', entrezName: 'tumor protein p53', category: 'Cancer' },
+                        ].map((item) => (
+                            <article
+                                key={item.id}
+                                className="landing-card"
+                                onClick={() => history.push(`/gene/${item.id}`)}
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => e.key === 'Enter' && history.push(`/gene/${item.id}`)}
+                            >
+                                <span className={`landing-card-category landing-card-category--${item.category.toLowerCase()}`}>
+                                    {item.category}
+                                </span>
+                                <h3 className="landing-card-cargo">{item.cargo}</h3>
+                                <p className="landing-card-entrez">{item.entrezName}</p>
+                            </article>
+                        ))}
+                    </div>
+                </section>
                 
                 <Box className={classes.introTitleBox}>
                     <Title title="Introduction of ExoCSC"/>
